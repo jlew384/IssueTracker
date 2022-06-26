@@ -1,0 +1,95 @@
+﻿@model IEnumerable<IssueTracker.Models.Issue>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Project: @ViewBag.Project.Title</h1>
+
+<p>Description: @ViewBag.Project.Desc</p>
+
+<p>
+    <a asp-action="Create" asp-route-pid="@ViewBag.Project.Id">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Desc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Priority)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            
+            
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatorUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Modified)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Desc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Priority)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.AssignedUser!.UserName)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatorUser!.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Modified)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" asp-route-pid="@ViewBag.Project.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id" asp-route-pid="@ViewBag.Project.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id" asp-route-pid="@ViewBag.Project.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<div>
+    <a asp-controller="Project" asp-action="Index" asp-route-pid="@ViewBag.Project.Id">Back to Project List</a>
+</div>
