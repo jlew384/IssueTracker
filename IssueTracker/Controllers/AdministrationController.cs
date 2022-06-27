@@ -5,7 +5,8 @@ using IssueTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace IssueTracker.Controllers
 {
@@ -22,6 +23,72 @@ namespace IssueTracker.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            List<UserViewModel> modelList = new List<UserViewModel>() { };
+            foreach(var user in _userManager.Users.Where(x => x.Id != _userManager.GetUserId(User)))
+            {
+                UserViewModel model = new UserViewModel();
+                model.Id = user.Id;
+                model.Name = user.UserName;
+                model.Email = user.Email;
+                model.Roles = await _userManager.GetRolesAsync(user);
+                modelList.Add(model);
+            }
+
+            return View(modelList);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditUserRole(string userId)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+
+            if(user == null)
+            {
+                return NotFound();
+            }
+
+            EditUserRoleViewModel model = new EditUserRoleViewModel();
+            model.Id = user.Id;
+            model.Name = user.UserName;
+            model.Email = user.Email;
+            model.IsAdmin = await _userManager.IsInRoleAsync(user, UserRoles.ADMIN);
+            model.IsProjectManager = await _userManager.IsInRoleAsync(user, UserRoles.PROJ_MNGR);
+            model.IsDeveloper = await _userManager.IsInRoleAsync(user, UserRoles.DEV);
+            model.IsSubmitter = await _userManager.IsInRoleAsync(user, UserRoles.SUB);
+
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUserRole(EditUserRoleViewModel model)
+        {
+            if(!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            ApplicationUser user = await _userManager.FindByIdAsync(model.Id);
+
+            List<string> rolesIn = new List<string>();
+            if (model.IsAdmin) rolesIn.Add(UserRoles.ADMIN);
+            if (model.IsProjectManager) rolesIn.Add(UserRoles.PROJ_MNGR);
+            if (model.IsDeveloper) rolesIn.Add(UserRoles.DEV);
+            if (model.IsSubmitter) rolesIn.Add(UserRoles.SUB);
+
+            IList<string> roles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, roles);
+            await _userManager.AddToRolesAsync(user, rolesIn);
+
+            return RedirectToAction("Index");
+        }
+
+
+
 
         [HttpGet]
         public IActionResult CreateRole()

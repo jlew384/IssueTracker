@@ -19,7 +19,7 @@ namespace IssueTracker
 
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
                     options.SignIn.RequireConfirmedAccount = true;
-                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@. ";
                 })
                 .AddRoles <IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();

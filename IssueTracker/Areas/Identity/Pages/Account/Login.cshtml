@@ -12,9 +12,9 @@
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-floating mt-2">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
-                    <label asp-for="Input.Email" class="form-label"></label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    <input asp-for="Input.EmailOrUserName" class="form-control" autocomplete="username" aria-required="true" />
+                    <label asp-for="Input.EmailOrUserName" class="form-label"></label>
+                    <span asp-validation-for="Input.EmailOrUserName" class="text-danger"></span>
                 </div>
                 <div class="form-floating mt-2">
                     <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
@@ -45,7 +45,7 @@
                 </div>*@
             </form>
             <form id="account" method="post" class="mt-2">
-                <input asp-for="Input.Email" class="form-control"  hidden value="proj_mngr@@issuetracker.com" />
+                <input asp-for="Input.EmailOrUserName" class="form-control"  hidden value="guest@@issuetracker.com" />
                 <input asp-for="Input.Password" class="form-control" hidden value="Test1@@" />
                 <div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in as Guest</button>
