@@ -1,6 +1,6 @@
-﻿using IssueTracker.Constants;
-using IssueTracker.Data;
+﻿using IssueTracker.Data;
 using IssueTracker.Models;
+using IssueTracker.Authorization;
 using IssueTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IssueTracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220619215825_Navigation Prop added to ApplicationUser")]
-    partial class NavigationPropaddedtoApplicationUser
+    [Migration("20220629175302_removed self referenece in ApplicationUser model")]
+    partial class removedselfrefereneceinApplicationUsermodel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,21 +24,19 @@ namespace IssueTracker.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("IssueTracker.Models.ApplicationUserProject", b =>
+            modelBuilder.Entity("ApplicationUserProject", b =>
                 {
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnOrder(0);
+                    b.Property<int>("ProjectsId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int")
-                        .HasColumnOrder(1);
+                    b.Property<string>("UsersId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ApplicationUserId", "ProjectId");
+                    b.HasKey("ProjectsId", "UsersId");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("UsersId");
 
-                    b.ToTable("ApplicationUserProjects");
+                    b.ToTable("ApplicationUserProject");
                 });
 
             modelBuilder.Entity("IssueTracker.Models.Issue", b =>
@@ -341,31 +339,22 @@ namespace IssueTracker.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
-            modelBuilder.Entity("IssueTracker.Models.ApplicationUserProject", b =>
+            modelBuilder.Entity("ApplicationUserProject", b =>
                 {
-                    b.HasOne("IssueTracker.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("Projects")
-                        .HasForeignKey("ApplicationUserId")
+                    b.HasOne("IssueTracker.Models.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("IssueTracker.Models.Project", "Project")
-                        .WithMany("Users")
-                        .HasForeignKey("ProjectId")
+                    b.HasOne("IssueTracker.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("IssueTracker.Models.Issue", b =>
@@ -440,25 +429,6 @@ namespace IssueTracker.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("IssueTracker.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("IssueTracker.Models.ApplicationUser", null)
-                        .WithMany("Issues")
-                        .HasForeignKey("ApplicationUserId");
-                });
-
-            modelBuilder.Entity("IssueTracker.Models.Project", b =>
-                {
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("IssueTracker.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("Issues");
-
-                    b.Navigation("Projects");
                 });
 #pragma warning restore 612, 618
         }

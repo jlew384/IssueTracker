@@ -1,11 +1,14 @@
-﻿using IssueTracker.Constants;
+﻿using IssueTracker.Authorization;
 using IssueTracker.Data;
 using IssueTracker.Models;
+using IssueTracker.Authorization;
 using IssueTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
+using System.Security.Claims;
 
 namespace IssueTracker.Controllers
 {
@@ -31,21 +34,24 @@ namespace IssueTracker.Controllers
         public async Task<IActionResult> MyProjects()
         {
             MyProjectsViewModel model = new MyProjectsViewModel();
-
             ApplicationUser user = await _userManager.GetUserAsync(User);
-            model.ManagedProjects = _context.Projects.Where(p => p.ProjectManagerId == user.Id).ToList();
-
-            if (user.Projects != null)
+            var claims = await _userManager.GetClaimsAsync(user);
+            List<int> ownedProjectIds = claims
+                .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+                .Select(c => Int32.Parse(c.Value))
+                .ToList();
+            
+            foreach(Project project in user.Projects)
             {
-                foreach (var row in user.Projects)
+                if(ownedProjectIds.Contains(project.Id))
                 {
-                    if(row.Project.ProjectManagerId != user.Id)
-                    {
-                        model.AssignedProjects.Add(row.Project);
-                    }
-                    
+                    model.ManagedProjects.Add(project);
                 }
-            }            
+                else
+                {
+                    model.AssignedProjects.Add(project);
+                }
+            }
             return View(model);
         }
 
@@ -58,19 +64,17 @@ namespace IssueTracker.Controllers
 
         
         [HttpPost]
-        public IActionResult Create(Project obj)
+        public async Task<IActionResult> Create(Project project)
         {
-            obj.DateCreated = DateTime.Now;
-            _context.Projects.Add(obj);
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+
+            project.Users.Add(user);
+            project.DateCreated = DateTime.Now;
+            _context.Projects.Add(project);
             _context.SaveChanges();
 
-            string userId = _userManager.GetUserId(this.User);
-            ApplicationUserProject applicationUserProject = new ApplicationUserProject();
-            applicationUserProject.ApplicationUserId = userId;
-            applicationUserProject.ProjectId = obj.Id;
+            await _userManager.AddClaimAsync(user, new Claim(UserClaimTypes.PROJECT_OWNER, project.Id.ToString()));
 
-            _context.ApplicationUserProjects.Add(applicationUserProject);
-            _context.SaveChanges();
             return RedirectToAction("Index");
         }
 

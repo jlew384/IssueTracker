@@ -1,6 +1,10 @@
 ﻿@model IEnumerable<IssueTracker.Models.Project>
 
 @{
+    var ownerClaimValues = User.Claims
+        .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+        .Select(c => Int32.Parse(c.Value))
+        .ToList();
     bool showButtons = ViewBag.showButtons;
 }
 
@@ -12,9 +16,6 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Desc)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProjectManager)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DateCreated)
@@ -35,16 +36,13 @@
                 @Html.DisplayFor(modelItem => item.Desc)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ProjectManager.UserName)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.DateCreated)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DateModified)
             </td>
             <td>
-              @if(showButtons)
+              @if(User.IsInRole(UserRoles.ADMIN) || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(item.Id))
                 {
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a>

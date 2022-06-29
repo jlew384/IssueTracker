@@ -13,14 +13,11 @@ namespace IssueTracker.Models
         [Required]
         [StringLength(600)]
         public string Desc { get; set; } = null!;
+        
+        //[NotMapped]
+        //public virtual ApplicationUser? ProjectManager { get; set; }
 
-        public string? ProjectManagerId { get; set; }
-
-        [ForeignKey("ProjectManagerId")]
-        public virtual ApplicationUser? ProjectManager { get; set; }
-
-        [Required]
-        public virtual ICollection<ApplicationUserProject> Users { get; set; } = null!;
+        public virtual ICollection<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
 
         [Required]
         public DateTime DateCreated { get; set; }
