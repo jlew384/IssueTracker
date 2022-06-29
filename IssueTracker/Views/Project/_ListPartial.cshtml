@@ -1,0 +1,62 @@
+﻿@model IEnumerable<IssueTracker.Models.Project>
+
+@{
+    bool showButtons = ViewBag.showButtons;
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Desc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProjectManager)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateCreated)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateModified)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+ @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Desc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProjectManager.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateCreated)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateModified)
+            </td>
+            <td>
+              @if(showButtons)
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                }                       
+                
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+    @if(Model.Count() == 0) {
+        <p class="text-center">There are no projects to display.</p>
+    }

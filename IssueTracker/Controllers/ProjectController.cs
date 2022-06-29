@@ -1,11 +1,15 @@
-﻿using IssueTracker.Data;
+﻿using IssueTracker.Constants;
+using IssueTracker.Data;
 using IssueTracker.Models;
+using IssueTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IssueTracker.Controllers
 {
+    [Authorize]
     public class ProjectController : Controller
     {
         private readonly ApplicationDbContext _context; 
@@ -17,20 +21,42 @@ namespace IssueTracker.Controllers
             _userManager = userManager;
         }
 
-        [Authorize]
+        
         public IActionResult Index()
         {
             return View(_context.Projects.ToList());
         }
 
+        [HttpGet]
+        public async Task<IActionResult> MyProjects()
+        {
+            MyProjectsViewModel model = new MyProjectsViewModel();
 
-        [Authorize]
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            model.ManagedProjects = _context.Projects.Where(p => p.ProjectManagerId == user.Id).ToList();
+
+            if (user.Projects != null)
+            {
+                foreach (var row in user.Projects)
+                {
+                    if(row.Project.ProjectManagerId != user.Id)
+                    {
+                        model.AssignedProjects.Add(row.Project);
+                    }
+                    
+                }
+            }            
+            return View(model);
+        }
+
+
+        
         public IActionResult Create()
         {
             return View();
         }
 
-        [Authorize]
+        
         [HttpPost]
         public IActionResult Create(Project obj)
         {
@@ -48,8 +74,8 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize]
-        public IActionResult Edit(int? id)
+        
+        public async Task<IActionResult> Edit(int? id)
         {
             if(id == null || id == 0)
             {
@@ -62,10 +88,14 @@ namespace IssueTracker.Controllers
                 return NotFound();
             }
 
+            IList<ApplicationUser> projectManagers = await _userManager.GetUsersInRoleAsync(UserRoles.ADMIN);
+            IList<ApplicationUser> admins = await _userManager.GetUsersInRoleAsync(UserRoles.PROJ_MNGR);
+
+            ViewBag.ProjectManagerSelectList = new SelectList(admins.Concat(projectManagers), "Id", "UserName");
             return View(project);
         }
 
-        [Authorize]
+        
         [HttpPost]
         public IActionResult Edit(Project obj)
         {
@@ -75,7 +105,7 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize]
+        
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0)
@@ -92,7 +122,7 @@ namespace IssueTracker.Controllers
             return View(project);
         }
 
-        [Authorize]
+        
         [HttpPost]
         public IActionResult Delete(Project obj)
         {
@@ -101,7 +131,7 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize]
+        
         public IActionResult Details(int? id)
         {
             if (id == null || id == 0)

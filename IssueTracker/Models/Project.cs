@@ -14,6 +14,11 @@ namespace IssueTracker.Models
         [StringLength(600)]
         public string Desc { get; set; } = null!;
 
+        public string? ProjectManagerId { get; set; }
+
+        [ForeignKey("ProjectManagerId")]
+        public virtual ApplicationUser? ProjectManager { get; set; }
+
         [Required]
         public virtual ICollection<ApplicationUserProject> Users { get; set; } = null!;
 
