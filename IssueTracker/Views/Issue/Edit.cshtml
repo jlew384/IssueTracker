@@ -1,52 +1,52 @@
-﻿@model IssueTracker.Models.Issue
+﻿@model EditIssueViewModel
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>@Model.Project.Title</h1>
+<h1>@Model.Issue.Project.Title</h1>
 
 <h4>Edit Issue</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit" asp-route-pid="@Model.ProjectId">
+        <form asp-controller="Issue" asp-action="Edit" asp-route-pid="@Model.Issue.ProjectId">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="Modified" />
-            <input type="hidden" asp-for="Created" />
-            <input type="hidden" asp-for="ProjectId"/>
-            <input type="hidden" asp-for="CreatorUserId" />
+            <input type="hidden" asp-for="Issue.Id" />
+            <input type="hidden" asp-for="Issue.Modified" />
+            <input type="hidden" asp-for="Issue.Created" />
+            <input type="hidden" asp-for="Issue.ProjectId"/>
+            <input type="hidden" asp-for="Issue.CreatorUserId" />
             <div class="form-group">
-                <label asp-for="AssignedUserId" class="control-label"></label>
-                <select asp-for="AssignedUserId" class="form-control" asp-items="@ViewBag.AssignedUsers"></select>
-                <span asp-validation-for="AssignedUserId" class="text-danger"></span>
+                <label asp-for="Issue.Title" class="control-label"></label>
+                <input asp-for="Issue.Title" class="form-control" />
+                <span asp-validation-for="Issue.Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                <label asp-for="Issue.Desc" class="control-label"></label>
+                <input asp-for="Issue.Desc" class="form-control" />
+                <span asp-validation-for="Issue.Desc" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Desc" class="control-label"></label>
-                <input asp-for="Desc" class="form-control" />
-                <span asp-validation-for="Desc" class="text-danger"></span>
+                <label asp-for="Issue.AssignedUserId" class="control-label"></label>
+                <select asp-for="Issue.AssignedUserId" class="form-control" asp-items='@new SelectList(Model.AssignableUsers, "Id", "UserName")'></select>
+                <span asp-validation-for="Issue.AssignedUserId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <select asp-for="Status" class="form-control" asp-items="@ViewBag.StatusSelectList" ><</select>
-                <span asp-validation-for="Status" class="text-danger"></span>
+                <label asp-for="Issue.Status" class="control-label"></label>
+                <select asp-for="Issue.Status" class="form-control" asp-items="@new SelectList(IssueStatus.List)" ><</select>
+                <span asp-validation-for="Issue.Status" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Priority" class="control-label"></label>
-                <select asp-for="Priority" class="form-control" asp-items="@ViewBag.PrioritySelectList"></select>
-                <span asp-validation-for="Priority" class="text-danger"></span>
+                <label asp-for="Issue.Priority" class="control-label"></label>
+                <select asp-for="Issue.Priority" class="form-control" asp-items="@new SelectList(IssuePriority.List)"></select>
+                <span asp-validation-for="Issue.Priority" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Type" class="control-label"></label>
-                <select asp-for="Type" class="form-control" asp-items="@ViewBag.TypeSelectList"></select>
-                <span asp-validation-for="Type" class="text-danger"></span>
+                <label asp-for="Issue.Type" class="control-label"></label>
+                <select asp-for="Issue.Type" class="form-control" asp-items="@new SelectList(IssueType.List)"></select>
+                <span asp-validation-for="Issue.Type" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -56,7 +56,7 @@
 </div>
 
 <div>
-    <a asp-action="Index" asp-route-pid="@Model.ProjectId">Back to List</a>
+    <a asp-action="Index" asp-route-pid="@Model.Issue.ProjectId">Back to List</a>
 </div>
 
 @section Scripts {

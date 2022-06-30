@@ -55,7 +55,7 @@ namespace IssueTracker.Controllers
         }
 
 
-        
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
             ApplicationUser user = await _userManager.GetUserAsync(User);

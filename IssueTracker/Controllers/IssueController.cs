@@ -1,6 +1,7 @@
 ﻿using IssueTracker.Constants;
 using IssueTracker.Data;
 using IssueTracker.Models;
+using IssueTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,7 @@ namespace IssueTracker.Controllers
             return View(issues);
         }
 
+        [HttpGet]
         public IActionResult Create(int? pid)
         {
             Project project = _context.Projects.Find(pid);
@@ -45,39 +47,40 @@ namespace IssueTracker.Controllers
             ViewBag.PrioritySelectList = new SelectList(IssuePriority.List);
             ViewBag.TypeSelectList = new SelectList(IssueType.List);
             ViewBag.Project = project;
-            return View();
+
+            CreateIssueViewModel model = new CreateIssueViewModel();
+            model.Project = project;
+            model.AssignableUsers = project.Users;
+            return View(model);
         }
 
         [Authorize]
         [HttpPost]
-        public IActionResult Create(Issue obj)
+        public IActionResult Create(CreateIssueViewModel model)
         {
-            obj.Status = IssueStatus.TO_DO;
-            obj.CreatorUserId = _userManager.GetUserId(this.User);
-            _context.Issues.Add(obj);
+            model.Issue.CreatorUserId = _userManager.GetUserId(this.User);
+            _context.Issues.Add(model.Issue);
             _context.SaveChanges();
-            return RedirectToAction("Index", new {pid = obj.ProjectId});
+
+            
+            return RedirectToAction("Index", new {pid = model.Issue.ProjectId});
         }
 
         public IActionResult Edit(int? id)
-        {            
-            var issue = _context.Issues.Find(id);
-            var users = _userManager.Users;
-            var userIds = new List<string>();
-            ViewBag.AssignedUsers = new SelectList(users);
-            ViewBag.StatusSelectList = new SelectList(IssueStatus.List);
-            ViewBag.PrioritySelectList = new SelectList(IssuePriority.List);
-            ViewBag.TypeSelectList = new SelectList(IssueType.List);
-            return View(issue);
+        {
+            EditIssueViewModel model = new EditIssueViewModel();
+            model.Issue = _context.Issues.Find(id);
+            model.AssignableUsers = model.Issue.Project.Users;
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(Issue obj)
+        public IActionResult Edit(EditIssueViewModel model)
         {
-            obj.Modified = DateTime.Now;
-            _context.Issues.Update(obj);
+            model.Issue.Modified = DateTime.Now;
+            _context.Issues.Update(model.Issue);
             _context.SaveChanges();
-            return RedirectToAction("Index", new {pid = obj.ProjectId});
+            return RedirectToAction("Index", new {pid = model.Issue.ProjectId});
         }
 
         public IActionResult Delete(int id)
