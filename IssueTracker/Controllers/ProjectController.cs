@@ -1,7 +1,6 @@
 ﻿using IssueTracker.Authorization;
 using IssueTracker.Data;
 using IssueTracker.Models;
-using IssueTracker.Authorization;
 using IssueTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -57,23 +56,43 @@ namespace IssueTracker.Controllers
 
 
         
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            CreateProjectViewModel model = new CreateProjectViewModel();
+            foreach(var u in _userManager.Users)
+            {
+                CreateProjectViewModel.AssignedUser assignedUser = new CreateProjectViewModel.AssignedUser();
+                assignedUser.User = u;
+                assignedUser.IsSelected = false;
+                model.AssignedUsers.Add(assignedUser);
+            }
+            model.ApplicationUsers = _userManager.Users;
+            IList<ApplicationUser> admins = await _userManager.GetUsersInRoleAsync(UserRoles.ADMIN);
+            IList<ApplicationUser> projectManagers = await _userManager.GetUsersInRoleAsync(UserRoles.PROJ_MNGR);
+            model.ProjectManagers = admins.Concat(projectManagers);
+            return View(model);
         }
 
         
         [HttpPost]
-        public async Task<IActionResult> Create(Project project)
+        public async Task<IActionResult> Create(CreateProjectViewModel model)
         {
-            ApplicationUser user = await _userManager.GetUserAsync(User);
-
-            project.Users.Add(user);
-            project.DateCreated = DateTime.Now;
-            _context.Projects.Add(project);
+            for(int i = 0; i < model.AssignedUsers.Count; i++)
+            {
+                if(model.AssignedUsers[i].IsSelected)
+                {
+                    ApplicationUser userToAdd = await _userManager.FindByIdAsync(model.AssignedUsers[i].User.Id);
+                    model.Project.Users.Add(userToAdd);
+                }
+                
+            }
+            model.Project.DateCreated = DateTime.Now;
+            _context.Projects.Add(model.Project);
             _context.SaveChanges();
 
-            await _userManager.AddClaimAsync(user, new Claim(UserClaimTypes.PROJECT_OWNER, project.Id.ToString()));
+            ApplicationUser user = await _userManager.FindByIdAsync(model.ProjectManagerId);
+            await _userManager.AddClaimAsync(user, new Claim(UserClaimTypes.PROJECT_OWNER, model.Project.Id.ToString()));
 
             return RedirectToAction("Index");
         }
@@ -135,7 +154,7 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Index");
         }
 
-        
+        [HttpGet]
         public IActionResult Details(int? id)
         {
             if (id == null || id == 0)
@@ -149,7 +168,13 @@ namespace IssueTracker.Controllers
                 return NotFound();
             }
 
-            return View(project);
+            ProjectIssueViewModel model = new ProjectIssueViewModel();
+            model.Project = project;
+            model.Issues = _context.Issues
+                .Where(i => i.ProjectId == project.Id)
+                .ToList();
+
+            return View(model);
         }
     }
 }

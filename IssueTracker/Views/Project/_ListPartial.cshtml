@@ -5,7 +5,6 @@
         .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
         .Select(c => Int32.Parse(c.Value))
         .ToList();
-    bool showButtons = ViewBag.showButtons;
 }
 
 <table class="table">

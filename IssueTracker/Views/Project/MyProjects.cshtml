@@ -9,14 +9,14 @@
     <h3>Managed Projects</h3>
     <a class="btn btn-primary" asp-controller="Project" asp-action="Create">Create New Project</a>
     <div id="ManagedProjects">
-    <partial name="_ListPartial" model="Model.ManagedProjects" view-data='new ViewDataDictionary(this.ViewData){{"showButtons", true}}' />
-</div>
+        <partial name="_ListPartial" model="Model.ManagedProjects" />
+    </div>
 }
 
 
 <h3>Assigned Projects</h3>
 <div id="assignedProjects">
-    <partial name="_ListPartial" model="Model.AssignedProjects" view-data='new ViewDataDictionary(this.ViewData){{"showButtons", true}}' />
+    <partial name="_ListPartial" model="Model.AssignedProjects" />
 </div>
 
 

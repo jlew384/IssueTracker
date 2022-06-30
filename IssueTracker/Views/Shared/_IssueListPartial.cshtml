@@ -1,0 +1,82 @@
+﻿@model IEnumerable<Issue>
+@{
+   
+}
+<table class="table">
+    <thead>
+        <tr>
+            
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Desc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Priority)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            
+            
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatorUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Modified)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Desc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Priority)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.AssignedUser!.UserName)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatorUser!.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Modified)
+            </td>
+            <td>
+                <a asp-controller="Issue" asp-action="Edit" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Edit</a> |
+                <a asp-controller="Issue" asp-action="Details" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Details</a> |
+                <a asp-controller="Issue" asp-action="Delete" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
