@@ -80,7 +80,7 @@ namespace IssueTracker.Controllers
             model.Issue.Modified = DateTime.Now;
             _context.Issues.Update(model.Issue);
             _context.SaveChanges();
-            return RedirectToAction("Index", new {pid = model.Issue.ProjectId});
+            return RedirectToAction("Details", "Project", new {pid = model.Issue.ProjectId});
         }
 
         public IActionResult Delete(int id)
@@ -104,6 +104,16 @@ namespace IssueTracker.Controllers
             var issue = _context.Issues.Find(id);
             ViewBag.Project = issue.Project;
             return View(issue);
+        }
+
+        public async Task<IActionResult> MyIssues()
+        {
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            MyIssuesViewModel model = new MyIssuesViewModel();
+            model.IssuesCreated = _context.Issues.Where(issue => issue.CreatorUserId == user.Id && issue.Status != IssueStatus.DONE);
+            model.IssuesAssigned = _context.Issues.Where(issue => issue.AssignedUserId == user.Id && issue.CreatorUserId != user.Id && issue.Status != IssueStatus.DONE);
+
+            return View(model);
         }
     }
 }

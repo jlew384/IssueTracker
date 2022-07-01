@@ -56,7 +56,7 @@
 </div>
 
 <div>
-    <a asp-action="Index" asp-route-pid="@Model.Issue.ProjectId">Back to List</a>
+    <a asp-controller="Project" asp-action="Details" asp-route-pid="@Model.Issue.ProjectId">Back to List</a>
 </div>
 
 @section Scripts {

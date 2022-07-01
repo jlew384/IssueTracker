@@ -1,6 +1,12 @@
-﻿@model IEnumerable<Issue>
+﻿@using System.Security.Claims;
+@model IEnumerable<Issue>
+
 @{
-   
+   string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+   var ownerClaimValues = User.Claims
+        .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+        .Select(c => Int32.Parse(c.Value))
+        .ToList();
 }
 <table class="table">
     <thead>
@@ -71,10 +77,13 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Modified)
             </td>
-            <td>
-                <a asp-controller="Issue" asp-action="Edit" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Edit</a> |
-                <a asp-controller="Issue" asp-action="Details" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Details</a> |
-                <a asp-controller="Issue" asp-action="Delete" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Delete</a>
+            <td><a asp-controller="Issue" asp-action="Details" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Details</a>
+                @if(User.IsInRole(UserRoles.ADMIN) || userId == item.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(item.ProjectId))
+                {
+                    <a asp-controller="Issue" asp-action="Edit" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Edit</a>
+                    <a asp-controller="Issue" asp-action="Delete" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Delete</a>
+                }  
+                
             </td>
         </tr>
 }

@@ -44,5 +44,10 @@
 <h4>Issues</h4>
 <a class="btn btn-primary" asp-controller="Issue" asp-action="Create" asp-route-pid="@Model?.Project.Id">Create Issue</a>
 <div id="project-issues">
-    <partial name="_IssueListPartial" model="Model?.Issues"/>
+    <partial name="_IssueListPartial" model="Model?.IssuesNotDone"/>
+</div>
+
+<h4>Completed Issues</h4>
+<div id="project-issues-done">
+    <partial name="_IssueListPartial" model="Model?.IssuesDone"/>
 </div>

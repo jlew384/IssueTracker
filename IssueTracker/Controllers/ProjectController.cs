@@ -1,4 +1,5 @@
 ﻿using IssueTracker.Authorization;
+using IssueTracker.Constants;
 using IssueTracker.Data;
 using IssueTracker.Models;
 using IssueTracker.ViewModels;
@@ -186,13 +187,13 @@ namespace IssueTracker.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(int? id)
+        public IActionResult Details(int? pid)
         {
-            if (id == null || id == 0)
+            if (pid == null || pid == 0)
             {
                 return NotFound();
             }
-            var project = _context.Projects.Find(id);
+            var project = _context.Projects.Find(pid);
 
             if (project == null)
             {
@@ -201,8 +202,11 @@ namespace IssueTracker.Controllers
 
             ProjectIssueViewModel model = new ProjectIssueViewModel();
             model.Project = project;
-            model.Issues = _context.Issues
-                .Where(i => i.ProjectId == project.Id)
+            model.IssuesNotDone = _context.Issues
+                .Where(i => i.ProjectId == project.Id && i.Status != IssueStatus.DONE)
+                .ToList();
+            model.IssuesDone = _context.Issues
+                .Where(i => i.ProjectId == project.Id && i.Status == IssueStatus.DONE)
                 .ToList();
 
             return View(model);
