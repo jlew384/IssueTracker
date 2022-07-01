@@ -60,50 +60,48 @@ namespace IssueTracker.Controllers
         {
             ApplicationUser user = await _userManager.GetUserAsync(User);
             CreateProjectViewModel model = new CreateProjectViewModel();
-            foreach(var u in _userManager.Users)
-            {
-                CreateProjectViewModel.AssignedUser assignedUser = new CreateProjectViewModel.AssignedUser();
-                assignedUser.User = u;
-                assignedUser.IsSelected = false;
-                model.AssignedUsers.Add(assignedUser);
-            }
-            model.ApplicationUsers = _userManager.Users;
+            model.AssignableUsers = _userManager.Users.Where(u => u.Id != user.Id).ToList();
             IList<ApplicationUser> admins = await _userManager.GetUsersInRoleAsync(UserRoles.ADMIN);
             IList<ApplicationUser> projectManagers = await _userManager.GetUsersInRoleAsync(UserRoles.PROJ_MNGR);
-            model.ProjectManagers = admins.Concat(projectManagers);
+            model.AssignableProjectManagers = admins.Concat(projectManagers);
             return View(model);
         }
 
         
         [HttpPost]
         public async Task<IActionResult> Create(CreateProjectViewModel model)
-        {
-            for(int i = 0; i < model.AssignedUsers.Count; i++)
+        {            
+            for (int i = 0; i < model.AssignableUsers.Count; i++)
             {
-                if(model.AssignedUsers[i].IsSelected)
+                if(model.AssignableUsers[i].IsSelected)
                 {
-                    ApplicationUser userToAdd = await _userManager.FindByIdAsync(model.AssignedUsers[i].User.Id);
-                    model.Project.Users.Add(userToAdd);
+                    model.Project.Users.Add(await _userManager.FindByIdAsync(model.AssignableUsers[i].Id));
                 }
                 
             }
+            ApplicationUser user = await _userManager.FindByIdAsync(model.ProjectManagerId);
+            ApplicationUser projectManager = await _userManager.FindByIdAsync(model.ProjectManagerId);
+
+            if(!model.Project.Users.Contains(user))
+            {
+                model.Project.Users.Add(user);
+            }
+
+            if (!model.Project.Users.Contains(user))
+            {
+                model.Project.Users.Add(projectManager);
+            }
+
             model.Project.DateCreated = DateTime.Now;
             _context.Projects.Add(model.Project);
             _context.SaveChanges();
-
-            ApplicationUser user = await _userManager.FindByIdAsync(model.ProjectManagerId);
             await _userManager.AddClaimAsync(user, new Claim(UserClaimTypes.PROJECT_OWNER, model.Project.Id.ToString()));
-
             return RedirectToAction("Index");
         }
 
         
         public async Task<IActionResult> Edit(int? id)
         {
-            if(id == null || id == 0)
-            {
-                return NotFound();
-            }
             var project = _context.Projects.Find(id);
 
             if(project == null)
@@ -111,19 +109,52 @@ namespace IssueTracker.Controllers
                 return NotFound();
             }
 
-            IList<ApplicationUser> projectManagers = await _userManager.GetUsersInRoleAsync(UserRoles.ADMIN);
-            IList<ApplicationUser> admins = await _userManager.GetUsersInRoleAsync(UserRoles.PROJ_MNGR);
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            EditProjectViewModel model = new EditProjectViewModel();
+            model.Id = project.Id;
+            model.Title = project.Title;
+            model.Desc = project.Desc;
 
-            ViewBag.ProjectManagerSelectList = new SelectList(admins.Concat(projectManagers), "Id", "UserName");
-            return View(project);
+            foreach (ApplicationUser assignableUser in _userManager.Users)
+            {
+                if(assignableUser.Id != user.Id)
+                {
+                    if(project.Users.Contains(assignableUser))
+                    {
+                        assignableUser.IsSelected = true;
+                    }
+
+                    model.AssignableUsers.Add(assignableUser);
+                }                
+            }
+
+            return View(model);
         }
 
         
         [HttpPost]
-        public IActionResult Edit(Project obj)
+        public async Task<IActionResult> Edit(EditProjectViewModel model)
         {
-            obj.DateModified = DateTime.Now;
-            _context.Projects.Update(obj);
+            Project project = _context.Projects.Find(model.Id);
+
+            project.Title = model.Title;
+            project.Desc = model.Desc;
+            foreach (var partialUser in model.AssignableUsers)
+            {
+                var user  = await _userManager.FindByIdAsync(partialUser.Id);
+                if(partialUser.IsSelected && !project.Users.Contains(user))
+                {
+                    project.Users.Add(user);
+                }
+                else if(!partialUser.IsSelected)
+                {
+                    project.Users.Remove(user);
+                }
+                
+            }
+
+            project.DateModified = DateTime.Now;
+            _context.Projects.Update(project);
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
