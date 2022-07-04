@@ -24,7 +24,34 @@ namespace IssueTracker.Controllers
             _userManager = userManager;
         }
 
-        
+        private async Task AddProjectOwnerClaim(ApplicationUser projectOwner, int? projectId)
+        {
+            Claim projectOwnerClaim = new Claim(UserClaimTypes.PROJECT_OWNER, projectId.ToString());
+            await RemoveProjectOwnerClaim(projectOwnerClaim);
+            await _userManager.AddClaimAsync(projectOwner, projectOwnerClaim);
+        }
+
+        private async Task RemoveProjectOwnerClaim(int? projectId)
+        {
+            Claim projectOwnerClaim = new Claim(UserClaimTypes.PROJECT_OWNER, projectId.ToString());
+            await RemoveProjectOwnerClaim(projectOwnerClaim);
+        }
+
+        private async Task RemoveProjectOwnerClaim(Claim projectOwnerClaim)
+        {
+            IList<ApplicationUser> users = await _userManager.GetUsersForClaimAsync(projectOwnerClaim);
+            foreach (ApplicationUser user in users)
+            {
+                await _userManager.RemoveClaimAsync(user, projectOwnerClaim);
+            }
+        }
+
+        private bool CheckForProjectOwnerClaim(int? projectId)
+        {           
+            return User.HasClaim(x => x.Type == UserClaimTypes.PROJECT_OWNER && x.Value == projectId.ToString());
+        }
+
+
         public IActionResult Index()
         {
             return View(_context.Projects.ToList());
@@ -55,8 +82,8 @@ namespace IssueTracker.Controllers
             return View(model);
         }
 
-
-        [HttpGet]
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
+        [HttpGet]        
         public async Task<IActionResult> Create()
         {
             ApplicationUser user = await _userManager.GetUserAsync(User);
@@ -68,7 +95,8 @@ namespace IssueTracker.Controllers
             return View(model);
         }
 
-        
+
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
         public async Task<IActionResult> Create(CreateProjectViewModel model)
         {            
@@ -96,16 +124,21 @@ namespace IssueTracker.Controllers
             model.Project.DateCreated = DateTime.Now;
             _context.Projects.Add(model.Project);
             _context.SaveChanges();
-            await _userManager.AddClaimAsync(user, new Claim(UserClaimTypes.PROJECT_OWNER, model.Project.Id.ToString()));
+            await AddProjectOwnerClaim(user, model.Project.Id);
             return RedirectToAction("Index");
         }
 
-        
-        public async Task<IActionResult> Edit(int? id)
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? pid)
         {
-            var project = _context.Projects.Find(id);
+            var project = _context.Projects.Find(pid);
 
             if(project == null)
+            {
+                return NotFound();
+            }
+            if(User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(pid))
             {
                 return NotFound();
             }
@@ -132,11 +165,16 @@ namespace IssueTracker.Controllers
             return View(model);
         }
 
-        
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
         public async Task<IActionResult> Edit(EditProjectViewModel model)
         {
-            Project project = _context.Projects.Find(model.Id);
+            if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(model.Id))
+            {
+                return NotFound();
+            }
+            
+            Project project = _context.Projects.Find(model.Id);            
 
             project.Title = model.Title;
             project.Desc = model.Desc;
@@ -160,31 +198,48 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Index");
         }
 
-        
-        public IActionResult Delete(int? id)
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
+        [HttpGet]
+        public async Task<IActionResult> Delete(int? pid)
         {
-            if (id == null || id == 0)
+            if (pid == null || pid == 0)
             {
                 return NotFound();
             }
-            var project = _context.Projects.Find(id);
+
+            if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(pid))
+            {
+                return NotFound();
+            }
+
+            var project = _context.Projects.Find(pid);
 
             if (project == null)
             {
                 return NotFound();
             }
 
+            await RemoveProjectOwnerClaim(pid);
+
+
             return View(project);
         }
 
-        
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
-        public IActionResult Delete(Project obj)
+        public IActionResult Delete(Project model)
         {
-            _context.Projects.Remove(obj);
+            if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(model.Id))
+
+            {
+                return NotFound();
+            }
+
+            _context.Projects.Remove(model);
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
+
 
         [HttpGet]
         public IActionResult Details(int? pid)

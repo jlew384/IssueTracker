@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IssueTracker.Controllers
 {
+    [Authorize]
     public class IssueController : Controller
     {
         ApplicationDbContext _context;
@@ -54,7 +55,6 @@ namespace IssueTracker.Controllers
             return View(model);
         }
 
-        [Authorize]
         [HttpPost]
         public IActionResult Create(CreateIssueViewModel model)
         {
