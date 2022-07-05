@@ -8,7 +8,7 @@
         .Select(c => Int32.Parse(c.Value))
         .ToList();
 }
-<table class="table">
+<table class="table table-hover">
     <thead>
         <tr>
             
@@ -46,7 +46,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr onclick="location.href = '@Url.Action("Details", "Issue", new { id = item.Id })'">
             
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
@@ -77,11 +77,11 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Modified)
             </td>
-            <td><a asp-controller="Issue" asp-action="Details" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Details</a>
+            <td>
                 @if(User.IsInRole(UserRoles.ADMIN) || userId == item.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(item.ProjectId))
                 {
-                    <a asp-controller="Issue" asp-action="Edit" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Edit</a>
-                    <a asp-controller="Issue" asp-action="Delete" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Delete</a>
+                    <a class="btn btn-outline-primary" asp-controller="Issue" asp-action="Edit" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Edit</a>
+                    <a class="btn btn-outline-primary" asp-controller="Issue" asp-action="Delete" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Delete</a>
                 }  
                 
             </td>
