@@ -93,7 +93,7 @@ namespace IssueTracker.Components
                     }
                     break;
                 case IssueSortOrder.ASSIGNED_USER_NAME:
-                    if (lastSortOrder == IssueSortOrder.STATUS)
+                    if (lastSortOrder == IssueSortOrder.ASSIGNED_USER_NAME)
                     {
                         lastSortOrder = IssueSortOrder.ASSIGNED_USER_NAME_DESC;
                         model = model.OrderByDescending(x => x.AssignedUser.UserName);

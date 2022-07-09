@@ -10,8 +10,12 @@
 }
 
 <div class="card shadow">
-    <div class="card-header">
-        <h3>@Model.Title</h3>
+    <div class="card-header d-flex flex-row justify-content-between align-content-center">
+        <span class="h3">@Model.Title</span>
+        <div class="input-group w-25">
+            <input class="form-control search-input" type="text" placeholder="Search by title" />
+            <span role="button" class="input-group-text pointer-event"><i class="bi bi-search search-btn"></i></span>
+        </div>
     </div>
     <div class="card-body">
         <table class="table table-hover table-resposive">
