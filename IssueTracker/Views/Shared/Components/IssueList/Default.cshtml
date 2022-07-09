@@ -1,0 +1,45 @@
+﻿@using System.Security.Claims;
+@model IEnumerable<Issue>
+
+@{
+    string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+    var ownerClaimValues = User.Claims
+         .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+         .Select(c => Int32.Parse(c.Value))
+         .ToList();
+}
+
+@foreach(var issue in Model)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(issueItem => issue.Title)
+        </td>
+        <td>
+            @Html.DisplayFor(issueItem => issue.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(issueItem => issue.Priority)
+        </td>
+        <td>
+            @Html.DisplayFor(issueItem => issue.Type)
+        </td>
+        <td>
+            @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(issueItem => issue.Created)
+        </td>
+        <td>
+            @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+            {
+                <span>
+                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Edit" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-pencil-fill"></i></a>
+                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Delete" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-trash2-fill"></i></a>
+                </span>
+                    
+            }  
+        </td>
+    </tr>
+}
+

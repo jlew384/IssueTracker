@@ -1,91 +1,68 @@
 ﻿@using System.Security.Claims;
-@model IEnumerable<Issue>
+@model IssueListViewModel
 
 @{
-   string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-   var ownerClaimValues = User.Claims
-        .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
-        .Select(c => Int32.Parse(c.Value))
-        .ToList();
+    string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+    var ownerClaimValues = User.Claims
+         .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+         .Select(c => Int32.Parse(c.Value))
+         .ToList();
 }
-<table class="table table-hover">
-    <thead>
-        <tr>
-            
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Desc)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Priority)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Type)
-            </th>
-            
-            
-            <th>
-                @Html.DisplayNameFor(model => model.AssignedUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatorUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Created)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Modified)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr onclick="location.href = '@Url.Action("Details", "Issue", new { id = item.Id })'">
-            
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Desc)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Priority)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            
-            <td>
-                @Html.DisplayFor(modelItem => item.AssignedUser!.UserName)
-            </td>
-            
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatorUser!.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Modified)
-            </td>
-            <td>
-                @if(User.IsInRole(UserRoles.ADMIN) || userId == item.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(item.ProjectId))
-                {
-                    <a class="btn btn-outline-primary" asp-controller="Issue" asp-action="Edit" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Edit</a>
-                    <a class="btn btn-outline-primary" asp-controller="Issue" asp-action="Delete" asp-route-id="@item.Id" asp-route-pid="@item.ProjectId">Delete</a>
-                }  
-                
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="card shadow">
+    <div class="card-header">
+        <h3>@Model.Title</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover table-resposive">
+            <thead>
+                <tr>
+                    <th>
+                        <a class="sort-btn" sort-order="@IssueSortOrder.TITLE">
+                        @Html.DisplayNameFor(model => model.Issue.Title)
+                        </a>
+                    </th>
+                    <th>
+                        <a class="sort-btn" sort-order="@IssueSortOrder.STATUS">
+                        @Html.DisplayNameFor(model => model.Issue.Status)
+                        </a>
+                    </th>
+                    <th>
+                        <a class="sort-btn" sort-order="@IssueSortOrder.PRIORITY">
+                        @Html.DisplayNameFor(model => model.Issue.Priority)
+                        </a>
+                    </th>
+                    <th>
+                        <a class="sort-btn" sort-order="@IssueSortOrder.TYPE">
+                        @Html.DisplayNameFor(model => model.Issue.Type)
+                        </a>
+                    </th>
+                    <th>
+                        <a class="sort-btn" sort-order="@IssueSortOrder.ASSIGNED_USER_NAME">
+                        @Html.DisplayNameFor(model => model.Issue.AssignedUser)
+                        </a>
+                    </th>
+                    <th>
+                        <a class="sort-btn" sort-order="@IssueSortOrder.CREATED_DATE">
+                        @Html.DisplayNameFor(model => model.Issue.Created)
+                        </a>
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody class="component-container">
+                @await Component.InvokeAsync("IssueList",  
+                new {
+                    pid=Model?.ProjectId,
+                    lastSortOrder=IssueSortOrder.CREATED_DATE_DESC,
+                    searchString="",
+                    creatorId=@Model.CreatorId,
+                    assignedId=@Model.AssignedUserId
+                })
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+

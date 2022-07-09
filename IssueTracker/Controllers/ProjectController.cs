@@ -57,6 +57,9 @@ namespace IssueTracker.Controllers
             return View(_context.Projects.ToList());
         }
 
+
+        
+
         [HttpGet]
         public async Task<IActionResult> MyProjects()
         {
@@ -253,18 +256,9 @@ namespace IssueTracker.Controllers
             if (project == null)
             {
                 return NotFound();
-            }
+            }            
 
-            ProjectIssueViewModel model = new ProjectIssueViewModel();
-            model.Project = project;
-            model.IssuesNotDone = _context.Issues
-                .Where(i => i.ProjectId == project.Id && i.Status != IssueStatus.DONE)
-                .ToList();
-            model.IssuesDone = _context.Issues
-                .Where(i => i.ProjectId == project.Id && i.Status == IssueStatus.DONE)
-                .ToList();
-
-            return View(model);
+            return View(project);
         }
     }
 }

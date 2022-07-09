@@ -6,13 +6,39 @@
 @{
     ViewData["Title"] = "My Issues";
 }
-<h2>My Issues</h2>
-<h4>Created Issues</h4>
-<div id="issues-created">
-    <partial name="_IssueListPartial" model="Model?.IssuesCreated"/>
+<div id="issues-created-container">
+    <partial name="_IssueListPartial" model='new IssueListViewModel { Title = "Created Issues", CreatorId = Model.UserId}'/>
 </div>
 
-<h4>Assigned Issues</h4>
-<div id="issues-assigned">
-    <partial name="_IssueListPartial" model="Model?.IssuesAssigned"/>
+<div id="issues-assigned-container">
+    <partial name="_IssueListPartial" model='new IssueListViewModel { Title = "Assigned Issues", AssignedUserId = Model.UserId}'/>
 </div>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+
+            $('#issues-created-container').find('.sort-btn').click(function() {
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("IssueList", "Issue")",
+                    data: {sortOrder: $(this).attr('sort-order'), creatorId: @Model.UserId},
+                    success: function(result) {  
+                        $('#issues-container').find('.component-container').html(result);
+                    }
+                })
+            });
+
+            $('#issues-assigned-container').find('.sort-btn').click(function() {
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("IssueList", "Issue")",
+                    data: {sortOrder: $(this).attr('sort-order'), assignedId: @Model.UserId},
+                    success: function(result) {  
+                        $('#issues-container').find('.component-container').html(result);
+                    }
+                })
+            });
+        })
+    </script>
+}

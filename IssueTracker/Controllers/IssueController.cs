@@ -21,6 +21,19 @@ namespace IssueTracker.Controllers
             _userManager = userManager;
         }
 
+        public IActionResult IssueList(int pid, string sortOrder, string assignedId, string creatorId, string searchString)
+        {
+            return ViewComponent("IssueList",
+                new
+                {
+                    pid = pid,
+                    sortOrder = sortOrder,
+                    searchString = searchString,
+                    assignedId = assignedId,
+                    creatorId = creatorId
+                });
+        }
+
 
         public IActionResult Index(int? pid)
         {
@@ -109,9 +122,10 @@ namespace IssueTracker.Controllers
         public async Task<IActionResult> MyIssues()
         {
             ApplicationUser user = await _userManager.GetUserAsync(User);
-            MyIssuesViewModel model = new MyIssuesViewModel();
-            model.IssuesCreated = _context.Issues.Where(issue => issue.CreatorUserId == user.Id && issue.Status != IssueStatus.DONE);
-            model.IssuesAssigned = _context.Issues.Where(issue => issue.AssignedUserId == user.Id && issue.CreatorUserId != user.Id && issue.Status != IssueStatus.DONE);
+
+            MyIssuesViewModel model = new MyIssuesViewModel { UserId = user.Id };
+            //model.IssuesCreated = _context.Issues.Where(issue => issue.CreatorUserId == user.Id && issue.Status != IssueStatus.DONE);
+            //model.IssuesAssigned = _context.Issues.Where(issue => issue.AssignedUserId == user.Id && issue.CreatorUserId != user.Id && issue.Status != IssueStatus.DONE);
 
             return View(model);
         }
