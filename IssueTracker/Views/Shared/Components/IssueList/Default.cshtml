@@ -1,5 +1,5 @@
 ﻿@using System.Security.Claims;
-@model IEnumerable<Issue>
+@model IssueListViewModel
 
 @{
     string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -9,37 +9,103 @@
          .ToList();
 }
 
-@foreach(var issue in Model)
-{
-    <tr>
-        <td>
-            @Html.DisplayFor(issueItem => issue.Title)
-        </td>
-        <td>
-            @Html.DisplayFor(issueItem => issue.Status)
-        </td>
-        <td>
-            @Html.DisplayFor(issueItem => issue.Priority)
-        </td>
-        <td>
-            @Html.DisplayFor(issueItem => issue.Type)
-        </td>
-        <td>
-            @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)
-        </td>
-        <td>
-            @Html.DisplayFor(issueItem => issue.Created)
-        </td>
-        <td>
-            @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
-            {
-                <span>
-                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Edit" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-pencil-fill"></i></a>
-                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Delete" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-trash2-fill"></i></a>
-                </span>
+<div class="card shadow">
+    <div class="card-header d-flex flex-row justify-content-between align-content-center">
+        <div class="fs-2">
+            Issues
+        </div>
+        <div class="input-group w-25">
+            <input class="form-control search-input" type="text" placeholder="Search by title" value="@Model.SearchString"/>
+            <span onclick="searchIssueList()" role="button" class="input-group-text pointer-event"><i class="bi bi-search search-btn"></i></span>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover table-resposive">
+            <thead>
+                <tr>
+                    <th>
+                        <a onclick="sortIssueList('@IssueSortOrder.TITLE')">
+                        @Html.DisplayNameFor(model => model.Issue.Title)
+                        </a>
+                    </th>
+                    <th>
+                        <a onclick="sortIssueList('@IssueSortOrder.STATUS')">
+                        @Html.DisplayNameFor(model => model.Issue.Status)
+                        </a>
+                    </th>
+                    <th>
+                        <a onclick="sortIssueList('@IssueSortOrder.PRIORITY')">
+                        @Html.DisplayNameFor(model => model.Issue.Priority)
+                        </a>
+                    </th>
+                    <th>
+                        <a onclick="sortIssueList('@IssueSortOrder.TYPE')">
+                        @Html.DisplayNameFor(model => model.Issue.Type)
+                        </a>
+                    </th>
+                    <th>
+                        <a onclick="sortIssueList('@IssueSortOrder.ASSIGNED_USER_NAME')">
+                        @Html.DisplayNameFor(model => model.Issue.AssignedUser)
+                        </a>
+                    </th>
+                    <th>
+                        <a onclick="sortIssueList('@IssueSortOrder.CREATED_DATE')">
+                        @Html.DisplayNameFor(model => model.Issue.Created)
+                        </a>
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var issue in Model.Issues)
+                {
+                    <tr onclick="location.href = '@Url.Action("Details", "Issue", new { id = issue.Id })'">
+                        <td>
+                            @Html.DisplayFor(issueItem => issue.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(issueItem => issue.Status)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(issueItem => issue.Priority)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(issueItem => issue.Type)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(issueItem => issue.Created)
+                        </td>
+                        <td>
+                            
+                            @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+                            {
+                                <span>
+                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Edit" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-pencil-fill"></i></a>
+                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Delete" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-trash2-fill"></i></a>
+                                </span>
                     
-            }  
-        </td>
-    </tr>
-}
+                            }  
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex flex-row justify-content-between">
+        @if(Model.ProjectId != null && Model.ProjectId != 0)
+        {
+            <a class="btn btn-primary" asp-controller="Issue" asp-action="Create" asp-route-pid="@Model.ProjectId"><i class="bi bi-plus"></i> Create Issue</a>
+        }
+        <div class="btn-group" role="group">
+            @for(int i = 1; i <= Model.Issues.TotalPages; i++)
+            {
+                <button type="button" class="btn btn-primary" onclick="selectPage(@i)">@i</button>
+            }
+        </div>
+        
+    </div>
+</div>
 

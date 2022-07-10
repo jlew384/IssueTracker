@@ -245,7 +245,7 @@ namespace IssueTracker.Controllers
 
 
         [HttpGet]
-        public IActionResult Details(int? pid)
+        public async Task<IActionResult> Details(int? pid)
         {
             if (pid == null || pid == 0)
             {
@@ -256,9 +256,11 @@ namespace IssueTracker.Controllers
             if (project == null)
             {
                 return NotFound();
-            }            
+            }
 
-            return View(project);
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+
+            return View(new ProjectIssuesViewModel { Project = project, UserId = user.Id });
         }
     }
 }

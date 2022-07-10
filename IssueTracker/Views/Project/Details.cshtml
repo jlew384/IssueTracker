@@ -1,83 +1,88 @@
-﻿@model Project
+﻿@model ProjectIssuesViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Project Details";
 }
-
-<h1>Details</h1>
-
-<div>
-    <hr />
-    <h4>Project</h4>    
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Desc)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Desc)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateCreated)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateCreated)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateModified)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateModified)
-        </dd>
-    </dl>
+<div class="card m-2">
+    <div class="card-header">
+        <div class="d-flex flex-row justify-content-between align-content-center">
+            <h1>
+                @Html.DisplayFor(model => model.Project.Title)
+            </h1>     
+            <div>
+                <a class="text-muted h4 m-1" asp-action="Edit" asp-route-pid="@Model.Project.Id"><i class="bi bi-pencil-fill"></i></a>
+                <a class="text-muted h4 m-1" asp-action="Delete" asp-route-pid="@Model.Project.Id"><i class="bi bi-trash2-fill"></i></a>
+            </div>
+        </div>
+        
+    </div>
+    <div class="card-body">
+        <h6>
+            @Html.DisplayNameFor(model => model.Project.Desc)
+        </h6>
+        <p class="mb-5">
+            @Html.DisplayFor(model => model.Project.Desc)
+        </p>
+        <h6>
+            @Html.DisplayNameFor(model => model.Project.DateCreated)
+        </h6>
+        <p>
+            @Html.DisplayFor(model => model.Project.DateCreated)
+        </p>
+        <h6>
+            @Html.DisplayNameFor(model => model.Project.DateModified)
+        </h6>
+        <p>
+            @Html.DisplayFor(model => model.Project.DateModified)
+        </p>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
-<hr />
 
-<div id="issues-container">
-    <partial name="_IssueListPartial" model='new IssueListViewModel { Title = "Issues", ProjectId = Model.Id }'></partial>
+<div id="issues-container" class="m-2">
 </div>
 
 @section scripts {
     <script>
-        $(document).ready(function() {
+let components = {
+    issueLists: {
+        default: {
+            type: 'GET',
+            url: "@Url.Action("IssueList", "Issue")",
+            data: {
+                type: "default",
+                sortOrder: "@IssueSortOrder.CREATED_DATE_DESC",
+                searchString: "",
+                pageIndex: 1,
+                pid: @Model.Project.Id,
+            },
+            success: function(result) {
+                $('#issues-container').html(result);
+            }
+        }      
+    }
+}
 
-            $('#issues-container').find('.sort-btn').click(function() {
-                var searchInput = $('#issues-container').find('.search-input').val();
+function sortIssueList(sortOrder) {
+    if (sortOrder == components.issueLists.default.data.sortOrder) {
+        sortOrder += "_DESC";
+    }
+    components.issueLists.default.data.sortOrder = sortOrder;
+    $.ajax(components.issueLists.default);
+}
 
-                $.ajax({
-                    type: 'GET',
-                    url: "@Url.Action("IssueList", "Issue")",
-                    data: { pid: @Model.Id, sortOrder: $(this).attr('sort-order'), searchString: searchInput},
-                    success: function(result) {  
-                        $('#issues-container').find('.component-container').html(result);
-                    }
-                })
-            });
+function searchIssueList() {
+    components.issueLists.default.data.searchString = $('#issues-container').find('.search-input').val();
+    $.ajax(components.issueLists.default);
+}
 
+function selectPage(pageIndex) {
+    components.issueLists.default.data.pageIndex = pageIndex;
+    $.ajax(components.issueLists.default);
+}
 
-            $('#issues-container').find('.search-btn').click(function() {
-                console.log('clicked');
-                var searchInput = $('#issues-container').find('.search-input').val();
-
-                $.ajax({
-                    type: 'GET',
-                    url: "@Url.Action("IssueList", "Issue")",
-                    data: { pid: @Model.Id, searchString: searchInput},
-                    success: function(result) {  
-                        $('#issues-container').find('.component-container').html(result);
-                    }
-                })
-            })
-        })
+$(document).ready(function() {
+    $.ajax(components.issueLists.default);
+})
     </script>
 }
 

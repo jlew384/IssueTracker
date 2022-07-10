@@ -8,125 +8,110 @@ namespace IssueTracker.Components
 {
     public class IssueListViewComponent : ViewComponent
     {
+        public static class Type
+        {
+            public const string DEFAULT = "default";
+            public const string CREATED = "created";
+            public const string ASSIGNED = "assigned";
+            public const string ASSIGNED_ONLY = "assigned_only";
+        }
+
+
         private readonly ApplicationDbContext _context;
-        private static string lastSortOrder = "";
+        private const int PAGE_SIZE = 5;
+
 
         public IssueListViewComponent(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int? pid, string? creatorId, string? assignedId, string? sortOrder, string? searchString)
+        public async Task<IViewComponentResult> InvokeAsync(string type, string? sortOrder, string? searchString, int? pageIndex, int? pid, string userId)
         {
-            IEnumerable<Issue> model;
-            if(pid != null)
-            {
-                model = _context.Issues.Where(x => x.ProjectId == pid);
-            }
-            else
-            {
-                model = _context.Issues;
-            }
+            IQueryable<Issue> issues = InitializeIssues(type, userId, pid);           
 
-            if(creatorId != null)
-            {
-                model = _context.Issues.Where(x => x.CreatorUserId == creatorId);
-            }
+            issues = Sort(issues, sortOrder);
+            issues = Search(issues, searchString);
 
-            if(assignedId != null)
-            {
-                model = _context.Issues.Where(x => x.AssignedUserId == assignedId && x.CreatorUserId != assignedId);
-            }
+            PaginatedList<Issue> paginatedList = await PaginatedList<Issue>.CreateAsync(issues, pageIndex ?? 1, PAGE_SIZE);
 
+
+            return View(new IssueListViewModel
+                {
+                    Type = type,
+                    SortOrder = sortOrder,
+                    SearchString = searchString,
+                    PageIndex = pageIndex ?? 1,
+                    ProjectId = pid,
+                    UserId = userId,
+                    Issues = paginatedList
+                });
+        }
+
+        private IQueryable<Issue> InitializeIssues(string type, string userId, int? pid)
+        {
+            switch (type)
+            {
+                case Type.CREATED:
+                    return _context.Issues.Where(x => x.CreatorUserId == userId);
+                case Type.ASSIGNED:
+                    return _context.Issues.Where(x => x.AssignedUserId == userId);
+                case Type.ASSIGNED_ONLY:
+                    return _context.Issues.Where(x => x.AssignedUserId == userId && x.CreatorUserId != userId);
+                default:
+                    return _context.Issues.Where(x => x.ProjectId == pid);
+            }
+        }
+
+        private IQueryable<Issue> Sort(IQueryable<Issue> issues, string sortOrder)
+        {
             switch (sortOrder)
             {
                 case IssueSortOrder.TITLE:
-                    if (lastSortOrder == IssueSortOrder.TITLE)
-                    {
-                        lastSortOrder = IssueSortOrder.TITLE_DESC;
-                        model = model.OrderByDescending(x => x.Title);
-                    }
-                    else
-                    {
-                        lastSortOrder = IssueSortOrder.TITLE;
-                        model = model.OrderBy(x => x.Title);
-                    }
-                    break;
+                    return issues.OrderBy(x => x.Title);
+                case IssueSortOrder.TITLE_DESC:
+                    return issues.OrderByDescending(x => x.Title);
                 case IssueSortOrder.STATUS:
-                    if (lastSortOrder == IssueSortOrder.STATUS)
-                    {
-                        lastSortOrder = IssueSortOrder.STATUS_DESC;
-                        model = model.OrderBy(x => x.Status);
-                    }
-                    else
-                    {
-                        lastSortOrder = IssueSortOrder.STATUS;
-                        model = model.OrderByDescending(x => x.Status);
-                    }
-                    break;
+                    return issues.OrderByDescending(x => x.Status);
+                case IssueSortOrder.STATUS_DESC:
+                    return issues.OrderBy(x => x.Status);
                 case IssueSortOrder.PRIORITY:
-                    var highs = model.Where(x => x.Priority == IssuePriority.HIGH);
-                    var mediums = model.Where(x => x.Priority == IssuePriority.MEDIUM);
-                    var lows = model.Where(x => x.Priority == IssuePriority.LOW);
-
-                    if (lastSortOrder == IssueSortOrder.PRIORITY)
-                    {
-                        lastSortOrder = IssueSortOrder.PRIORITY_DESC;
-                        model = highs.Concat(mediums).Concat(lows);
-                    }
-                    else
-                    {
-                        lastSortOrder = IssueSortOrder.PRIORITY;
-                        model = lows.Concat(mediums).Concat(highs);
-                    }
-                    break;
+                    return issues
+                        .Where(x => x.Priority == IssuePriority.LOW)
+                        .Concat(issues.Where(x => x.Priority == IssuePriority.MEDIUM))
+                        .Concat(issues.Where(x => x.Priority == IssuePriority.HIGH));
+                case IssueSortOrder.PRIORITY_DESC:
+                    return issues
+                        .Where(x => x.Priority == IssuePriority.HIGH)
+                        .Concat(issues.Where(x => x.Priority == IssuePriority.MEDIUM))
+                        .Concat(issues.Where(x => x.Priority == IssuePriority.LOW));
                 case IssueSortOrder.TYPE:
-                    if (lastSortOrder == IssueSortOrder.TYPE)
-                    {
-                        lastSortOrder = IssueSortOrder.TYPE_DESC;
-                        model = model.OrderByDescending(x => x.Type);
-                    }
-                    else
-                    {
-                        lastSortOrder = IssueSortOrder.TYPE;
-                        model = model.OrderBy(x => x.Type);
-                    }
-                    break;
+                    return issues.OrderBy(x => x.Type);
+                case IssueSortOrder.TYPE_DESC:
+                    return issues.OrderByDescending(x => x.Type);
                 case IssueSortOrder.ASSIGNED_USER_NAME:
-                    if (lastSortOrder == IssueSortOrder.ASSIGNED_USER_NAME)
-                    {
-                        lastSortOrder = IssueSortOrder.ASSIGNED_USER_NAME_DESC;
-                        model = model.OrderByDescending(x => x.AssignedUser.UserName);
-                    }
-                    else
-                    {
-                        lastSortOrder = IssueSortOrder.ASSIGNED_USER_NAME;
-                        model = model.OrderBy(x => x.AssignedUser.UserName);
-                    }
-                    break;
+                    return issues.OrderBy(x => x.AssignedUser.UserName);
+                case IssueSortOrder.ASSIGNED_USER_NAME_DESC:
+                    return issues.OrderByDescending(x => x.AssignedUser.UserName);
                 case IssueSortOrder.CREATED_DATE:
-                    if (lastSortOrder == IssueSortOrder.CREATED_DATE)
-                    {
-                        lastSortOrder = IssueSortOrder.CREATED_DATE_DESC;
-                        model = model.OrderByDescending(x => x.Created);
-                    }
-                    else
-                    {
-                        lastSortOrder= IssueSortOrder.CREATED_DATE;   
-                        model = model.OrderBy(x => x.Created);
-                    }
-                    break;
+                    return issues.OrderBy(x => x.Created);
+                case IssueSortOrder.CREATED_DATE_DESC:
+                    return issues.OrderByDescending(x => x.Created);
                 default:
-                    lastSortOrder = IssueSortOrder.CREATED_DATE_DESC;
-                    model = model.OrderByDescending(x => x.Created);
-                    break;
+                    return issues.OrderByDescending(x => x.Created);
             }
+        }
 
+        private IQueryable<Issue> Search(IQueryable<Issue> issues, string searchString)
+        {
             if (!String.IsNullOrEmpty(searchString))
             {
-                model = model.Where(x => x.Title.Contains(searchString));
+                return issues.Where(x => x.Title.ToLower().Contains(searchString.ToLower()));
             }
-            return View(model);
+            else
+            {
+                return issues;
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@using System.Security.Claims;
+﻿@*@using System.Security.Claims;
 @model IssueListViewModel
 
 @{
@@ -11,7 +11,9 @@
 
 <div class="card shadow">
     <div class="card-header d-flex flex-row justify-content-between align-content-center">
-        <span class="h3">@Model.Title</span>
+        <div class="fs-2">
+            @Model.Title
+        </div>
         <div class="input-group w-25">
             <input class="form-control search-input" type="text" placeholder="Search by title" />
             <span role="button" class="input-group-text pointer-event"><i class="bi bi-search search-btn"></i></span>
@@ -66,7 +68,14 @@
             </tbody>
         </table>
     </div>
+    <div class="card-footer">
+            @if(Model.ProjectId != null && Model.ProjectId != 0)
+            {
+                <a class="btn btn-primary" asp-controller="Issue" asp-action="Create" asp-route-pid="@Model.ProjectId"><i class="bi bi-plus"></i> Create Issue</a>
+            }
+    </div>
 </div>
 
 
 
+*@

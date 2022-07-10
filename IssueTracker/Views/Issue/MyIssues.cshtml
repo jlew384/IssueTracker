@@ -7,11 +7,11 @@
     ViewData["Title"] = "My Issues";
 }
 <div id="issues-created-container">
-    <partial name="_IssueListPartial" model='new IssueListViewModel { Title = "Created Issues", CreatorId = Model.UserId}'/>
-</div>
+@*    <partial name="_IssueListPartial" model='new IssueListViewModel { Title = "Created Issues", CreatorId = Model.UserId}'/>
+*@</div>
 
 <div id="issues-assigned-container">
-    <partial name="_IssueListPartial" model='new IssueListViewModel { Title = "Assigned Issues", AssignedUserId = Model.UserId}'/>
+    @*<partial name="_IssueListPartial" model='new IssueListViewModel { Title = "Assigned Issues", AssignedUserId = Model.UserId}'/>*@
 </div>
 
 @section scripts {

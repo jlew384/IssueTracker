@@ -21,16 +21,17 @@ namespace IssueTracker.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult IssueList(int pid, string sortOrder, string assignedId, string creatorId, string searchString)
+        public IActionResult IssueList(string type, string sortOrder, string searchString, int? pageIndex, int? pid, string userId)
         {
             return ViewComponent("IssueList",
                 new
                 {
-                    pid = pid,
+                    type = type,
                     sortOrder = sortOrder,
                     searchString = searchString,
-                    assignedId = assignedId,
-                    creatorId = creatorId
+                    pageIndex = pageIndex,
+                    pid = pid,
+                    userId = userId
                 });
         }
 
