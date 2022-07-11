@@ -7,51 +7,112 @@
          .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
          .Select(c => Int32.Parse(c.Value))
          .ToList();
+
+    var statusList = IssueStatus.List;
+    statusList.Insert(0, "Status");
+
+    var priorityList = IssuePriority.List;
+    priorityList.Insert(0, "Priority");
+
+    var typeList = IssueType.List;
+    typeList.Insert(0, "Type");
 }
 
 <div class="card shadow">
     <div class="card-header d-flex flex-row justify-content-between align-content-center">
-        <div class="fs-2">
-            Issues
-        </div>
-        <div class="input-group w-25">
-            <input class="form-control search-input" type="text" placeholder="Search by title" value="@Model.SearchString"/>
-            <span onclick="searchIssueList()" role="button" class="input-group-text pointer-event"><i class="bi bi-search search-btn"></i></span>
+        @switch(Model.Type)
+        {
+            case IssueListViewComponent.Type.CREATED:
+                <div class="fs-2">            
+                    Issues
+                </div>
+                break;
+            case IssueListViewComponent.Type.ASSIGNED:
+            case IssueListViewComponent.Type.ASSIGNED_ONLY:
+                <div class="fs-2">            
+                    Assigned Issues
+                </div>
+                break;
+            default:
+                <div class="fs-2">            
+                    Issues
+                </div>
+                break;
+        }
+        
+        <div class="w-50 d-flex">
+            <div class="d-flex" >
+                <select class="btn-secondary m-1 filter-status" onchange="filterStatus()" style="border-radius: 4px">
+                    @foreach(var status in statusList)
+                    {
+                        if(Model.StatusFilter == status)
+                        {
+                            <option selected value="@status">@status</option>
+                        }
+                        else
+                        {
+                            <option value="@status">@status</option>
+                        }
+                        
+                    }
+                </select>
+                <select class="btn-secondary m-1 filter-priority" onchange="filterPriority()" style="border-radius: 4px">
+                    @foreach(var priority in priorityList)
+                    {
+                        if(Model.PriorityFilter == priority)
+                        {
+                            <option selected value="@priority">@priority</option>
+                        }
+                        else
+                        {
+                            <option value="@priority">@priority</option>
+                        }
+                        
+                    }
+                </select>
+                <select class="btn-secondary m-1 filter-type" onchange="filterType()" style="border-radius: 4px">
+                    @foreach(var type in typeList)
+                    {
+                        if(Model.TypeFilter == type)
+                        {
+                            <option selected value="@type">@type</option>
+                        }
+                        else
+                        {
+                            <option value="@type">@type</option>
+                        }
+                        
+                    }
+                </select>
+            </div>
+            <div class="input-group m-1"> 
+                <input class="form-control search-input" type="text" placeholder="Search by title" value="@Model.SearchString"/>
+                <span onclick="searchIssueList()" role="button" class="input-group-text pointer-event"><i class="bi bi-search search-btn"></i></span>
+            </div>
+            
         </div>
     </div>
-    <div class="card-body">
+    <div class="">
         <table class="table table-hover table-resposive">
             <thead>
-                <tr>
-                    <th>
-                        <a onclick="sortIssueList('@IssueSortOrder.TITLE')">
+                <tr class="bg-secondary text-white">
+                    <th role="button" class="border" onclick="sortIssueList('@IssueSortOrder.TITLE')">
                         @Html.DisplayNameFor(model => model.Issue.Title)
-                        </a>
                     </th>
-                    <th>
-                        <a onclick="sortIssueList('@IssueSortOrder.STATUS')">
+                    <th role="button" onclick="sortIssueList('@IssueSortOrder.STATUS')" class="border">
                         @Html.DisplayNameFor(model => model.Issue.Status)
-                        </a>
                     </th>
-                    <th>
-                        <a onclick="sortIssueList('@IssueSortOrder.PRIORITY')">
+                    <th role="button" onclick="sortIssueList('@IssueSortOrder.PRIORITY')" class="border">
                         @Html.DisplayNameFor(model => model.Issue.Priority)
-                        </a>
                     </th>
-                    <th>
-                        <a onclick="sortIssueList('@IssueSortOrder.TYPE')">
+                    <th role="button" class="border" onclick="sortIssueList('@IssueSortOrder.TYPE')">
                         @Html.DisplayNameFor(model => model.Issue.Type)
-                        </a>
                     </th>
-                    <th>
-                        <a onclick="sortIssueList('@IssueSortOrder.ASSIGNED_USER_NAME')">
+                    <th role="button" class="border" onclick="sortIssueList('@IssueSortOrder.ASSIGNED_USER_NAME')">
                         @Html.DisplayNameFor(model => model.Issue.AssignedUser)
-                        </a>
                     </th>
-                    <th>
-                        <a onclick="sortIssueList('@IssueSortOrder.CREATED_DATE')">
+                    <th role="button" class="border" onclick="sortIssueList('@IssueSortOrder.CREATED_DATE')">
                         @Html.DisplayNameFor(model => model.Issue.Created)
-                        </a>
                     </th>
                     <th></th>
                 </tr>
@@ -100,9 +161,43 @@
             <a class="btn btn-primary" asp-controller="Issue" asp-action="Create" asp-route-pid="@Model.ProjectId"><i class="bi bi-plus"></i> Create Issue</a>
         }
         <div class="btn-group" role="group">
-            @for(int i = 1; i <= Model.Issues.TotalPages; i++)
+            @if(Model.Issues.TotalPages > 1)
             {
-                <button type="button" class="btn btn-primary" onclick="selectPage(@i)">@i</button>
+                if(Model.Issues.PageIndex > 3)
+                {
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectPage(1)">First</button>
+                }
+
+                if(Model.Issues.PageIndex > 2)
+                {
+                    int pnum = Model.PageIndex - 2;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectPage(@pnum)">@pnum</button>
+                }
+
+                if(Model.Issues.PageIndex > 1)
+                {
+                    int pnum = Model.PageIndex - 1;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectPage(@pnum)">@pnum</button>
+                }
+                
+                <button type="button" class="btn btn-secondary">@Model.Issues.PageIndex</button>
+
+                if(Model.Issues.PageIndex < Model.Issues.TotalPages)
+                {
+                    int pnum = Model.PageIndex + 1;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectPage(@pnum)">@pnum</button>
+                }
+
+                if(Model.Issues.PageIndex < Model.Issues.TotalPages - 1)
+                {
+                    int pnum = Model.PageIndex + 2;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectPage(@pnum)">@pnum</button>
+                }
+
+                if(Model.Issues.PageIndex < Model.Issues.TotalPages - 2)
+                {
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectPage(@Model.Issues.TotalPages)">Last</button>
+                }
             }
         </div>
         

@@ -18,7 +18,7 @@ namespace IssueTracker.Components
 
 
         private readonly ApplicationDbContext _context;
-        private const int PAGE_SIZE = 5;
+        private const int PAGE_SIZE = 10;
 
 
         public IssueListViewComponent(ApplicationDbContext context)
@@ -26,12 +26,16 @@ namespace IssueTracker.Components
             _context = context;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string type, string? sortOrder, string? searchString, int? pageIndex, int? pid, string userId)
+        public async Task<IViewComponentResult> InvokeAsync(string type, string? sortOrder, string? searchString, int? pageIndex, string statusFilter, string priorityFilter, string typeFilter, int? pid, string userId)
         {
-            IQueryable<Issue> issues = InitializeIssues(type, userId, pid);           
+            IQueryable<Issue> issues = InitializeIssues(type, userId, pid);
 
-            issues = Sort(issues, sortOrder);
+            issues = FilterStatus(issues, statusFilter);
+            issues = FilterPriority(issues, priorityFilter);
+            issues = FilterType(issues, typeFilter);
             issues = Search(issues, searchString);
+            issues = Sort(issues, sortOrder);
+            
 
             PaginatedList<Issue> paginatedList = await PaginatedList<Issue>.CreateAsync(issues, pageIndex ?? 1, PAGE_SIZE);
 
@@ -42,11 +46,56 @@ namespace IssueTracker.Components
                     SortOrder = sortOrder,
                     SearchString = searchString,
                     PageIndex = pageIndex ?? 1,
+                    StatusFilter = statusFilter,
+                    PriorityFilter = priorityFilter,
+                    TypeFilter = typeFilter,
                     ProjectId = pid,
                     UserId = userId,
                     Issues = paginatedList
                 });
         }
+
+        private IQueryable<Issue> FilterStatus(IQueryable<Issue> issues, string statusFilter)
+        {
+            if (!String.IsNullOrEmpty(statusFilter))
+            {
+
+                return issues.Where(x => x.Status == statusFilter);
+            }
+            else
+            {
+                return issues;
+            }
+            
+        }
+        private IQueryable<Issue> FilterPriority(IQueryable<Issue> issues, string priorityFilter)
+        {
+            if (!String.IsNullOrEmpty(priorityFilter))
+            {
+
+                return issues.Where(x => x.Priority == priorityFilter);
+            }
+            else
+            {
+                return issues;
+            }
+        }
+
+
+        private IQueryable<Issue> FilterType(IQueryable<Issue> issues, string typeFilter)
+        {
+            if (!String.IsNullOrEmpty(typeFilter))
+            {
+
+                return issues.Where(x => x.Type == typeFilter);
+            }
+            else
+            {
+                return issues;
+            }
+
+        }
+
 
         private IQueryable<Issue> InitializeIssues(string type, string userId, int? pid)
         {

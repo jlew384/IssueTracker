@@ -21,7 +21,7 @@ namespace IssueTracker.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult IssueList(string type, string sortOrder, string searchString, int? pageIndex, int? pid, string userId)
+        public IActionResult IssueList(string type, string sortOrder, string searchString, int? pageIndex, string statusFilter, string priorityFilter, string typeFilter, int? pid, string userId)
         {
             return ViewComponent("IssueList",
                 new
@@ -30,6 +30,9 @@ namespace IssueTracker.Controllers
                     sortOrder = sortOrder,
                     searchString = searchString,
                     pageIndex = pageIndex,
+                    statusFilter = statusFilter,
+                    priorityFilter = priorityFilter,
+                    typeFilter = typeFilter,
                     pid = pid,
                     userId = userId
                 });

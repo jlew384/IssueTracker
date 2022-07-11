@@ -16,25 +16,31 @@
         </div>
         
     </div>
-    <div class="card-body">
-        <h6>
+    <div class="card-body d-flex">
+        <div class="col-9">
+            <h6>
             @Html.DisplayNameFor(model => model.Project.Desc)
-        </h6>
-        <p class="mb-5">
-            @Html.DisplayFor(model => model.Project.Desc)
-        </p>
-        <h6>
+            </h6>
+            <p class="mb-5">
+                @Html.DisplayFor(model => model.Project.Desc)
+            </p>
+        </div>
+        <div class="col-3">
+            <h6>
             @Html.DisplayNameFor(model => model.Project.DateCreated)
-        </h6>
-        <p>
-            @Html.DisplayFor(model => model.Project.DateCreated)
-        </p>
-        <h6>
-            @Html.DisplayNameFor(model => model.Project.DateModified)
-        </h6>
-        <p>
-            @Html.DisplayFor(model => model.Project.DateModified)
-        </p>
+            </h6>
+            <p>
+                @Html.DisplayFor(model => model.Project.DateCreated)
+            </p>
+            <h6>
+                @Html.DisplayNameFor(model => model.Project.DateModified)
+            </h6>
+            <p>
+                @Html.DisplayFor(model => model.Project.DateModified)
+            </p>
+        </div>
+        
+        
     </div>
 </div>
 
@@ -53,6 +59,9 @@ let components = {
                 sortOrder: "@IssueSortOrder.CREATED_DATE_DESC",
                 searchString: "",
                 pageIndex: 1,
+                statusFilter: "",
+                priorityFilter: "",
+                typeFilter: "",
                 pid: @Model.Project.Id,
             },
             success: function(result) {
@@ -77,6 +86,39 @@ function searchIssueList() {
 
 function selectPage(pageIndex) {
     components.issueLists.default.data.pageIndex = pageIndex;
+    $.ajax(components.issueLists.default);
+}
+
+function filterStatus() {
+    var selectedFilter = $('#issues-container').find('.filter-status :selected').text();
+    if (selectedFilter == 'Status') {
+        components.issueLists.default.data.statusFilter = '';
+    }
+    else {
+        components.issueLists.default.data.statusFilter = selectedFilter;
+    }
+    $.ajax(components.issueLists.default);
+}
+
+function filterPriority() {
+    var selectedFilter = $('#issues-container').find('.filter-priority :selected').text();
+    if (selectedFilter == 'Priority') {
+        components.issueLists.default.data.priorityFilter = '';
+    }
+    else {
+        components.issueLists.default.data.priorityFilter = selectedFilter;
+    }
+    $.ajax(components.issueLists.default);
+}
+
+function filterType() {
+    var selectedFilter = $('#issues-container').find('.filter-type :selected').text();
+    if (selectedFilter == 'Type') {
+        components.issueLists.default.data.typeFilter = '';
+    }
+    else {
+        components.issueLists.default.data.typeFilter = selectedFilter;
+    }
     $.ajax(components.issueLists.default);
 }
 
