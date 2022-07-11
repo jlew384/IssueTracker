@@ -1,10 +1,105 @@
-﻿@model IEnumerable<IssueTracker.Models.Project>
+﻿@model MyProjectsViewModel
 
 @{
     ViewData["Title"] = "All Projects";
 }
 
 <h1>All Projects</h1>
-<div id="all-projects">
-    <partial name="_ListPartial" model="Model" />
+<div id="default-projects-container">
 </div>
+
+@section scripts {
+    <script>
+const componentContainers = {
+    projectLists: {
+        default: "#default-projects-container",
+        managed: "#managed-projects-container",
+        assigned: "#assigned-projects-container",
+        assigned_only: "#assigned-only-projects-container"
+    }
+}
+
+let components = {
+    projectLists: {
+        default: {
+            type: 'GET',
+            url: "@Url.Action("ProjectList", "Project")",
+            data: {
+                type: "default",
+                sortOrder: "@ProjectSortOrder.CREATED_DATE_DESC",
+                searchString: "",
+                pageIndex: 1,
+                userId: '@Model.UserId',
+            },
+            success: function(result) {
+                $(componentContainers.projectLists.default).html(result);
+            }
+        },
+        managed: {
+            type: 'GET',
+            url: "@Url.Action("ProjectList", "Project")",
+            data: {
+                type: "managed",
+                sortOrder: "@ProjectSortOrder.CREATED_DATE_DESC",
+                searchString: "",
+                pageIndex: 1,
+                userId: '@Model.UserId',
+            },
+            success: function(result) {
+                $(componentContainers.projectLists.managed).html(result);
+            }
+        },
+        assigned: {
+            type: 'GET',
+            url: "@Url.Action("ProjectList", "Project")",
+            data: {
+                type: "assigned",
+                sortOrder: "@ProjectSortOrder.CREATED_DATE_DESC",
+                searchString: "",
+                pageIndex: 1,
+                userId: '@Model.UserId',
+            },
+            success: function(result) {
+                $(componentContainers.projectLists.assigned).html(result);
+            }
+        },
+        assigned_only: {
+            type: 'GET',
+            url: "@Url.Action("ProjectList", "Project")",
+            data: {
+                type: "assigned_only",
+                sortOrder: "@ProjectSortOrder.CREATED_DATE_DESC",
+                searchString: "",
+                pageIndex: 1,
+                userId: '@Model.UserId',
+            },
+            success: function(result) {
+                $(componentContainers.projectLists.assigned_only).html(result);
+            }
+        }
+    }
+}
+
+function sortProjectList(listType, sortOrder) {
+    if (sortOrder == components.projectLists[listType].data.sortOrder) {
+        sortOrder += "_DESC";
+    }
+    components.projectLists[listType].data.sortOrder = sortOrder;
+    $.ajax(components.projectLists[listType]);
+}
+
+function searchProjectList(listType) {
+    components.projectLists[listType].data.searchString = $(componentContainers.projectLists[listType]).find('.search-input').val();
+    $.ajax(components.projectLists[listType]);
+}
+
+function selectProjectPage(listType, pageIndex) {
+    components.projectLists[listType].data.pageIndex = pageIndex;
+    $.ajax(components.projectLists[listType]);
+}
+
+$(document).ready(function() {
+    $.ajax(components.projectLists.default);
+})
+    </script>
+}

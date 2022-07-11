@@ -1,0 +1,140 @@
+﻿@using System.Security.Claims;
+@model ProjectListViewModel
+
+@{
+    string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+    var ownerClaimValues = User.Claims
+         .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+         .Select(c => Int32.Parse(c.Value))
+         .ToList();
+}
+
+<div class="card shadow">
+    <div class="card-header d-flex flex-row justify-content-between align-content-center">
+        @switch(Model.Type)
+        {
+            case ProjectListViewComponent.Type.MANAGED:
+                <div class="fs-2">            
+                    Managed Projects
+                </div>
+                break;
+            case ProjectListViewComponent.Type.ASSIGNED:
+            case ProjectListViewComponent.Type.ASSIGNED_ONLY:
+                <div class="fs-2">            
+                    Assigned Projects
+                </div>
+                break;
+            default:
+                <div class="fs-2">            
+                    Projects
+                </div>
+                break;
+        }
+        
+        <div class="w-50 d-flex">
+            <div>
+            </div>
+            <div class="input-group m-1"> 
+                <input class="form-control search-input" type="text" placeholder="Search by title" value="@Model.SearchString"/>
+                <span onclick="searchProjectList('@Model.Type')" role="button" class="input-group-text pointer-event"><i class="bi bi-search search-btn"></i></span>
+            </div>
+            
+        </div>
+    </div>
+    <div class="">
+        <table class="table table-hover table-resposive">
+            <thead>
+                <tr class="bg-secondary text-white">
+                    <th role="button" class="border" onclick="sortProjectList('@Model.Type', '@ProjectSortOrder.TITLE')">
+                        @Html.DisplayNameFor(model => model.Project.Title)
+                    </th>
+                    <th role="button" class="border" onclick="sortProjectList('@Model.Type', '@ProjectSortOrder.CREATED_DATE')">
+                        @Html.DisplayNameFor(model => model.Project.DateCreated)
+                    </th>
+                    <th role="button" class="border" onclick="sortProjectList('@Model.Type', '@ProjectSortOrder.MODIFIED_DATE')">
+                        @Html.DisplayNameFor(model => model.Project.DateModified)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var project in Model.Projects)
+                {
+                    <tr onclick="location.href = '@Url.Action("Details", "Project", new { pid = project.Id })'">
+                        <td>
+                            @Html.DisplayFor(projectItem => project.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(projectItem => project.DateCreated)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(projectItem => project.DateModified)
+                        </td>
+                        <td>
+                            
+                            @if(User.IsInRole(UserRoles.ADMIN) || (User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(project.Id)))
+                            {
+                                <span>
+                                    <a class="m-1 text-muted" asp-controller="Project" asp-action="Edit" asp-route-pid="@project.Id"><i class="bi bi-pencil-fill"></i></a>
+                                    <a class="m-1 text-muted" asp-controller="Project" asp-action="Delete" asp-route-pid="@project.Id"><i class="bi bi-trash2-fill"></i></a>
+                                </span>
+                    
+                            }  
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex flex-row justify-content-between">
+        <div>
+            @if((User.IsInRole(UserRoles.ADMIN) || User.IsInRole(UserRoles.PROJ_MNGR)) && (Model.Type == ProjectListViewComponent.Type.MANAGED || Model.Type == ProjectListViewComponent.Type.DEFAULT))
+            {
+                <a class="btn btn-primary" asp-controller="Project" asp-action="Create"><i class="bi bi-plus"></i> Create Project</a>
+            }
+        </div>
+        
+        <div class="btn-group" role="group">
+            @if(Model.Projects.TotalPages > 1)
+            {
+                if(Model.Projects.PageIndex > 3)
+                {
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectProjectPage('@Model.Type', 1)">First</button>
+                }
+
+                if(Model.Projects.PageIndex > 2)
+                {
+                    int pnum = Model.PageIndex - 2;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectProjectPage('@Model.Type', @pnum)">@pnum</button>
+                }
+
+                if(Model.Projects.PageIndex > 1)
+                {
+                    int pnum = Model.PageIndex - 1;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectProjectPage('@Model.Type', @pnum)">@pnum</button>
+                }
+                
+                <button type="button" class="btn btn-secondary">@Model.Projects.PageIndex</button>
+
+                if(Model.Projects.PageIndex < Model.Projects.TotalPages)
+                {
+                    int pnum = Model.PageIndex + 1;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectProjectPage('@Model.Type', @pnum)">@pnum</button>
+                }
+
+                if(Model.Projects.PageIndex < Model.Projects.TotalPages - 1)
+                {
+                    int pnum = Model.PageIndex + 2;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectProjectPage('@Model.Type', @pnum)">@pnum</button>
+                }
+
+                if(Model.Projects.PageIndex < Model.Projects.TotalPages - 2)
+                {
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectProjectPage('@Model.Type', @Model.Projects.TotalPages)">Last</button>
+                }
+            }
+        </div>
+        
+    </div>
+</div>
+

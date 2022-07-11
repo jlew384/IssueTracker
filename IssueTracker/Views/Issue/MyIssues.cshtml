@@ -6,74 +6,133 @@
 @{
     ViewData["Title"] = "My Issues";
 }
-<div id="issues-created-container">
-@*    <partial name="_IssueListPartial" model='new IssueListViewModel { Title = "Created Issues", CreatorId = Model.UserId}'/>
-*@</div>
+<div id="created-issues-container">
+</div>
 
-<div id="issues-assigned-container">
-    @*<partial name="_IssueListPartial" model='new IssueListViewModel { Title = "Assigned Issues", AssignedUserId = Model.UserId}'/>*@
+<div id="assigned-issues-container">
 </div>
 
 @section scripts {
     <script>
-        $(document).ready(function() {
+const componentContainers = {
+    issueLists: {
+        default: "#default-issues-container",
+        created: "#created-issues-container",
+        assigned: "#assigned-issues-container",
+        assigned_only: "#assigned-only-issues-container"
+    }
+}
 
-            $('#issues-created-container').find('.sort-btn').click(function() {
-                var searchInput = $('#issues-created-container').find('.search-input').val();
+let components = {
+    issueLists: {
+        created: {
+            type: 'GET',
+            url: "@Url.Action("IssueList", "Issue")",
+            data: {
+                type: "created",
+                sortOrder: "@IssueSortOrder.CREATED_DATE_DESC",
+                searchString: "",
+                pageIndex: 1,
+                statusFilter: "",
+                priorityFilter: "",
+                typeFilter: "",
+                userId: '@Model.UserId'
+            },
+            success: function(result) {
+                $(componentContainers.issueLists.created).html(result);
+            }
+        },
+        assigned: {
+            type: 'GET',
+            url: "@Url.Action("IssueList", "Issue")",
+            data: {
+                type: "assigned",
+                sortOrder: "@IssueSortOrder.CREATED_DATE_DESC",
+                searchString: "",
+                pageIndex: 1,
+                statusFilter: "",
+                priorityFilter: "",
+                typeFilter: "",
+                userId: '@Model.UserId'
+            },
+            success: function(result) {
+                $(componentContainers.issueLists.assigned).html(result);
+            }
+        },
+        assigned_only: {
+            type: 'GET',
+            url: "@Url.Action("IssueList", "Issue")",
+            data: {
+                type: "assigned_only",
+                sortOrder: "@IssueSortOrder.CREATED_DATE_DESC",
+                searchString: "",
+                pageIndex: 1,
+                statusFilter: "",
+                priorityFilter: "",
+                typeFilter: "",
+                userId: '@Model.UserId'
+            },
+            success: function(result) {
+                $(componentContainers.issueLists.assigned_only).html(result);
+            }
+        }
+    }
+}
 
-                $.ajax({
-                    type: 'GET',
-                    url: "@Url.Action("IssueList", "Issue")",
-                    data: { creatorId: "@Model.UserId", sortOrder: $(this).attr('sort-order'), searchString: searchInput},
-                    success: function(result) {  
-                        $('#issues-created-container').find('.component-container').html(result);
-                    }
-                })
-            });
+function sortIssueList(listType, sortOrder) {
+    if (sortOrder == components.issueLists[listType].data.sortOrder) {
+        sortOrder += "_DESC";
+    }
+    components.issueLists[listType].data.sortOrder = sortOrder;
+    $.ajax(components.issueLists[listType]);
+}
 
+function searchIssueList(listType) {
+    components.issueLists[listType].data.searchString = $(componentContainers.issueLists[listType]).find('.search-input').val();
+    $.ajax(components.issueLists[listType]);
+}
 
-            $('#issues-created-container').find('.search-btn').click(function() {
-                console.log('clicked');
-                var searchInput = $('#issues-created-container').find('.search-input').val();
+function selectPage(listType, pageIndex) {
+    components.issueLists[listType].data.pageIndex = pageIndex;
+    $.ajax(components.issueLists[listType]);
+}
 
-                $.ajax({
-                    type: 'GET',
-                    url: "@Url.Action("IssueList", "Issue")",
-                    data: { creatorId: "@Model.UserId", searchString: searchInput},
-                    success: function(result) {  
-                        $('#issues-created-container').find('.component-container').html(result);
-                    }
-                })
-            })
+function filterStatus(listType) {
+    var selectedFilter = $(componentContainers.issueLists[listType]).find('.filter-status :selected').text();
+    if (selectedFilter == 'Status') {
+        components.issueLists[listType].data.statusFilter = '';
+    }
+    else {
+        components.issueLists[listType].data.statusFilter = selectedFilter;
+    }
+    $.ajax(components.issueLists[listType]);
+}
 
-            $('#issues-assigned-container').find('.sort-btn').click(function() {
-                var searchInput = $('#issues-assigned-container').find('.search-input').val();
+function filterPriority(listType) {
+    var selectedFilter = $(componentContainers.issueLists[listType]).find('.filter-priority :selected').text();
+    if (selectedFilter == 'Priority') {
+        components.issueLists[listType].data.priorityFilter = '';
+    }
+    else {
+        components.issueLists[listType].data.priorityFilter = selectedFilter;
+    }
+    $.ajax(components.issueLists[listType]);
+}
 
-                $.ajax({
-                    type: 'GET',
-                    url: "@Url.Action("IssueList", "Issue")",
-                    data: { assignedId: "@Model.UserId", sortOrder: $(this).attr('sort-order'), searchString: searchInput},
-                    success: function(result) {  
-                        $('#issues-assigned-container').find('.component-container').html(result);
-                    }
-                })
-            });
+function filterType(listType) {
+    var selectedFilter = $(componentContainers.issueLists[listType]).find('.filter-type :selected').text();
+    if (selectedFilter == 'Type') {
+        components.issueLists[listType].data.typeFilter = '';
+    }
+    else {
+        components.issueLists[listType].data.typeFilter = selectedFilter;
+    }
+    $.ajax(components.issueLists[listType]);
+}
 
-
-            $('#issues-assigned-container').find('.search-btn').click(function() {
-                console.log('clicked');
-                var searchInput = $('#issues-assigned-container').find('.search-input').val();
-
-                $.ajax({
-                    type: 'GET',
-                    url: "@Url.Action("IssueList", "Issue")",
-                    data: { assignedId: "@Model.UserId", searchString: searchInput},
-                    success: function(result) {  
-                        $('#issues-assigned-container').find('.component-container').html(result);
-                    }
-                })
-            })
-
-        })
+$(document).ready(function() {
+    $.ajax(components.issueLists.created);
+    $.ajax(components.issueLists.assigned);
+})
     </script>
 }

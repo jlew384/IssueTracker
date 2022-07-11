@@ -54,11 +54,24 @@ namespace IssueTracker.Controllers
 
         public IActionResult Index()
         {
-            return View(_context.Projects.ToList());
+            return View(new MyProjectsViewModel { UserId = _userManager.GetUserAsync(User).Result.Id});
+        }
+
+        public IActionResult ProjectList(string type, string sortOrder, string searchString, int? pageIndex, string userId)
+        {
+            return ViewComponent("ProjectList",
+                new
+                {
+                    type = type,
+                    sortOrder = sortOrder,
+                    searchString = searchString,
+                    pageIndex = pageIndex,
+                    userId = userId
+                });
         }
 
 
-        
+
 
         [HttpGet]
         public async Task<IActionResult> MyProjects()
@@ -82,6 +95,7 @@ namespace IssueTracker.Controllers
                     model.AssignedProjects.Add(project);
                 }
             }
+            model.UserId = user.Id;
             return View(model);
         }
 
