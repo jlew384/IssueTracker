@@ -74,13 +74,23 @@ namespace IssueTracker.Components
             switch (type)
             {
                 case Type.IN_PROJECT:
-                    users = _userManager.Users.Where(x => x.Id != userId && x.Projects.Select(x => x.Id).ToList().Contains((int)pid));
+                    users = _context.Projects
+                        .Where(x => x.Id == pid)
+                        .Select(x => x.Users)
+                        .SelectMany(x => x);
                     break;
                 case Type.NOT_IN_PROJECT:
-                    users = _userManager.Users.Where(x => x.Id != userId && !x.Projects.Select(x => x.Id).ToList().Contains((int)pid));
+                    users = _context.Projects
+                        .Where(x => x.Id == pid)
+                        .Select(x => x.Users)
+                        .SelectMany(x => x);
+
+                    users = _userManager.Users
+                        .Except(users);
+
                     break;
                 default:
-                    users = _userManager.Users.Where(x => x.Id != userId);
+                    users = _userManager.Users;
                     break;
             }
 

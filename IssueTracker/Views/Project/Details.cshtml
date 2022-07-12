@@ -2,6 +2,10 @@
 
 @{
     ViewData["Title"] = "Project Details";
+    var ownerClaimValues = User.Claims
+         .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+         .Select(c => Int32.Parse(c.Value))
+         .ToList();
 }
 <div class="card m-2">
     <div class="card-header">
@@ -38,9 +42,18 @@
             <p>
                 @Html.DisplayFor(model => model.Project.DateModified)
             </p>
-        </div>
-        
-        
+        </div>        
+    </div>
+    <div class="card-footer">
+        @if(User.IsInRole(UserRoles.ADMIN) || (User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(Model.Project.Id)))
+        {
+            <a asp-controller="Administration" asp-action="ManageUsersInProject" asp-route-pid="@Model.Project.Id" class="btn btn-primary">Manage Project Users</a>
+        }
+        else
+        {
+            <a class="btn btn-primary">View Project Users</a>
+        }
+
     </div>
 </div>
 

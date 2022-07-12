@@ -55,6 +55,40 @@ namespace IssueTracker.Controllers
             ApplicationUser user1 = await _userManager.GetUserAsync(User);
             return View(user1);
         }
+        public IActionResult ManageUsersInProject(int pid)
+        {
+            Project project = _context.Projects
+                .Where(x => x.Id == pid)
+                .First();
+
+            return View(project);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveUserFromProject(string userId, int pid)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+            user.Projects = user.Projects.Where(x => x.Id != pid).ToList();
+            _context.SaveChanges();
+            return this.Ok("Form Data received");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddUserToProject(string userId, int pid)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+            Project project  = _context.Projects.Where(x => x.Id == pid).FirstOrDefault();
+            user.Projects.Add(project);
+            _context.SaveChanges();
+            return this.Ok("Form Data received");
+        }
+
+        public IActionResult Test()
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> EditUserRole(string userId)

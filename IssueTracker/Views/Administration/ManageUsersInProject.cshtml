@@ -1,0 +1,143 @@
+﻿@using System.Security.Claims
+@model Project
+@{
+    ViewData["Title"] = Model.Title + " Users";
+    string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+}
+
+<div id="in-project-users-container">
+
+</div>
+
+<div id="not-in-project-users-container">
+
+</div>
+
+@section scripts {
+    <script>
+const componentContainers = {
+    userLists: {
+        default: "#default-users-container",
+        in_project: "#in-project-users-container",
+        not_in_project: "#not-in-project-users-container"
+    }
+}
+
+let components = {
+    userLists: {
+        default: {
+            type: 'GET',
+            url: "@Url.Action("UserList", "Administration")",
+            data: {
+                type: "default",
+                sortOrder: "@UserSortOrder.USER_NAME",
+                searchString: "",
+                pageIndex: 1,
+                roleFilter: "",
+                userId: '@userId'
+            },
+            success: function(result) {
+                $(componentContainers.userLists.default).html(result);
+            }
+        },
+        in_project: {
+            type: 'GET',
+            url: "@Url.Action("UserList", "Administration")",
+            data: {
+                type: "in_project",
+                sortOrder: "@UserSortOrder.USER_NAME",
+                searchString: "",
+                pageIndex: 1,
+                roleFilter: "",
+                userId: '@userId',
+                pid: '@Model.Id'
+            },
+            success: function(result) {
+                $(componentContainers.userLists.in_project).html(result);
+            }
+        },
+        not_in_project: {
+            type: 'GET',
+            url: "@Url.Action("UserList", "Administration")",
+            data: {
+                type: "not_in_project",
+                sortOrder: "@UserSortOrder.USER_NAME",
+                searchString: "",
+                pageIndex: 1,
+                roleFilter: "",
+                userId: '@userId',
+                pid: '@Model.Id'
+            },
+            success: function(result) {
+                $(componentContainers.userLists.not_in_project).html(result);
+            }
+        }
+    }
+}
+
+function sortUserList(listType, sortOrder) {
+    if (sortOrder == components.userLists[listType].data.sortOrder) {
+        sortOrder += "_DESC";
+    }
+    components.userLists[listType].data.sortOrder = sortOrder;
+    $.ajax(components.userLists[listType]);
+}
+
+function searchUserList(listType) {
+    components.userLists[listType].data.searchString = $(componentContainers.userLists[listType]).find('.search-input').val();
+    $.ajax(components.userLists[listType]);
+}
+
+function selectUserPage(listType, pageIndex) {
+    components.userLists[listType].data.pageIndex = pageIndex;
+    $.ajax(components.userLists[listType]);
+}
+
+function filterUserRole(listType) {
+    var selectedFilter = $(componentContainers.userLists[listType]).find('.filter-type :selected').text();
+    if (selectedFilter == 'Role') {
+        components.userLists[listType].data.roleFilter = '';
+    }
+    else {
+        components.userLists[listType].data.roleFilter = selectedFilter;
+    }
+    $.ajax(components.userLists[listType]);
+}
+
+function addUserToProject(userId) {
+    $.ajax({
+        type: 'POST',
+        url: '@Url.Action("AddUserToProject", "Administration")',
+        data: {
+            userId: userId,
+            pid: '@Model.Id'
+        },
+        success: function(result) {
+            $.ajax(components.userLists.in_project);
+            $.ajax(components.userLists.not_in_project);
+        }
+    })
+}
+
+function removeUserFromProject(userId) {
+    $.ajax({
+        type: 'POST',
+        url: '@Url.Action("RemoveUserFromProject", "Administration")',
+        data: {
+            userId: userId,
+            pid: '@Model.Id'
+        },
+        success: function(result) {
+            $.ajax(components.userLists.in_project);
+            $.ajax(components.userLists.not_in_project);
+        }
+    })
+}
+
+
+$(document).ready(function() {
+    $.ajax(components.userLists.in_project);
+    $.ajax(components.userLists.not_in_project);
+})
+    </script>
+}
