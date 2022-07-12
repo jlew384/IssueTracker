@@ -1,0 +1,156 @@
+﻿@using System.Security.Claims;
+@using IssueTracker.Authorization;
+@model UserListViewModel
+
+@{
+    string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+    var ownerClaimValues = User.Claims
+         .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+         .Select(c => Int32.Parse(c.Value))
+         .ToList();
+
+
+    var roleList = UserRoles.ROLES.ToList();
+    roleList.Insert(0, "Role");
+}
+
+<div class="card shadow">
+    <div class="card-header d-flex flex-row justify-content-between align-content-center">
+        @switch(Model.Type)
+        {
+            case UserListViewComponent.Type.IN_PROJECT:
+                <div class="fs-2">            
+                    Users In Project
+                </div>
+                break;
+            case UserListViewComponent.Type.NOT_IN_PROJECT:
+                <div class="fs-2">            
+                    Users Not In Project
+                </div>
+                break;
+            default:
+                <div class="fs-2">            
+                    Users
+                </div>
+                break;
+        }
+        
+        <div class="w-50 d-flex">
+            <div class="d-flex" >
+                
+                <select class="btn-secondary m-1 filter-type" onchange="filterUserRole('@Model.Type')" style="border-radius: 4px">
+                    @foreach(var role in roleList)
+                    {
+                        if(Model.RoleFilter == role)
+                        {
+                            <option selected value="@role">@role</option>
+                        }
+                        else
+                        {
+                            <option value="@role">@role</option>
+                        }
+                        
+                    }
+                </select>
+            </div>
+            <div class="input-group m-1"> 
+                <input class="form-control search-input" type="text" placeholder="Search by title" value="@Model.SearchString"/>
+                <span onclick="searchUserList('@Model.Type')" role="button" class="input-group-text pointer-event"><i class="bi bi-search search-btn"></i></span>
+            </div>
+            
+        </div>
+    </div>
+    <div class="">
+        <table class="table table-hover table-resposive">
+            <thead>
+                <tr class="bg-secondary text-white">
+                    <th role="button" class="border" onclick="sortUserList('@Model.Type', '@UserSortOrder.USER_NAME')">
+                        @Html.DisplayNameFor(model => model.User.Name)
+                    </th>
+                    <th role="button" onclick="sortUserList('@Model.Type', '@UserSortOrder.EMAIL')" class="border">
+                        @Html.DisplayNameFor(model => model.User.Email)
+                    </th>
+                    <th role="button" onclick="sortUserList('@Model.Type', '@UserSortOrder.ROLES')" class="border">
+                        @Html.DisplayNameFor(model => model.User.Roles)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var user in Model.Users)
+                {
+                    <tr @*onclick="location.href = '@Url.Action("Details", "Issue", new { id = user.Id })'"*@>
+                        <td>
+                            @Html.DisplayFor(issueItem => user.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(issueItem => user.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(issueItem => user.Roles)
+                        </td>
+                        <td>
+                            
+                            @if(User.IsInRole(UserRoles.ADMIN) && Model.Type == UserListViewComponent.Type.DEFAULT)
+                            {
+                                <span>
+                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Edit"><i class="bi bi-pencil-fill"></i></a> @*change links*@
+                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Delete"><i class="bi bi-trash2-fill"></i></a> @*change links*@
+                                </span>
+                    
+                            }  
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex flex-row justify-content-between">
+        <div>
+        </div>
+        
+        <div class="btn-group" role="group">
+            @if(Model.Users.TotalPages > 1)
+            {
+                if(Model.Users.PageIndex > 3)
+                {
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectUsersPage('@Model.Type', 1)">First</button>
+                }
+
+                if(Model.Users.PageIndex > 2)
+                {
+                    int pnum = Model.PageIndex - 2;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectUsersPage('@Model.Type', @pnum)">@pnum</button>
+                }
+
+                if(Model.Users.PageIndex > 1)
+                {
+                    int pnum = Model.PageIndex - 1;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectUsersPage('@Model.Type', @pnum)">@pnum</button>
+                }
+                
+                <button type="button" class="btn btn-secondary">@Model.Users.PageIndex</button>
+
+                if(Model.Users.PageIndex < Model.Users.TotalPages)
+                {
+                    int pnum = Model.PageIndex + 1;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectUsersPage('@Model.Type', @pnum)">@pnum</button>
+                }
+
+                if(Model.Users.PageIndex < Model.Users.TotalPages - 1)
+                {
+                    int pnum = Model.PageIndex + 2;
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectUsersPage('@Model.Type', @pnum)">@pnum</button>
+                }
+
+                if(Model.Users.PageIndex < Model.Users.TotalPages - 2)
+                {
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectUsersPage('@Model.Type', @Model.Users.TotalPages)">Last</button>
+                }
+            }
+        </div>
+        
+    </div>
+</div>
+
+

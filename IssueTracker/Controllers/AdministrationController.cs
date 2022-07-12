@@ -24,6 +24,21 @@ namespace IssueTracker.Controllers
             _roleManager = roleManager;
         }
 
+        public IActionResult UserList(string type, string sortOrder, string searchString, int? pageIndex, string roleFilter, int? pid, string userId)
+        {
+            return ViewComponent("UserList",
+                new
+                {
+                    type = type,
+                    sortOrder = sortOrder,
+                    searchString = searchString,
+                    pageIndex = pageIndex,
+                    roleFilter = roleFilter,
+                    pid = pid,
+                    userId = userId
+                });
+        }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -37,8 +52,8 @@ namespace IssueTracker.Controllers
                 model.Roles = await _userManager.GetRolesAsync(user);
                 modelList.Add(model);
             }
-
-            return View(modelList);
+            ApplicationUser user1 = await _userManager.GetUserAsync(User);
+            return View(user1);
         }
 
         [HttpGet]
