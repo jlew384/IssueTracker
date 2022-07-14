@@ -130,7 +130,11 @@ function removeUserFromProject(userId) {
         success: function(result) {
             $.ajax(components.userLists.in_project);
             $.ajax(components.userLists.not_in_project);
+        },
+        error: function(result) {
+            alert(result.responseText);
         }
+        
     })
 }
 

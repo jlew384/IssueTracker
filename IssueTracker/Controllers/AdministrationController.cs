@@ -68,10 +68,20 @@ namespace IssueTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveUserFromProject(string userId, int pid)
         {
-            ApplicationUser user = await _userManager.FindByIdAsync(userId);
-            user.Projects = user.Projects.Where(x => x.Id != pid).ToList();
-            _context.SaveChanges();
-            return this.Ok("Form Data received");
+            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
+            if(currentUser.Id == userId)
+            {
+                return BadRequest("Cannot remove yourself from a project");
+            }
+            else
+            {
+                ApplicationUser user = await _userManager.FindByIdAsync(userId);
+                user.Projects = user.Projects.Where(x => x.Id != pid).ToList();
+                _context.SaveChanges();
+
+                return Ok("Form Data received");
+            }
+            
         }
 
         [HttpPost]
