@@ -1,78 +1,79 @@
-﻿@model IssueTracker.Models.Issue
+﻿@model IssueDetailsModelView
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Issue Details";
 }
-
-<h1>Details</h1>
-
-<div>
-    <h4>Issue</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Project)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Project.Desc)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatorUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatorUser.UserName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AssignedUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AssignedUser.UserName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Desc)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Desc)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Priority)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Priority)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Type)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Type)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Created)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Created)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Modified)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Modified)
-        </dd>
-    </dl>
+<div class="card">
+    <div class="card-header">
+        <h4>Issue Details</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.ProjectTitle)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.ProjectTitle)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Issue.CreatorUser)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Issue.CreatorUser.UserName)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Issue.AssignedUser)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Issue.AssignedUser.UserName)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Issue.Title)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Issue.Title)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Issue.Desc)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Issue.Desc)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Issue.Status)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Issue.Status)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Issue.Priority)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Issue.Priority)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Issue.Type)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Issue.Type)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Issue.Created)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Issue.Created)
+            </dd>
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Issue.Modified)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Issue.Modified)
+            </dd>
+        </dl>
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+        <a class="btn btn-primary" asp-action="Index" asp-route-pid="@Model.ProjectId">Back to List</a>
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Issue.Id" asp-route-pid="@Model.ProjectId">Edit</a>        
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id" asp-route-pid="@ViewBag.Project.Id">Edit</a> |
-    <a asp-action="Index" asp-route-pid="@ViewBag.Project.Id">Back to List</a>
-</div>
+

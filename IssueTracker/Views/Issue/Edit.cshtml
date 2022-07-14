@@ -1,16 +1,16 @@
 ﻿@model EditIssueViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Issue";
 }
-
-<h1>@Model.Issue.Project.Title</h1>
-
-<h4>Edit Issue</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-controller="Issue" asp-action="Edit" asp-route-pid="@Model.Issue.ProjectId">
+<form asp-controller="Issue" asp-action="Edit" asp-route-pid="@Model.Issue.ProjectId">
+    <div class="card">
+        <div class="card-header">
+            <h1>@Model.Issue.Project.Title</h1>
+            <div class="fs-3">Edit Issue</div>
+        </div>
+        <div class="card-body">
+        
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Issue.Id" />
             <input type="hidden" asp-for="Issue.Modified" />
@@ -24,40 +24,45 @@
             </div>
             <div class="form-group">
                 <label asp-for="Issue.Desc" class="control-label"></label>
-                <input asp-for="Issue.Desc" class="form-control" />
+                <textarea asp-for="Issue.Desc" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Issue.Desc" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Issue.AssignedUserId" class="control-label"></label>
-                <select asp-for="Issue.AssignedUserId" class="form-control" asp-items='@new SelectList(Model.AssignableUsers, "Id", "UserName")'></select>
+                <select asp-for="Issue.AssignedUserId" class="form-select">
+                    <option value="">Unassigned</option>
+                    @foreach(var user in Model.AssignableUsers)
+                    {
+                        <option value="@user.Id">@user.UserName</option>
+                    }
+                </select>
                 <span asp-validation-for="Issue.AssignedUserId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Issue.Status" class="control-label"></label>
-                <select asp-for="Issue.Status" class="form-control" asp-items="@new SelectList(IssueStatus.List)" ><</select>
+                <select asp-for="Issue.Status" class="form-select" asp-items="@new SelectList(IssueStatus.List)" ><</select>
                 <span asp-validation-for="Issue.Status" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="Issue.Priority" class="control-label"></label>
-                <select asp-for="Issue.Priority" class="form-control" asp-items="@new SelectList(IssuePriority.List)"></select>
+                <select asp-for="Issue.Priority" class="form-select" asp-items="@new SelectList(IssuePriority.List)"></select>
                 <span asp-validation-for="Issue.Priority" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Issue.Type" class="control-label"></label>
-                <select asp-for="Issue.Type" class="form-control" asp-items="@new SelectList(IssueType.List)"></select>
+                <select asp-for="Issue.Type" class="form-select" asp-items="@new SelectList(IssueType.List)"></select>
                 <span asp-validation-for="Issue.Type" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+            
+        
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a class="btn btn-primary" asp-controller="Project" asp-action="Details" asp-route-pid="@Model.Issue.ProjectId">Back to Project</a>
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-controller="Project" asp-action="Details" asp-route-pid="@Model.Issue.ProjectId">Back to List</a>
-</div>
+</form>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -6,7 +6,6 @@ namespace IssueTracker.ViewModels
     {
         public Project Project { get; set; }
         public string ProjectManagerId { get; set; }
-        public List<ApplicationUser> AssignableUsers { get; set; } = new List<ApplicationUser>();
         public IEnumerable<ApplicationUser> AssignableProjectManagers { get; set; }
 
     }

@@ -67,8 +67,9 @@ namespace IssueTracker.Controllers
             ViewBag.Project = project;
 
             CreateIssueViewModel model = new CreateIssueViewModel();
-            model.Project = project;
-            model.AssignableUsers = project.Users;
+            model.ProjectId = project.Id;
+            model.ProjectTitle = project.Title;
+
             return View(model);
         }
 
@@ -80,7 +81,7 @@ namespace IssueTracker.Controllers
             _context.SaveChanges();
 
             
-            return RedirectToAction("Index", new {pid = model.Issue.ProjectId});
+            return RedirectToAction("Details", "Project", new {pid = model.Issue.ProjectId});
         }
 
         public IActionResult Edit(int? id)
@@ -119,8 +120,11 @@ namespace IssueTracker.Controllers
         public IActionResult Details(int id)
         {
             var issue = _context.Issues.Find(id);
-            ViewBag.Project = issue.Project;
-            return View(issue);
+            IssueDetailsModelView model = new IssueDetailsModelView();
+            model.ProjectId = issue.ProjectId;
+            model.ProjectTitle = issue.Project.Title;
+            model.Issue = issue;
+            return View(model);
         }
 
         public async Task<IActionResult> MyIssues()

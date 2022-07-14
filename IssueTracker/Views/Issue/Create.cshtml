@@ -2,22 +2,23 @@
 @model CreateIssueViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Issue";
     var ownerClaimValues = User.Claims
         .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
         .Select(c => Int32.Parse(c.Value))
         .ToList();
 }
 
-<h1>Project: @Model.Project.Title</h1>
-
-<h4>Create Issue</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" asp-route-pid="@Model.Project.Id">
+<form asp-action="Create" asp-route-pid="@Model.ProjectId">
+    <div class="card">
+        <div class="card-header">
+            <h1>@Model.ProjectTitle</h1>
+            <div class="fs-3">Create Issue</div>
+        </div>
+        <div class="card-body">
+        
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Issue.ProjectId" value="@Model.Project.Id"/>
+            <input type="hidden" asp-for="Issue.ProjectId" value="@Model.ProjectId"/>
             <input type="hidden" asp-for="Issue.Status" value="@IssueStatus.TO_DO" />
             <div class="form-group">
                 <label asp-for="Issue.Title" class="control-label"></label>
@@ -26,16 +27,9 @@
             </div>
             <div class="form-group">
                 <label asp-for="Issue.Desc" class="control-label"></label>
-                <input asp-for="Issue.Desc" class="form-control" />
+                <textarea asp-for="Issue.Desc" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Issue.Desc" class="text-danger"></span>
-            </div>
-            @if(User.IsInRole(UserRoles.ADMIN) || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(Model.Project.Id)) {
-                <div class="form-group">
-                    <label asp-for="Issue.AssignedUserId" class="control-label"></label>
-                    <select asp-for="Issue.AssignedUserId" class="form-control" asp-items='@new SelectList(Model.AssignableUsers, "Id", "UserName")'></select>
-                    <span asp-validation-for="Issue.AssignedUserId" class="text-danger"></span>
-                </div>
-            }            
+            </div>          
             <div class="form-group">
                 <label asp-for="Issue.Priority" class="control-label"></label>
                 <select asp-for="Issue.Priority" class="form-control" asp-items="@ViewBag.PrioritySelectList"></select>
@@ -46,16 +40,14 @@
                 <select asp-for="Issue.Type" class="form-control" asp-items="@ViewBag.TypeSelectList"></select>
                 <span asp-validation-for="Issue.Type" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+       
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a class="btn btn-primary" asp-controller="Project" asp-action="Details" asp-route-pid="@Model.ProjectId">Back to Project</a>
+            <input type="submit" value="Create Issue" class="btn btn-primary" />
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+ </form>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

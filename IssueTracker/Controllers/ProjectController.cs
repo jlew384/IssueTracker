@@ -105,10 +105,7 @@ namespace IssueTracker.Controllers
         {
             ApplicationUser user = await _userManager.GetUserAsync(User);
             CreateProjectViewModel model = new CreateProjectViewModel();
-            model.AssignableUsers = _userManager.Users.Where(u => u.Id != user.Id).ToList();
             IList<ApplicationUser> admins = await _userManager.GetUsersInRoleAsync(UserRoles.ADMIN);
-            IList<ApplicationUser> projectManagers = await _userManager.GetUsersInRoleAsync(UserRoles.PROJ_MNGR);
-            model.AssignableProjectManagers = admins.Concat(projectManagers);
             return View(model);
         }
 
@@ -117,32 +114,21 @@ namespace IssueTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateProjectViewModel model)
         {            
-            for (int i = 0; i < model.AssignableUsers.Count; i++)
-            {
-                if(model.AssignableUsers[i].IsSelected)
-                {
-                    model.Project.Users.Add(await _userManager.FindByIdAsync(model.AssignableUsers[i].Id));
-                }
+            //for (int i = 0; i < model.AssignableUsers.Count; i++)
+            //{
+            //    if(model.AssignableUsers[i].IsSelected)
+            //    {
+            //        model.Project.Users.Add(await _userManager.FindByIdAsync(model.AssignableUsers[i].Id));
+            //    }
                 
-            }
-            ApplicationUser user = await _userManager.FindByIdAsync(model.ProjectManagerId);
-            ApplicationUser projectManager = await _userManager.FindByIdAsync(model.ProjectManagerId);
-
-            if(!model.Project.Users.Contains(user))
-            {
-                model.Project.Users.Add(user);
-            }
-
-            if (!model.Project.Users.Contains(user))
-            {
-                model.Project.Users.Add(projectManager);
-            }
-
+            //}
+            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
+            model.Project.Users.Add(currentUser);
             model.Project.DateCreated = DateTime.Now;
             _context.Projects.Add(model.Project);
             _context.SaveChanges();
-            await AddProjectOwnerClaim(user, model.Project.Id);
-            return RedirectToAction("Index");
+            await AddProjectOwnerClaim(currentUser, model.Project.Id);
+            return RedirectToAction("ManageUsersInProject", "Administration", new {pid = model.Project.Id } );
         }
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
@@ -166,19 +152,6 @@ namespace IssueTracker.Controllers
             model.Title = project.Title;
             model.Desc = project.Desc;
 
-            foreach (ApplicationUser assignableUser in _userManager.Users)
-            {
-                if(assignableUser.Id != user.Id)
-                {
-                    if(project.Users.Contains(assignableUser))
-                    {
-                        assignableUser.IsSelected = true;
-                    }
-
-                    model.AssignableUsers.Add(assignableUser);
-                }                
-            }
-
             return View(model);
         }
 
@@ -195,19 +168,6 @@ namespace IssueTracker.Controllers
 
             project.Title = model.Title;
             project.Desc = model.Desc;
-            foreach (var partialUser in model.AssignableUsers)
-            {
-                var user  = await _userManager.FindByIdAsync(partialUser.Id);
-                if(partialUser.IsSelected && !project.Users.Contains(user))
-                {
-                    project.Users.Add(user);
-                }
-                else if(!partialUser.IsSelected)
-                {
-                    project.Users.Remove(user);
-                }
-                
-            }
 
             project.DateModified = DateTime.Now;
             _context.Projects.Update(project);
@@ -236,15 +196,13 @@ namespace IssueTracker.Controllers
                 return NotFound();
             }
 
-            await RemoveProjectOwnerClaim(pid);
-
 
             return View(project);
         }
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
-        public IActionResult Delete(Project model)
+        public async Task<IActionResult> Delete(Project model)
         {
             if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(model.Id))
 
@@ -254,6 +212,7 @@ namespace IssueTracker.Controllers
 
             _context.Projects.Remove(model);
             _context.SaveChanges();
+            await RemoveProjectOwnerClaim(model.Id);
             return RedirectToAction("Index");
         }
 

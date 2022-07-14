@@ -111,8 +111,7 @@
                             @if(User.IsInRole(UserRoles.ADMIN) && Model.Type == UserListViewComponent.Type.DEFAULT)
                             {
                                 <span>
-                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Edit"><i class="bi bi-pencil-fill"></i></a> @*change links*@
-                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Delete"><i class="bi bi-trash2-fill"></i></a> @*change links*@
+                                    <a class="m-1 text-muted" asp-controller="Administration" asp-action="EditUserRole" asp-route-userId="@user.Id"><i class="bi bi-pencil-fill"></i></a>
                                 </span>
                     
                             }  

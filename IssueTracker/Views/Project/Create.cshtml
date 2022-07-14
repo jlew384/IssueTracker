@@ -1,16 +1,15 @@
 ﻿@model CreateProjectViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Project";
 }
-
-<h1>Create</h1>
-
-<h4>Project</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+<form asp-action="Create">
+    <div class="card">
+        <div class="card-header">
+            <span class="fs-2">Create Project</span>
+        </div>
+        <div class="card-body">
+        
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Project.Title" class="control-label"></label>
@@ -19,36 +18,18 @@
             </div>
             <div class="form-group">
                 <label asp-for="Project.Desc" class="control-label"></label>
-                <input asp-for="Project.Desc" class="form-control" />
+                <textarea asp-for="Project.Desc" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Project.Desc" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ProjectManagerId" class="control-label"></label>
-                <select asp-for="ProjectManagerId" class="form-control" asp-items='@new SelectList(Model.AssignableProjectManagers, "Id", "UserName")' ><</select>
-                <span asp-validation-for="ProjectManagerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <h6>Assign users to the project:</h6>
-                @for (var i = 0; i < Model.AssignableUsers.Count; i++)
-                {
-                    <div class="form-check">
-                        <input type="checkbox" asp-for="@Model.AssignableUsers[i].IsSelected">
-                        <label asp-for="@Model.AssignableUsers[i].IsSelected">@Model.AssignableUsers[i].UserName</label>
-                        <input type="hidden" asp-for="@Model.AssignableUsers[i].Id">
-                    </div>
-                    
-                }
-            </div>
-      
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a class="btn btn-primary" asp-action="Index">Back to List</a>
+            <input type="submit" value="Create Project" class="btn btn-primary" />        
+        </div>
     </div>
-</div>
-
+</form>
 <div>
-    <a asp-action="Index">Back to List</a>
+    
 </div>
 
 @section Scripts {
