@@ -4,6 +4,7 @@
     ViewData["Title"] = "Create Project";
 }
 <form asp-action="Create">
+    
     <div class="card">
         <div class="card-header">
             <span class="fs-2">Create Project</span>
@@ -23,15 +24,11 @@
             </div>
         </div>
         <div class="card-footer d-flex justify-content-between">
-            <a class="btn btn-primary" asp-action="Index">Back to List</a>
+            <a class="btn btn-primary" href="@Model.RefererUrl">Cancel</a>
             <input type="submit" value="Create Project" class="btn btn-primary" />        
         </div>
     </div>
 </form>
-<div>
-    
-</div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

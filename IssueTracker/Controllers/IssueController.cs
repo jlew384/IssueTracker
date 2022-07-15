@@ -89,6 +89,9 @@ namespace IssueTracker.Controllers
             EditIssueViewModel model = new EditIssueViewModel();
             model.Issue = _context.Issues.Find(id);
             model.AssignableUsers = model.Issue.Project.Users;
+
+
+            model.RefererUrl = Request.Headers["Referer"].ToString();
             return View(model);
         }
 
@@ -98,23 +101,23 @@ namespace IssueTracker.Controllers
             model.Issue.Modified = DateTime.Now;
             _context.Issues.Update(model.Issue);
             _context.SaveChanges();
-            return RedirectToAction("Details", "Project", new {pid = model.Issue.ProjectId});
+            return Redirect(model.RefererUrl);
         }
 
         public IActionResult Delete(int id)
         {
-            
-            var issue = _context.Issues.Find(id);
-            ViewBag.Project = issue.Project;
-            return View(issue);
+            return View(new DeleteIssueModelView { 
+                Issue = _context.Issues.Find(id),
+                RefererUrl = Request.Headers["Referer"].ToString() 
+            });
         }
 
         [HttpPost]
-        public IActionResult Delete(Issue obj, int pid)
+        public IActionResult Delete(DeleteIssueModelView model)
         {
-            _context.Remove(obj);
+            _context.Issues.Remove(model.Issue);
             _context.SaveChanges();
-            return RedirectToAction("Index", new {pid = pid});
+            return Redirect(model.RefererUrl);
         }
 
         public IActionResult Details(int id)
@@ -124,6 +127,7 @@ namespace IssueTracker.Controllers
             model.ProjectId = issue.ProjectId;
             model.ProjectTitle = issue.Project.Title;
             model.Issue = issue;
+            model.RefererUrl = Request.Headers["Referer"].ToString();
             return View(model);
         }
 
@@ -132,9 +136,7 @@ namespace IssueTracker.Controllers
             ApplicationUser user = await _userManager.GetUserAsync(User);
 
             MyIssuesViewModel model = new MyIssuesViewModel { UserId = user.Id };
-            //model.IssuesCreated = _context.Issues.Where(issue => issue.CreatorUserId == user.Id && issue.Status != IssueStatus.DONE);
-            //model.IssuesAssigned = _context.Issues.Where(issue => issue.AssignedUserId == user.Id && issue.CreatorUserId != user.Id && issue.Status != IssueStatus.DONE);
-
+            
             return View(model);
         }
     }

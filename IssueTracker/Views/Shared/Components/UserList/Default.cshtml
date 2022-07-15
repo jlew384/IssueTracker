@@ -20,12 +20,12 @@
         {
             case UserListViewComponent.Type.IN_PROJECT:
                 <div class="fs-2">            
-                    Users In Project
+                    Project Members
                 </div>
                 break;
             case UserListViewComponent.Type.NOT_IN_PROJECT:
                 <div class="fs-2">            
-                    Users Not In Project
+                    Available Users
                 </div>
                 break;
             default:
@@ -82,44 +82,51 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach(var user in Model.Users)
+                @if(Model.Users.Count() > 0)
                 {
-                    <tr>
-                        @if(Model.Type == UserListViewComponent.Type.NOT_IN_PROJECT)
-                        {
-                            <td>
-                                <a role="button" onclick="addUserToProject('@user.Id')"><i class="bi bi-plus-square-fill text-muted"></i></a>
-                            </td>
-                        }
-                        @if(Model.Type == UserListViewComponent.Type.IN_PROJECT)
-                        {
-                            <td>
-                                <a role="button" onclick="removeUserFromProject('@user.Id')"><i class="bi bi-dash-square-fill text-muted"></i></a>
-                            </td>
-                        }
-                        <td>
-                            @Html.DisplayFor(issueItem => user.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(issueItem => user.Email)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(issueItem => user.Roles)
-                        </td>
-                        <td>
-                            
-                            @if(User.IsInRole(UserRoles.ADMIN) && Model.Type == UserListViewComponent.Type.DEFAULT)
+                    foreach(var user in Model.Users)
+                    {
+                        <tr>
+                            @if(Model.Type == UserListViewComponent.Type.NOT_IN_PROJECT)
                             {
-                                <span>
-                                    <a class="m-1 text-muted" asp-controller="Administration" asp-action="EditUserRole" asp-route-userId="@user.Id"><i class="bi bi-pencil-fill"></i></a>
-                                </span>
+                                <td>
+                                    <a role="button" onclick="addUserToProject('@user.Id')"><i class="bi bi-plus-square-fill text-muted"></i></a>
+                                </td>
+                            }
+                            @if(Model.Type == UserListViewComponent.Type.IN_PROJECT)
+                            {
+                                <td>
+                                    <a role="button" onclick="removeUserFromProject('@user.Id')"><i class="bi bi-dash-square-fill text-muted"></i></a>
+                                </td>
+                            }
+                            <td>
+                                @Html.DisplayFor(issueItem => user.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(issueItem => user.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(issueItem => user.Roles)
+                            </td>
+                            <td>
+                            
+                                @if(User.IsInRole(UserRoles.ADMIN) && Model.Type == UserListViewComponent.Type.DEFAULT)
+                                {
+                                    <span>
+                                        <a class="m-1 text-muted" asp-controller="Administration" asp-action="EditUserRole" asp-route-userId="@user.Id"><i class="bi bi-pencil-fill"></i></a>
+                                    </span>
                     
-                            }  
-                        </td>
-                    </tr>
-                }
+                                }  
+                            </td>
+                        </tr>
+                    }
+                }                
             </tbody>
         </table>
+        @if(Model.Users.Count() == 0)
+        {
+            <p class="text-center">There are no users to display.</p>
+        }
     </div>
     <div class="card-footer d-flex flex-row justify-content-between">
         <div>

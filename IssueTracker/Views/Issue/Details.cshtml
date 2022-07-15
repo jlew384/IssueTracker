@@ -72,8 +72,8 @@
         </dl>
     </div>
     <div class="card-footer d-flex justify-content-between">
-        <a class="btn btn-primary" asp-action="Index" asp-route-pid="@Model.ProjectId">Back to List</a>
-        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Issue.Id" asp-route-pid="@Model.ProjectId">Edit</a>        
+        <a class="btn btn-primary" href="@Model.RefererUrl">Back</a>
+       @* <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Issue.Id" asp-route-pid="@Model.ProjectId">Edit</a>       *@ 
     </div>
 </div>
 

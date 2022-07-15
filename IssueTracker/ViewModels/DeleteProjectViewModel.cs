@@ -2,7 +2,7 @@
 
 namespace IssueTracker.ViewModels
 {
-    public class CreateProjectViewModel
+    public class DeleteProjectViewModel
     {
         public Project Project { get; set; }
         public string RefererUrl { get; set; }

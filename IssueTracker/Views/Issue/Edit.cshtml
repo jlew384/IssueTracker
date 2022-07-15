@@ -2,6 +2,11 @@
 
 @{
     ViewData["Title"] = "Edit Issue";
+    var ownerClaimValues = User.Claims
+         .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+         .Select(c => Int32.Parse(c.Value))
+         .ToList();
+
 }
 <form asp-controller="Issue" asp-action="Edit" asp-route-pid="@Model.Issue.ProjectId">
     <div class="card">
@@ -27,17 +32,21 @@
                 <textarea asp-for="Issue.Desc" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Issue.Desc" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Issue.AssignedUserId" class="control-label"></label>
-                <select asp-for="Issue.AssignedUserId" class="form-select">
-                    <option value="">Unassigned</option>
-                    @foreach(var user in Model.AssignableUsers)
-                    {
-                        <option value="@user.Id">@user.UserName</option>
-                    }
-                </select>
-                <span asp-validation-for="Issue.AssignedUserId" class="text-danger"></span>
-            </div>
+            @if(User.IsInRole(UserRoles.ADMIN) || User.IsInRole(UserRoles.PROJ_MNGR))
+            {
+                <div class="form-group">
+                    <label asp-for="Issue.AssignedUserId" class="control-label"></label>
+                    <select asp-for="Issue.AssignedUserId" class="form-select">
+                        <option value="">Unassigned</option>
+                        @foreach(var user in Model.AssignableUsers)
+                        {
+                            <option value="@user.Id">@user.UserName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Issue.AssignedUserId" class="text-danger"></span>
+                </div>
+            }
+            
             <div class="form-group">
                 <label asp-for="Issue.Status" class="control-label"></label>
                 <select asp-for="Issue.Status" class="form-select" asp-items="@new SelectList(IssueStatus.List)" ><</select>
@@ -58,7 +67,8 @@
         
         </div>
         <div class="card-footer d-flex justify-content-between">
-            <a class="btn btn-primary" asp-controller="Project" asp-action="Details" asp-route-pid="@Model.Issue.ProjectId">Back to Project</a>
+            <a class="btn btn-primary" href="@Model.RefererUrl">Cancel</a>
+            <input hidden asp-for="RefererUrl" />
             <input type="submit" value="Save" class="btn btn-primary" />
         </div>
     </div>

@@ -8,5 +8,7 @@ namespace IssueTracker.ViewModels
         public string ProjectTitle { get; set; }
 
         public Issue Issue { get; set; }
+
+        public string RefererUrl { get; set; }
     }
 }

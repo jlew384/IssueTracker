@@ -58,33 +58,40 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach(var project in Model.Projects)
+                @if(Model.Projects.Count() > 0)
                 {
-                    <tr onclick="location.href = '@Url.Action("Details", "Project", new { pid = project.Id })'">
-                        <td>
-                            @Html.DisplayFor(projectItem => project.Title)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(projectItem => project.DateCreated)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(projectItem => project.DateModified)
-                        </td>
-                        <td>
+                    @foreach(var project in Model.Projects)
+                    {
+                        <tr onclick="location.href = '@Url.Action("Details", "Project", new { pid = project.Id })'">
+                            <td>
+                                @Html.DisplayFor(projectItem => project.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(projectItem => project.DateCreated)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(projectItem => project.DateModified)
+                            </td>
+                            <td>
                             
-                            @if(User.IsInRole(UserRoles.ADMIN) || (User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(project.Id)))
-                            {
-                                <span>
-                                    <a class="m-1 text-muted" asp-controller="Project" asp-action="Edit" asp-route-pid="@project.Id"><i class="bi bi-pencil-fill"></i></a>
-                                    <a class="m-1 text-muted" asp-controller="Project" asp-action="Delete" asp-route-pid="@project.Id"><i class="bi bi-trash2-fill"></i></a>
-                                </span>
+                                @if(User.IsInRole(UserRoles.ADMIN) || (User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(project.Id)))
+                                {
+                                    <span>
+                                        <a class="m-1 text-muted" asp-controller="Project" asp-action="Edit" asp-route-pid="@project.Id"><i class="bi bi-pencil-fill"></i></a>
+                                        <a class="m-1 text-muted" asp-controller="Project" asp-action="Delete" asp-route-pid="@project.Id"><i class="bi bi-trash2-fill"></i></a>
+                                    </span>
                     
-                            }  
-                        </td>
-                    </tr>
-                }
+                                }  
+                            </td>
+                        </tr>
+                    }
+                }                
             </tbody>
         </table>
+        @if(Model.Projects.Count() == 0)
+        {
+            <p class="text-center">There are no projects to display.</p>
+        }
     </div>
     <div class="card-footer d-flex flex-row justify-content-between">
         <div>

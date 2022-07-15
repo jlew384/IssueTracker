@@ -25,7 +25,8 @@
             </div>        
         </div>
         <div class="card-footer d-flex justify-content-between">
-            <a class="btn btn-primary" asp-controller="Project" asp-action="Details" asp-route-pid="@Model.Id">Back to Project</a>
+            <a class="btn btn-primary" href="@Model.RefererUrl">Cancel</a>
+            <input hidden asp-for="RefererUrl" />
             <input type="submit" value="Save" class="btn btn-primary" />
         </div>
     </div>

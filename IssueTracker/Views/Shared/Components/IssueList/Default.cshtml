@@ -118,42 +118,49 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach(var issue in Model.Issues)
+                @if(Model.Issues.Count > 0)
                 {
-                    <tr onclick="location.href = '@Url.Action("Details", "Issue", new { id = issue.Id })'">
-                        <td>
-                            @Html.DisplayFor(issueItem => issue.Title)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(issueItem => issue.Status)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(issueItem => issue.Priority)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(issueItem => issue.Type)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(issueItem => issue.Created)
-                        </td>
-                        <td>
+                    foreach(var issue in Model.Issues)
+                    {
+                        <tr onclick="location.href = '@Url.Action("Details", "Issue", new { id = issue.Id })'">
+                            <td>
+                                @Html.DisplayFor(issueItem => issue.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(issueItem => issue.Status)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(issueItem => issue.Priority)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(issueItem => issue.Type)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(issueItem => issue.Created)
+                            </td>
+                            <td>
                             
-                            @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
-                            {
-                                <span>
-                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Edit" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-pencil-fill"></i></a>
-                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Delete" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-trash2-fill"></i></a>
-                                </span>
+                                @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+                                {
+                                    <span>
+                                        <a class="m-1 text-muted" asp-controller="Issue" asp-action="Edit" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-pencil-fill"></i></a>
+                                        <a class="m-1 text-muted" asp-controller="Issue" asp-action="Delete" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-trash2-fill"></i></a>
+                                    </span>
                     
-                            }  
-                        </td>
-                    </tr>
-                }
+                                }  
+                            </td>
+                        </tr>
+                    }
+                }                
             </tbody>
         </table>
+        @if(Model.Issues.Count == 0)
+        {
+            <p class="text-center">There are no issues to display.</p>
+        }
     </div>
     <div class="card-footer d-flex flex-row justify-content-between">
         <div>

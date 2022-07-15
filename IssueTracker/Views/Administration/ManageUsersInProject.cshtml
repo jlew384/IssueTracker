@@ -4,14 +4,19 @@
     ViewData["Title"] = Model.Title + " Users";
     string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 }
-
-<div id="in-project-users-container">
+<div class="text-center">
+    <h1>Project: @Model.Title</h1>
 </div>
 
-<div id="not-in-project-users-container">
+<div id="in-project-users-container" class="m-3">
 </div>
 
-<a class="btn btn-primary" asp-controller="Project" asp-action="Details" asp-route-pid="@Model.Id">Done</a>
+<div id="not-in-project-users-container" class="m-3">
+</div>
+
+<div class="text-center m-4">
+    <a class="btn btn-primary w-25" asp-controller="Project" asp-action="Details" asp-route-pid="@Model.Id">Done</a>
+</div>
 
 @section scripts {
     <script>

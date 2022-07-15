@@ -1,44 +1,45 @@
-﻿@model IssueTracker.Models.Project
+﻿@model DeleteProjectViewModel
 
 @{
     ViewData["Title"] = "Delete Project";
 }
 <div class="card">
     <div class="card-header">
-        <h4>Are you sure you want to delete the "@Model.Title" project?</h4>
+        <h4>Are you sure you want to delete the "@Model.Project.Title" project?</h4>
     </div>
     <div class="card-body">
         <dl class="row">
             <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.DisplayNameFor(model => model.Project.Title)
             </dt>
             <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Title)
+                @Html.DisplayFor(model => model.Project.Title)
             </dd>
             <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Desc)
+                @Html.DisplayNameFor(model => model.Project.Desc)
             </dt>
             <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Desc)
+                @Html.DisplayFor(model => model.Project.Desc)
             </dd>
             <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.DateCreated)
+                @Html.DisplayNameFor(model => model.Project.DateCreated)
             </dt>
             <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.DateCreated)
+                @Html.DisplayFor(model => model.Project.DateCreated)
             </dd>
             <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.DateModified)
+                @Html.DisplayNameFor(model => model.Project.DateModified)
             </dt>
             <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.DateModified)
+                @Html.DisplayFor(model => model.Project.DateModified)
             </dd>
         </dl>
     </div>
     <div class="card-footer">
         <form class="d-flex justify-content-between" asp-action="Delete">
-            <a class="btn btn-primary" asp-action="Index">Back to List</a>
-            <input type="hidden" asp-for="Id" />
+            <a class="btn btn-primary" href="@Model.RefererUrl">Cancel</a>
+            <input type="hidden" asp-for="RefererUrl" />
+            <input type="hidden" asp-for="Project.Id" />
             <input type="submit" value="Delete Project" class="btn btn-danger" />
             
         </form>

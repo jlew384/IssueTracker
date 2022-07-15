@@ -103,9 +103,8 @@ namespace IssueTracker.Controllers
         [HttpGet]        
         public async Task<IActionResult> Create()
         {
-            ApplicationUser user = await _userManager.GetUserAsync(User);
             CreateProjectViewModel model = new CreateProjectViewModel();
-            IList<ApplicationUser> admins = await _userManager.GetUsersInRoleAsync(UserRoles.ADMIN);
+            model.RefererUrl = Request.Headers["Referer"].ToString();
             return View(model);
         }
 
@@ -113,15 +112,7 @@ namespace IssueTracker.Controllers
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
         public async Task<IActionResult> Create(CreateProjectViewModel model)
-        {            
-            //for (int i = 0; i < model.AssignableUsers.Count; i++)
-            //{
-            //    if(model.AssignableUsers[i].IsSelected)
-            //    {
-            //        model.Project.Users.Add(await _userManager.FindByIdAsync(model.AssignableUsers[i].Id));
-            //    }
-                
-            //}
+        {
             ApplicationUser currentUser = await _userManager.GetUserAsync(User);
             model.Project.Users.Add(currentUser);
             model.Project.DateCreated = DateTime.Now;
@@ -146,12 +137,11 @@ namespace IssueTracker.Controllers
                 return NotFound();
             }
 
-            ApplicationUser user = await _userManager.GetUserAsync(User);
             EditProjectViewModel model = new EditProjectViewModel();
             model.Id = project.Id;
             model.Title = project.Title;
             model.Desc = project.Desc;
-
+            model.RefererUrl = Request.Headers["Referer"].ToString();
             return View(model);
         }
 
@@ -172,12 +162,12 @@ namespace IssueTracker.Controllers
             project.DateModified = DateTime.Now;
             _context.Projects.Update(project);
             _context.SaveChanges();
-            return RedirectToAction("Index");
+            return Redirect(model.RefererUrl);
         }
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpGet]
-        public async Task<IActionResult> Delete(int? pid)
+        public async Task<IActionResult> Delete(int? pid, string? refererUrl)
         {
             if (pid == null || pid == 0)
             {
@@ -195,25 +185,28 @@ namespace IssueTracker.Controllers
             {
                 return NotFound();
             }
-
-
-            return View(project);
+            
+            return View(new DeleteProjectViewModel
+            {
+                Project = project,
+                RefererUrl = Request.Headers["Referer"].ToString()
+            });
         }
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
-        public async Task<IActionResult> Delete(Project model)
+        public async Task<IActionResult> Delete(DeleteProjectViewModel model)
         {
-            if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(model.Id))
+            if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(model.Project.Id))
 
             {
                 return NotFound();
             }
 
-            _context.Projects.Remove(model);
+            _context.Projects.Remove(model.Project);
             _context.SaveChanges();
-            await RemoveProjectOwnerClaim(model.Id);
-            return RedirectToAction("Index");
+            await RemoveProjectOwnerClaim(model.Project.Id);
+            return Redirect(model.RefererUrl);
         }
 
 
@@ -233,7 +226,11 @@ namespace IssueTracker.Controllers
 
             ApplicationUser user = await _userManager.GetUserAsync(User);
 
-            return View(new ProjectIssuesViewModel { Project = project, UserId = user.Id });
+            return View(new ProjectIssuesViewModel { 
+                Project = project, 
+                UserId = user.Id, 
+                RefererUrl = Request.Headers["Referer"].ToString() 
+            });
         }
     }
 }
