@@ -2,14 +2,35 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
+@{
+    string role;
+
+    if(User.IsInRole(UserRoles.ADMIN))
+    {
+        role = UserRoles.ADMIN;
+    }
+    else if(User.IsInRole(UserRoles.PROJ_MNGR)) {
+        role = UserRoles.PROJ_MNGR;
+    }
+    else if(User.IsInRole(UserRoles.DEV)) {
+        role = UserRoles.DEV;
+    }
+    else {
+        role = UserRoles.SUB;
+    }
+}
+
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@role: @User.Identity?.Name</a>
+}
+
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">User: @User.Identity?.Name</a>
-    </li>
-    <li class="nav-item">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Project", new { area = "" })">
+        <form  class="" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Project", new { area = "" })">
             <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
         </form>
     </li>

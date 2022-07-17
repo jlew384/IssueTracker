@@ -3,8 +3,9 @@
 @model UserListViewModel
 
 @{
-    string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-    var ownerClaimValues = User.Claims
+    var user = User as ClaimsPrincipal;
+    string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+    var ownerClaimValues = user.Claims
          .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
          .Select(c => Int32.Parse(c.Value))
          .ToList();
@@ -84,36 +85,36 @@
             <tbody>
                 @if(Model.Users.Count() > 0)
                 {
-                    foreach(var user in Model.Users)
+                    foreach(var userItem in Model.Users)
                     {
                         <tr>
                             @if(Model.Type == UserListViewComponent.Type.NOT_IN_PROJECT)
                             {
                                 <td>
-                                    <a role="button" onclick="addUserToProject('@user.Id')"><i class="bi bi-plus-square-fill text-muted"></i></a>
+                                    <a role="button" onclick="addUserToProject('@userItem.Id')"><i class="bi bi-plus-square-fill text-muted"></i></a>
                                 </td>
                             }
                             @if(Model.Type == UserListViewComponent.Type.IN_PROJECT)
                             {
                                 <td>
-                                    <a role="button" onclick="removeUserFromProject('@user.Id')"><i class="bi bi-dash-square-fill text-muted"></i></a>
+                                    <a role="button" onclick="removeUserFromProject('@userItem.Id')"><i class="bi bi-dash-square-fill text-muted"></i></a>
                                 </td>
                             }
                             <td>
-                                @Html.DisplayFor(issueItem => user.Name)
+                                @Html.DisplayFor(issueItem => userItem.Name)
                             </td>
                             <td>
-                                @Html.DisplayFor(issueItem => user.Email)
+                                @Html.DisplayFor(issueItem => userItem.Email)
                             </td>
                             <td>
-                                @Html.DisplayFor(issueItem => user.Roles)
+                                @Html.DisplayFor(issueItem => userItem.Roles)
                             </td>
                             <td>
                             
                                 @if(User.IsInRole(UserRoles.ADMIN) && Model.Type == UserListViewComponent.Type.DEFAULT)
                                 {
                                     <span>
-                                        <a class="m-1 text-muted" asp-controller="Administration" asp-action="EditUserRole" asp-route-userId="@user.Id"><i class="bi bi-pencil-fill"></i></a>
+                                        <a class="m-1 text-muted" asp-controller="Administration" asp-action="EditUserRole" asp-route-userId="@userItem.Id"><i class="bi bi-pencil-fill"></i></a>
                                     </span>
                     
                                 }  

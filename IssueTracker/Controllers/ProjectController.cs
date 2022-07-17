@@ -51,12 +51,13 @@ namespace IssueTracker.Controllers
             return User.HasClaim(x => x.Type == UserClaimTypes.PROJECT_OWNER && x.Value == projectId.ToString());
         }
 
-
+        [HttpGet]
         public IActionResult Index()
         {
             return View(new MyProjectsViewModel { UserId = _userManager.GetUserAsync(User).Result.Id});
         }
 
+        [HttpGet]
         public IActionResult ProjectList(string type, string sortOrder, string searchString, int? pageIndex, string userId)
         {
             return ViewComponent("ProjectList",

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace IssueTracker.Controllers
 {
-    [Authorize(Roles = UserRoles.ADMIN)]
+    [Authorize]
     public class AdministrationController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,6 +23,7 @@ namespace IssueTracker.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
+
 
         public IActionResult UserList(string type, string sortOrder, string searchString, int? pageIndex, string roleFilter, int? pid, string userId)
         {
@@ -39,6 +40,7 @@ namespace IssueTracker.Controllers
                 });
         }
 
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -55,6 +57,10 @@ namespace IssueTracker.Controllers
             ApplicationUser user1 = await _userManager.GetUserAsync(User);
             return View(user1);
         }
+
+
+        [Authorize(Roles = UserRoles.PROJ_MNGR + "," + UserRoles.ADMIN)]
+        [HttpGet]
         public IActionResult ManageUsersInProject(int pid)
         {
             Project project = _context.Projects
@@ -64,7 +70,8 @@ namespace IssueTracker.Controllers
             return View(project);
         }
 
-
+        [IgnoreAntiforgeryToken]
+        [Authorize(Roles = UserRoles.PROJ_MNGR + "," + UserRoles.ADMIN)]
         [HttpPost]
         public async Task<IActionResult> RemoveUserFromProject(string userId, int pid)
         {
@@ -84,6 +91,8 @@ namespace IssueTracker.Controllers
             
         }
 
+        [IgnoreAntiforgeryToken]
+        [Authorize(Roles = UserRoles.PROJ_MNGR + "," + UserRoles.ADMIN)]
         [HttpPost]
         public async Task<IActionResult> AddUserToProject(string userId, int pid)
         {
@@ -99,7 +108,7 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpGet]
         public async Task<IActionResult> EditUserRole(string userId)
         {
@@ -123,6 +132,7 @@ namespace IssueTracker.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpPost]
         public async Task<IActionResult> EditUserRole(EditUserRoleViewModel model)
         {
@@ -146,15 +156,14 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Index");
         }
 
-
-
-
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpGet]
         public IActionResult CreateRole()
         {
             return View();
         }
 
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpPost]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
         {
@@ -180,6 +189,7 @@ namespace IssueTracker.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpGet]
         public IActionResult ListRoles()
         {
@@ -187,6 +197,7 @@ namespace IssueTracker.Controllers
             return View(roles);
         }
 
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpGet]
         public async Task<IActionResult> EditRole(string id)
         {
@@ -216,6 +227,7 @@ namespace IssueTracker.Controllers
 
         }
 
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpPost]
         public async Task<IActionResult> EditRole(EditRoleViewModel model)
         {
@@ -246,6 +258,7 @@ namespace IssueTracker.Controllers
 
         }
 
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpGet]
         public async Task<IActionResult> EditUsersInRole(string roleId)
         {
@@ -282,6 +295,7 @@ namespace IssueTracker.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpPost]
         public async Task<IActionResult> EditUsersInRole(List<UserRoleViewModel> model, string roleId)
         {

@@ -2,8 +2,9 @@
 @model IssueListViewModel
 
 @{
-    string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-    var ownerClaimValues = User.Claims
+    var user = User as ClaimsPrincipal;
+    string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+    var ownerClaimValues = user.Claims
          .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
          .Select(c => Int32.Parse(c.Value))
          .ToList();

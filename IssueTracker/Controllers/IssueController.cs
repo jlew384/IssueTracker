@@ -1,4 +1,5 @@
-﻿using IssueTracker.Constants;
+﻿using IssueTracker.Authorization;
+using IssueTracker.Constants;
 using IssueTracker.Data;
 using IssueTracker.Models;
 using IssueTracker.ViewModels;
@@ -38,7 +39,7 @@ namespace IssueTracker.Controllers
                 });
         }
 
-
+        [HttpGet]
         public IActionResult Index(int? pid)
         {
          
@@ -84,13 +85,14 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Details", "Project", new {pid = model.Issue.ProjectId});
         }
 
-        public IActionResult Edit(int? id)
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
         {
+
             EditIssueViewModel model = new EditIssueViewModel();
             model.Issue = _context.Issues.Find(id);
-            model.AssignableUsers = model.Issue.Project.Users;
-
-
+            var submitters = await _userManager.GetUsersInRoleAsync(UserRoles.SUB);
+            model.AssignableUsers = model.Issue.Project.Users.Except(submitters);
             model.RefererUrl = Request.Headers["Referer"].ToString();
             return View(model);
         }
@@ -104,6 +106,7 @@ namespace IssueTracker.Controllers
             return Redirect(model.RefererUrl);
         }
 
+        [HttpGet]
         public IActionResult Delete(int id)
         {
             return View(new DeleteIssueModelView { 
@@ -120,6 +123,7 @@ namespace IssueTracker.Controllers
             return Redirect(model.RefererUrl);
         }
 
+        [HttpGet]
         public IActionResult Details(int id)
         {
             var issue = _context.Issues.Find(id);
@@ -131,6 +135,7 @@ namespace IssueTracker.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public async Task<IActionResult> MyIssues()
         {
             ApplicationUser user = await _userManager.GetUserAsync(User);

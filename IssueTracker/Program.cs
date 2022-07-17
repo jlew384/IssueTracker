@@ -1,6 +1,7 @@
 using IssueTracker.Data;
 using IssueTracker.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,7 +24,10 @@ namespace IssueTracker
                 })
                 .AddRoles <IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(option =>
+            {
+                option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
             builder.Services.AddRazorPages();
 
             var app = builder.Build();
