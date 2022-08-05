@@ -1,6 +1,6 @@
-﻿using IssueTracker.Authorization;
-using IssueTracker.Constants;
+﻿using IssueTracker.Constants;
 using IssueTracker.Data;
+using IssueTracker.Helpers;
 using IssueTracker.Models;
 using IssueTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -116,7 +116,6 @@ namespace IssueTracker.Controllers
         {
             ApplicationUser currentUser = await _userManager.GetUserAsync(User);
             model.Project.Users.Add(currentUser);
-            model.Project.DateCreated = DateTime.Now;
             _context.Projects.Add(model.Project);
             _context.SaveChanges();
             await AddProjectOwnerClaim(currentUser, model.Project.Id);
@@ -160,7 +159,7 @@ namespace IssueTracker.Controllers
             project.Title = model.Title;
             project.Desc = model.Desc;
 
-            project.DateModified = DateTime.Now;
+            project.DateModified = DateTime.UtcNow;
             _context.Projects.Update(project);
             _context.SaveChanges();
             return Redirect(model.RefererUrl);

@@ -1,10 +1,12 @@
-﻿using IssueTracker.Authorization;
-using IssueTracker.Constants;
+﻿using IssueTracker.Constants;
 using IssueTracker.Data;
+using IssueTracker.Helpers;
 using IssueTracker.Models;
 using IssueTracker.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+
 namespace IssueTracker.Components
 {
     public class UserListViewComponent : ViewComponent
@@ -36,7 +38,6 @@ namespace IssueTracker.Components
             users = Search(users, searchString);
             users = Sort(users, sortOrder);
 
-
             PaginatedList<UserViewModel> paginatedList = new PaginatedList<UserViewModel>(users, users.Count, pageIndex ?? 1, PAGE_SIZE);
 
 
@@ -58,7 +59,7 @@ namespace IssueTracker.Components
             if (!String.IsNullOrEmpty(roleFilter))
             {
 
-                return users.Where(x => x.Roles.Contains(roleFilter)).ToList();
+                return users.Where(x => x.Role.Contains(roleFilter)).ToList();
             }
             else
             {
@@ -66,45 +67,78 @@ namespace IssueTracker.Components
             }
 
         }
-
-
         private async Task<List<UserViewModel>> InitializeUsersAsync(string type, string userId, int? pid)
         {
+            List<UserViewModel> usersList = null;
             IQueryable<ApplicationUser> users;
             switch (type)
             {
                 case Type.IN_PROJECT:
-                    users = _context.Projects
+                    usersList = _context.Projects
                         .Where(x => x.Id == pid)
                         .Select(x => x.Users)
-                        .SelectMany(x => x);
+                        .SelectMany(x => x)
+                        .Join(_context.UserRoles, u => u.Id, ur => ur.UserId, (u, ur) => new { u, ur})
+                        .Join(_context.Roles, ur => ur.ur.RoleId, r => r.Id, (ur, r) => new { ur, r })
+                        .Select(c => new UserViewModel()
+                        {
+                            Id = c.ur.u.Id,
+                            Name = c.ur.u.UserName,
+                            Email = c.ur.u.Email,
+                            Role = c.r.Name
+                        }).ToList().GroupBy(uv => new { uv.Id, uv.Name, uv.Email }).Select(r => new UserViewModel()
+                        {
+                            Id = r.Key.Id,
+                            Name = r.Key.Name,
+                            Email = r.Key.Email,
+                            Role = string.Join(",", r.Select(c => c.Role).ToArray())
+                        }).ToList();
                     break;
                 case Type.NOT_IN_PROJECT:
-                    users = _context.Projects
+                    users= _context.Projects
                         .Where(x => x.Id == pid)
                         .Select(x => x.Users)
                         .SelectMany(x => x);
 
-                    users = _userManager.Users
-                        .Except(users);
+                    usersList = _userManager.Users
+                        .Except(users)
+                        .Join(_context.UserRoles, u => u.Id, ur => ur.UserId, (u, ur) => new { u, ur })
+                        .Join(_context.Roles, ur => ur.ur.RoleId, r => r.Id, (ur, r) => new { ur, r })
+                        .Select(c => new UserViewModel()
+                        {
+                            Id = c.ur.u.Id,
+                            Name = c.ur.u.UserName,
+                            Email = c.ur.u.Email,
+                            Role = c.r.Name
+                        }).ToList().GroupBy(uv => new { uv.Id, uv.Name, uv.Email }).Select(r => new UserViewModel()
+                        {
+                            Id = r.Key.Id,
+                            Name = r.Key.Name,
+                            Email = r.Key.Email,
+                            Role = string.Join(",", r.Select(c => c.Role).ToArray())
+                        }).ToList();
 
                     break;
                 default:
-                    users = _userManager.Users;
+                    usersList = _userManager.Users
+                        .Join(_context.UserRoles, u => u.Id, ur => ur.UserId, (u, ur) => new { u, ur })
+                        .Join(_context.Roles, ur => ur.ur.RoleId, r => r.Id, (ur, r) => new { ur, r })
+                        .Select(c => new UserViewModel()
+                        {
+                            Id = c.ur.u.Id,
+                            Name = c.ur.u.UserName,
+                            Email = c.ur.u.Email,
+                            Role = c.r.Name
+                        }).ToList().GroupBy(uv => new { uv.Id, uv.Name, uv.Email }).Select(r => new UserViewModel()
+                        {
+                            Id = r.Key.Id,
+                            Name = r.Key.Name,
+                            Email = r.Key.Email,
+                            Role = string.Join(",", r.Select(c => c.Role).ToArray())
+                        }).ToList();
                     break;
             }
-
-            List<UserViewModel> usersList = new List<UserViewModel>();
-            foreach(ApplicationUser user in users)
-            {
-                usersList.Add(new UserViewModel()
-                {
-                    Id = user.Id,
-                    Name = user.UserName,
-                    Email = user.Email,
-                    Roles = await _userManager.GetRolesAsync(user)
-                });
-            }
+            
 
             return usersList;
         }
@@ -122,9 +156,9 @@ namespace IssueTracker.Components
                 case UserSortOrder.EMAIL_DESC:
                     return users.OrderByDescending(x => x.Email).ToList();
                 case UserSortOrder.ROLES:
-                    return users.OrderBy(x => x.Roles.First()).ToList();
+                    return users.OrderBy(x => x.Role).ToList();
                 case UserSortOrder.ROLES_DESC:
-                    return users.OrderByDescending(x => x.Roles.First()).ToList();
+                    return users.OrderByDescending(x => x.Role).ToList();
                 default:
                     return users.OrderBy(x => x.Name).ToList();
             }

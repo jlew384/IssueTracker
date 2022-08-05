@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace IssueTracker
+namespace IssueTracker.Helpers
 {
     public class PaginatedList<T> : List<T>
     {
@@ -12,7 +12,7 @@ namespace IssueTracker
             PageIndex = pageIndex;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 
-            this.AddRange(items);
+            AddRange(items);
         }
 
         public bool HasPreviousPage => PageIndex > 1;

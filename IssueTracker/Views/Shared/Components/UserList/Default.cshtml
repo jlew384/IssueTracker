@@ -1,5 +1,6 @@
-﻿@using System.Security.Claims;
-@using IssueTracker.Authorization;
+﻿
+@using IssueTracker.Helpers
+@using System.Security.Claims
 @model UserListViewModel
 
 @{
@@ -77,7 +78,7 @@
                         @Html.DisplayNameFor(model => model.User.Email)
                     </th>
                     <th role="button" onclick="sortUserList('@Model.Type', '@UserSortOrder.ROLES')" class="border">
-                        @Html.DisplayNameFor(model => model.User.Roles)
+                        @Html.DisplayNameFor(model => model.User.Role)
                     </th>
                     <th></th>
                 </tr>
@@ -107,7 +108,7 @@
                                 @Html.DisplayFor(issueItem => userItem.Email)
                             </td>
                             <td>
-                                @Html.DisplayFor(issueItem => userItem.Roles)
+                                @Html.DisplayFor(issueItem => userItem.Role)
                             </td>
                             <td>
                             

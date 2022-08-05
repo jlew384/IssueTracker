@@ -1,7 +1,7 @@
 ﻿using IssueTracker.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace IssueTracker.Authorization
+namespace IssueTracker.Helpers
 {
     public class UserRoles
     {

@@ -1,4 +1,6 @@
-﻿namespace IssueTracker.ViewModels
+﻿using IssueTracker.Helpers;
+
+namespace IssueTracker.ViewModels
 {
     public class UserListViewModel
     {

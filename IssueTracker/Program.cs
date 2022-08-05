@@ -26,7 +26,7 @@ namespace IssueTracker
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews(option =>
             {
-                option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                //option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             });
             builder.Services.AddRazorPages();
 

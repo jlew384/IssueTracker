@@ -86,4 +86,18 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+$(document).ready(function() {
+    var dt = new Date();
+    SetCookieCrumb("ClientDateTime", dt.toString());
+
+    var tz = -dt.getTimezoneOffset();
+    SetCookieCrumb("ClientTimeZone", tz.toString());
+
+    // Expire in one year
+    dt.setYear(dt.getYear() + 1);
+    SetCookieCrumb("expires", dt.toUTCString());
+});
+    </script>
 }

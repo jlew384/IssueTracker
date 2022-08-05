@@ -1,5 +1,6 @@
 ﻿using IssueTracker.Constants;
 using IssueTracker.Data;
+using IssueTracker.Helpers;
 using IssueTracker.Models;
 using IssueTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;

@@ -4,9 +4,17 @@ namespace IssueTracker.ViewModels
 {
     public class EditIssueViewModel
     {
-        public Issue Issue { get; set; }
-        public IEnumerable<ApplicationUser> AssignableUsers { get; set; }
+        
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Desc { get; set; }
+        public string? AssignedUserId { get; set; }
+        public string Priority { get; set; }
+        public string Status { get; set; }
+        public string Type { get; set; }
 
-        public string RefererUrl { get; set; }
+        public string? ProjectTitle { get; set; }
+
+        public IEnumerable<ApplicationUser>? AssignableUsers { get; set; }
     }
 }

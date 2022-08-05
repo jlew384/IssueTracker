@@ -18,27 +18,26 @@
         <div class="card-body">
         
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Issue.ProjectId" value="@Model.ProjectId"/>
-            <input type="hidden" asp-for="Issue.Status" value="@IssueStatus.TO_DO" />
+            <input type="hidden" asp-for="ProjectId" value="@Model.ProjectId"/>
             <div class="form-group">
-                <label asp-for="Issue.Title" class="control-label"></label>
-                <input asp-for="Issue.Title" class="form-control" />
-                <span asp-validation-for="Issue.Title" class="text-danger"></span>
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Issue.Desc" class="control-label"></label>
-                <textarea asp-for="Issue.Desc" class="form-control" rows="3"></textarea>
-                <span asp-validation-for="Issue.Desc" class="text-danger"></span>
+                <label asp-for="Desc" class="control-label"></label>
+                <textarea asp-for="Desc" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Desc" class="text-danger"></span>
             </div>          
             <div class="form-group">
-                <label asp-for="Issue.Priority" class="control-label"></label>
-                <select asp-for="Issue.Priority" class="form-control" asp-items="@ViewBag.PrioritySelectList"></select>
-                <span asp-validation-for="Issue.Priority" class="text-danger"></span>
+                <label asp-for="Priority" class="control-label"></label>
+                <select asp-for="Priority" class="form-control" asp-items="@new SelectList(IssuePriority.List)"></select>
+                <span asp-validation-for="Priority" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Issue.Type" class="control-label"></label>
-                <select asp-for="Issue.Type" class="form-control" asp-items="@ViewBag.TypeSelectList"></select>
-                <span asp-validation-for="Issue.Type" class="text-danger"></span>
+                <label asp-for="Type" class="control-label"></label>
+                <select asp-for="Type" class="form-control" asp-items="@new SelectList(IssueType.List)"></select>
+                <span asp-validation-for="Type" class="text-danger"></span>
             </div>
        
         </div>
@@ -50,5 +49,8 @@
  </form>
 
 @section Scripts {
+    
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    
 }

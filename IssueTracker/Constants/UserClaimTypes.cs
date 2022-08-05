@@ -1,4 +1,4 @@
-﻿namespace IssueTracker.Authorization
+﻿namespace IssueTracker.Constants
 {
     public class UserClaimTypes
     {

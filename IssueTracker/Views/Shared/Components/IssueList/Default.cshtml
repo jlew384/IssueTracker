@@ -1,5 +1,6 @@
 ﻿@using System.Security.Claims;
-@model IssueListViewModel
+@using IssueTracker.Helpers;
+@model IssueListViewModel;
 
 @{
     var user = User as ClaimsPrincipal;
@@ -140,7 +141,7 @@
                                 @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)
                             </td>
                             <td>
-                                @Html.DisplayFor(issueItem => issue.Created)
+                                @DateTimeHelpers.FormatElapsedTime(issue.Created)
                             </td>
                             <td>
                             

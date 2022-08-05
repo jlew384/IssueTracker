@@ -1,5 +1,6 @@
 ﻿@using System.Security.Claims;
-@model ProjectListViewModel
+@using IssueTracker.Helpers;
+@model ProjectListViewModel;
 
 @{
     
@@ -69,10 +70,10 @@
                                 @Html.DisplayFor(projectItem => project.Title)
                             </td>
                             <td>
-                                @Html.DisplayFor(projectItem => project.DateCreated)
+                                @DateTimeHelpers.FormatElapsedTime(project.DateCreated)
                             </td>
                             <td>
-                                @Html.DisplayFor(projectItem => project.DateModified)
+                                @DateTimeHelpers.FormatElapsedTime(project.DateModified)
                             </td>
                             <td>
                             

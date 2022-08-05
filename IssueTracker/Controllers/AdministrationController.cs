@@ -1,12 +1,12 @@
 ﻿using IssueTracker.Data;
 using IssueTracker.Models;
-using IssueTracker.Authorization;
 using IssueTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using IssueTracker.Helpers;
 
 namespace IssueTracker.Controllers
 {
@@ -25,6 +25,7 @@ namespace IssueTracker.Controllers
         }
 
 
+        [IgnoreAntiforgeryToken]
         public IActionResult UserList(string type, string sortOrder, string searchString, int? pageIndex, string roleFilter, int? pid, string userId)
         {
             return ViewComponent("UserList",
@@ -44,16 +45,16 @@ namespace IssueTracker.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            List<UserViewModel> modelList = new List<UserViewModel>() { };
-            foreach(var user in _userManager.Users.Where(x => x.Id != _userManager.GetUserId(User)))
-            {
-                UserViewModel model = new UserViewModel();
-                model.Id = user.Id;
-                model.Name = user.UserName;
-                model.Email = user.Email;
-                model.Roles = await _userManager.GetRolesAsync(user);
-                modelList.Add(model);
-            }
+            //List<UserViewModel> modelList = new List<UserViewModel>() { };
+            //foreach(var user in _userManager.Users.Where(x => x.Id != _userManager.GetUserId(User)))
+            //{
+            //    UserViewModel model = new UserViewModel();
+            //    model.Id = user.Id;
+            //    model.Name = user.UserName;
+            //    model.Email = user.Email;
+            //    model.Roles = await _userManager.GetRolesAsync(user);
+            //    modelList.Add(model);
+            //}
             ApplicationUser user1 = await _userManager.GetUserAsync(User);
             return View(user1);
         }

@@ -1,4 +1,5 @@
-﻿using IssueTracker.Models;
+﻿using IssueTracker.Helpers;
+using IssueTracker.Models;
 
 namespace IssueTracker.ViewModels
 {

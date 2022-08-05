@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IssueTracker.Models
@@ -7,21 +8,23 @@ namespace IssueTracker.Models
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         [StringLength(50)]
         public string Title { get; set; } = null!;
+
+        [DisplayName("Description")]
         [Required]
         [StringLength(600)]
         public string Desc { get; set; } = null!;
-        
-        //[NotMapped]
-        //public virtual ApplicationUser? ProjectManager { get; set; }
 
         public virtual ICollection<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
 
+        [DisplayName("Created")]
         [Required]
-        public DateTime DateCreated { get; set; }
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
+        [DisplayName("Modified")]
         public DateTime? DateModified { get; set; }
     }
 }

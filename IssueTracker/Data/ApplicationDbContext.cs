@@ -30,10 +30,12 @@ namespace IssueTracker.Data
 
         }
 
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
         
         public virtual DbSet<Project> Projects { get; set; }
 
         public virtual DbSet<Issue> Issues { get; set; }
+
+        //public virtual DbSet<ApplicationUserProject> ApplicationUserProject { get; set; }
     }
 }
