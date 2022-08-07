@@ -20,3 +20,15 @@ body {
 .table .no-cellpadding td {
     padding: 0;
 }
+
+.priority-dropdown {
+    width: 80px;
+}
+
+.type-dropdown {
+    width: 80px;
+}
+
+.status-dropdown {
+    width:100px;
+}

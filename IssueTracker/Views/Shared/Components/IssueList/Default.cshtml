@@ -141,7 +141,7 @@
                                 @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)
                             </td>
                             <td>
-                                @DateTimeHelpers.FormatElapsedTime(issue.Created)
+                                @DateTimeHelpers.GetSimpleElapsedTime(issue.Created)
                             </td>
                             <td>
                             

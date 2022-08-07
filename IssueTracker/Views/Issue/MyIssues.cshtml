@@ -131,6 +131,7 @@ function filterType(listType) {
 }
 
 $(document).ready(function() {
+    console.log("@Url.Action("IssueList", "Issue")");
     $.ajax(components.issueLists.created);
     $.ajax(components.issueLists.assigned);
 })

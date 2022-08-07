@@ -48,9 +48,61 @@ namespace IssueTracker.Controllers
             {
                 return NotFound();
             }
-            ViewBag.Project = project;
-            IEnumerable<Issue> issues = _context.Issues.Where(x => x.ProjectId == pid).ToList();
-            return View(issues);
+
+            IssueIndexViewModel model = new IssueIndexViewModel()
+            {
+                ProjectId = project.Id,
+                ProjectTitle = project.Title,
+                Issues = _context.Issues.Where(x => x.ProjectId == pid).ToList()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public string UpdateStatus(int id, string status)
+        {
+            Issue? issue = _context.Issues.Find(id);
+            if (issue == null)
+            {
+                return "";
+            }
+
+            issue.Status = status;
+            _context.Issues.Update(issue);
+            _context.SaveChanges();
+            return status;
+
+        }
+        [HttpPost]
+        public string UpdatePriority(int id, string priority)
+        {
+            Issue? issue = _context.Issues.Find(id);
+            if (issue == null)
+            {
+                return "";
+            }
+
+            issue.Priority = priority;
+            _context.Issues.Update(issue);
+            _context.SaveChanges();
+            return priority;
+
+        }
+        [HttpPost]
+        public string UpdateType(int id, string type)
+        {
+            Issue? issue = _context.Issues.Find(id);
+            if (issue == null)
+            {
+                return "";
+            }
+
+            issue.Type = type;
+            _context.Issues.Update(issue);
+            _context.SaveChanges();
+            return type;
+
         }
 
         [HttpGet]

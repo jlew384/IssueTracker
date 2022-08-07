@@ -64,13 +64,13 @@
                 @Html.DisplayNameFor(model => model.Created)
             </dt>
             <dd class = "col-sm-10">
-                @DateTimeHelpers.FormatElapsedTime(Model.Created)
+                @DateTimeHelpers.GetSimpleElapsedTime(Model.Created)
             </dd>
             <dt class = "col-sm-2">
                 @Html.DisplayNameFor(model =>  model.Modified)
             </dt>
             <dd class = "col-sm-10">
-                @DateTimeHelpers.FormatElapsedTime(Model.Modified)
+                @DateTimeHelpers.GetSimpleElapsedTime(Model.Modified)
             </dd>
         </dl>
     </div>

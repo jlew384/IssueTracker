@@ -34,13 +34,13 @@
             @Html.DisplayNameFor(model => model.Project.DateCreated)
             </h6>
             <p>
-                @DateTimeHelpers.FormatElapsedTime(Model.Project.DateCreated)
+                @DateTimeHelpers.GetSimpleElapsedTime(Model.Project.DateCreated)
             </p>
             <h6>
                 @Html.DisplayNameFor(model => model.Project.DateModified)
             </h6>
             <p>
-                @DateTimeHelpers.FormatElapsedTime(Model.Project.DateModified)
+                @DateTimeHelpers.GetSimpleElapsedTime(Model.Project.DateModified)
             </p>
         </div>        
     </div>

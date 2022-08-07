@@ -65,15 +65,15 @@
                 {
                     @foreach(var project in Model.Projects)
                     {
-                        <tr onclick="location.href = '@Url.Action("Details", "Project", new { pid = project.Id })'">
+                        <tr onclick="location.href = '@Url.Action("Index", "Issue", new { pid = project.Id })'">
                             <td>
                                 @Html.DisplayFor(projectItem => project.Title)
                             </td>
                             <td>
-                                @DateTimeHelpers.FormatElapsedTime(project.DateCreated)
+                                @DateTimeHelpers.GetSimpleElapsedTime(project.DateCreated)
                             </td>
                             <td>
-                                @DateTimeHelpers.FormatElapsedTime(project.DateModified)
+                                @DateTimeHelpers.GetSimpleElapsedTime(project.DateModified)
                             </td>
                             <td>
                             
