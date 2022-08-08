@@ -14,7 +14,7 @@
 
 <h1 class="display-4">@Model.ProjectTitle</h1>
 
-<div class="">
+<div class="issue-list-container">
     <table class="table table-hover table-responsive">
         <thead>
             <tr class="">
@@ -25,7 +25,9 @@
                     @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().CreatorUser)
                 </th>
                 <th class="" style="width: 5%;">
-                    @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Created)
+                    <a asp-action="Index" asp-controller="Issue" asp-route-pid="@Model.ProjectId" asp-route-sortBy="@IssueSortOrder.CREATED_DATE">
+                        @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Created)
+                    </a>
                 </th>
                 <th class="" style="width: 5%;">
                     @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Status)
@@ -47,7 +49,7 @@
             {
                 foreach(var issue in Model.Issues)
                 {
-                    <tr issueId="@issue.Id" class="issue-row">
+                    <tr tag="issue-row" issueId="@issue.Id">
                         <td>
                             @Html.DisplayFor(issueItem => issue.Title)
                         </td>
@@ -61,22 +63,22 @@
                             @switch(issue.Status)
                             {
                                 case IssueStatus.TO_DO:
-                                    <select asp-for="@issue.Status" issueId="@issue.Id" class="dropdown status-dropdown form-select-sm bg-success text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
+                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="form-select-sm bg-success text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
                                     break;
                                 case IssueStatus.IN_PROGRESS:
-                                    <select asp-for="@issue.Status" issueId="@issue.Id" class="dropdown status-dropdown form-select-sm bg-info text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
+                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="form-select-sm bg-info text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
                                     break;
                                 case IssueStatus.DONE:
-                                    <select asp-for="@issue.Status" issueId="@issue.Id" class="dropdown status-dropdown form-select-sm bg-secondary text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
+                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="form-select-sm bg-secondary text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
                                     break;
                             }
                             
                         </td>
                         <td>
-                            <select asp-for="@issue.Priority" issueId="@issue.Id" class="dropdown priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssuePriority.List)" ></select>
+                            <select tag="priority-dropdown" asp-for="@issue.Priority" issueId="@issue.Id" class="form-select-sm border-0" asp-items="@new SelectList(IssuePriority.List)" ></select>
                         </td>
                         <td>
-                            <select asp-for="@issue.Type" issueId="@issue.Id" class="dropdown type-dropdown form-select-sm border-0" asp-items="@new SelectList(IssueType.List)" ></select>
+                            <select tag="type-dropdown" asp-for="@issue.Type" issueId="@issue.Id" class="form-select-sm border-0" asp-items="@new SelectList(IssueType.List)" ></select>
                         </td>
                         <td class="d-none d-lg-table-cell text-nowrap">
                             @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)

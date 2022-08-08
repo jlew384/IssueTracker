@@ -40,20 +40,30 @@ namespace IssueTracker.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(int? pid)
+        public IActionResult Index(int? pid, string sortBy)
         {
-         
             Project? project = _context.Projects.Find(pid);
             if (pid == null)
             {
                 return NotFound();
             }
 
+            List<Issue> issues;
+
+            if(sortBy == null)
+            {
+                issues = _context.Issues.Where(x => x.ProjectId == pid).ToList();
+            }
+            else
+            {
+                issues = _context.Issues.Where(x => x.ProjectId == pid).OrderBy(x => x.Title).ToList();
+            }
+
             IssueIndexViewModel model = new IssueIndexViewModel()
             {
                 ProjectId = project.Id,
                 ProjectTitle = project.Title,
-                Issues = _context.Issues.Where(x => x.ProjectId == pid).ToList()
+                Issues = issues
             };
 
             return View(model);

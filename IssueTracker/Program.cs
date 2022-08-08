@@ -29,6 +29,11 @@ namespace IssueTracker
                 //option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             });
             builder.Services.AddRazorPages();
+      
+
+            builder.Services.AddDistributedMemoryCache();
+
+            builder.Services.AddSession();
 
             var app = builder.Build();
 
@@ -51,6 +56,8 @@ namespace IssueTracker
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.MapControllerRoute(
                 name: "default",
