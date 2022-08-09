@@ -86,6 +86,19 @@ function updateIssueType(event) {
     });
 }
 
+function sortIssues(event) {
+    $.ajax({
+        type: "GET",
+        url: "Issue/IssueTable",
+        data: {
+            sortField: $(event.target).attr("field")
+        },
+        success: function (result) {
+            $(event.currentTarget).html(result);
+        }
+    });
+}
+
 $(document).ready(function () {
     $('.issue-list-container').change(function (event) {
         switch ($(event.target).attr("tag")) {
@@ -100,7 +113,9 @@ $(document).ready(function () {
                 break;
         }
     }).click(function (event) {
-
+        if ($(event.target).attr("tag") == "sort-button") {
+            sortIssues(event);
+        }
 
         let element = event.target.parentElement;
         if ($(element).attr("tag") == "issue-row") {

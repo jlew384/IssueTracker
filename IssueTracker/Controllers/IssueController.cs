@@ -39,6 +39,57 @@ namespace IssueTracker.Controllers
                 });
         }
 
+        public IActionResult IssueTable(string filter, string sortField, string sortDirection)
+        {
+            if(filter == null)
+            {
+                filter = HttpContext.Session.GetString("filter");
+            }
+            else
+            {
+                HttpContext.Session.SetString("filter", filter);
+            }
+
+            if(sortField == null)
+            {
+                sortField = HttpContext.Session.GetString("sortField");
+                sortDirection = HttpContext.Session.GetString("sortDirection");
+            }
+            else
+            {
+                if(sortField == HttpContext.Session.GetString("sortField"))
+                {
+                    if(HttpContext.Session.GetString("sortDirection") == IssueSortOrder.DESC)
+                    {
+                        sortDirection = IssueSortOrder.ASC;
+                        HttpContext.Session.SetString("sortDirection", sortDirection);
+                    }
+                    else if(HttpContext.Session.GetString("sortDirection") == IssueSortOrder.ASC)
+                    {
+                        sortDirection = IssueSortOrder.DESC;
+                        HttpContext.Session.SetString("sortDirection", sortDirection);
+                    }
+                }
+                else
+                {
+                    HttpContext.Session.SetString("sortField", sortField);
+                    sortDirection = IssueSortOrder.DESC;
+                    HttpContext.Session.SetString("sortDirection", sortDirection);
+                }
+
+            }
+
+
+            return ViewComponent("IssueTable",
+                new
+                {
+                    filter = filter,
+                    projectId = HttpContext.Session.GetInt32("projectId"),
+                    sortField = sortField,
+                    sortDirection = sortDirection
+                });
+        }
+
         [HttpGet]
         public IActionResult Index(int? pid, string sortBy)
         {
@@ -48,22 +99,38 @@ namespace IssueTracker.Controllers
                 return NotFound();
             }
 
-            List<Issue> issues;
+            string? filter =  HttpContext.Session.GetString("filter");
+            string? sortField = HttpContext.Session.GetString("sortField");
+            string? sortDirection = HttpContext.Session.GetString("sortDirection");
 
-            if(sortBy == null)
+            HttpContext.Session.SetInt32("projectId", (int)pid);
+
+            if(filter == null)
             {
-                issues = _context.Issues.Where(x => x.ProjectId == pid).ToList();
+                filter = IssueFilter.PROJECT;
+                HttpContext.Session.SetString("filter", filter);
             }
-            else
+
+            if(sortField == null)
             {
-                issues = _context.Issues.Where(x => x.ProjectId == pid).OrderBy(x => x.Title).ToList();
+                sortField = IssueSortOrder.CREATED_DATE;
+                HttpContext.Session.SetString("sortField", sortField);
             }
+
+            if(sortDirection == null)
+            {
+                sortDirection = IssueSortOrder.DESC;
+                HttpContext.Session.SetString("sortDirection", sortDirection);
+            }
+
 
             IssueIndexViewModel model = new IssueIndexViewModel()
             {
                 ProjectId = project.Id,
                 ProjectTitle = project.Title,
-                Issues = issues
+                Filter = filter,
+                SortField = sortField,
+                SortDirection = sortDirection
             };
 
             return View(model);

@@ -1,4 +1,100 @@
-﻿
-@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using System.Security.Claims;
+@using IssueTracker.Helpers;
+@model IssueTableComponentViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    var user = User as ClaimsPrincipal;
+    string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+    var ownerClaimValues = user.Claims
+         .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+         .Select(c => Int32.Parse(c.Value))
+         .ToList();
+}
+
+<h1 class="display-4">@Model.ProjectTitle</h1>
+
+<div>
+    <table sortField="@Model.SortField" sortDirection="@Model.SortDirection" class="table table-hover table-responsive">
+        <thead>
+            <tr class="">
+                <th class="" style="width: 25%;">
+                    @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Title)
+                </th>
+                <th class="d-none d-xxl-table-cell" style="width: 5%;">
+                    @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().CreatorUser)
+                </th>
+                <th tag="sort-button" projectId="@Model.ProjectId" field="CREATED_DATE" role="button" class="" style="width: 5%;">
+                    @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Created)
+                </th>
+                <th tag="sort-button" projectId="@Model.ProjectId" field="STATUS" role="button" class="" style="width: 5%;">
+                    @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Status)
+                </th>
+                <th tag="sort-button" projectId="@Model.ProjectId" field="PRIORITY" role="button" class="" style="width: 5%;">
+                    @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Priority)
+                </th>
+                <th class="" style="width: 5%;">
+                    @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Type)
+                </th>
+                <th class="d-none d-lg-table-cell" style="width: 5%;">
+                    @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().AssignedUser)
+                </th>
+                <th class="d-none" style="width: 2%;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(Model.Issues.Count > 0)
+            {
+                foreach(var issue in Model.Issues)
+                {
+                    <tr tag="issue-row" issueId="@issue.Id">
+                        <td>
+                            @Html.DisplayFor(issueItem => issue.Title)
+                        </td>
+                        <td class="d-none d-xxl-table-cell text-nowrap">
+                            @Html.DisplayFor(issueItem => issue.CreatorUser.UserName)
+                        </td>
+                        <td class="text-muted">
+                            @DateTimeHelpers.GetSimpleElapsedTime(issue.Created)
+                        </td>
+                        <td>
+                            @switch(issue.Status)
+                            {
+                                case IssueStatus.TO_DO:
+                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-success text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
+                                    break;
+                                case IssueStatus.IN_PROGRESS:
+                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-info text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
+                                    break;
+                                case IssueStatus.DONE:
+                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-secondary text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
+                                    break;
+                            }
+                            
+                        </td>
+                        <td>
+                            <select tag="priority-dropdown" asp-for="@issue.Priority" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssuePriority.List)" ></select>
+                        </td>
+                        <td>
+                            <select tag="type-dropdown" asp-for="@issue.Type" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssueType.List)" ></select>
+                        </td>
+                        <td class="d-none d-lg-table-cell text-nowrap">
+                            @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)
+                        </td>                        
+                        <td class="d-none">
+                            
+                            @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+                            {
+                                <div class="text-nowrap">
+                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Edit" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-pencil-fill"></i></a>
+                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Delete" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-trash2-fill"></i></a>
+                                </div>
+                    
+                            }  
+                        </td>
+                    </tr>
+                }
+            }                
+        </tbody>
+    </table>
+</div>
