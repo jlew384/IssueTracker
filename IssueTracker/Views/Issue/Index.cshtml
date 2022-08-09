@@ -5,6 +5,11 @@
 @{
 }
 
+<div>
+    <h1 class="display-4">@Model.ProjectTitle</h1>
+</div>
+
+
 <div class="issue-list-container">
     @await Component.InvokeAsync("IssueTable", 
         new {

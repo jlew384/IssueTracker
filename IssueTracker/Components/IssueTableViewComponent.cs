@@ -66,59 +66,16 @@ namespace IssueTracker.Components
                 default:
                     return _context.Issues.Where(x => x.ProjectId == _projectId);
             }
-        }
-
-
-
-
-        private IQueryable<Issue> FilterStatus(IQueryable<Issue> issues, string statusFilter)
-        {
-            if (!String.IsNullOrEmpty(statusFilter))
-            {
-
-                return issues.Where(x => x.Status == statusFilter);
-            }
-            else
-            {
-                return issues;
-            }
-
-        }
-        private IQueryable<Issue> FilterPriority(IQueryable<Issue> issues, string priorityFilter)
-        {
-            if (!String.IsNullOrEmpty(priorityFilter))
-            {
-
-                return issues.Where(x => x.Priority == priorityFilter);
-            }
-            else
-            {
-                return issues;
-            }
-        }
-
-
-        private IQueryable<Issue> FilterType(IQueryable<Issue> issues, string typeFilter)
-        {
-            if (!String.IsNullOrEmpty(typeFilter))
-            {
-
-                return issues.Where(x => x.Type == typeFilter);
-            }
-            else
-            {
-                return issues;
-            }
-
-        }
-
-
-        
+        }        
 
         private IQueryable<Issue> Sort(IQueryable<Issue> issues, string sortOrder)
         {
             switch (sortOrder)
             {
+                case IssueSortOrder.TITLE_ASC:
+                    return issues.OrderBy(x => x.Title);
+                case IssueSortOrder.TITLE_DESC:
+                    return issues.OrderByDescending(x => x.Title);
                 case IssueSortOrder.STATUS_ASC:
                     return issues.OrderByDescending(x => x.Status);
                 case IssueSortOrder.STATUS_DESC:
@@ -133,10 +90,22 @@ namespace IssueTracker.Components
                         .Where(x => x.Priority == IssuePriority.HIGH)
                         .Concat(issues.Where(x => x.Priority == IssuePriority.MEDIUM))
                         .Concat(issues.Where(x => x.Priority == IssuePriority.LOW));
+                case IssueSortOrder.TYPE_ASC:
+                    return issues.OrderBy(x => x.Type);
+                case IssueSortOrder.TYPE_DESC:
+                    return issues.OrderByDescending(x => x.Type);
+                case IssueSortOrder.CREATOR_ASC:
+                    return issues.OrderBy(x => x.CreatorUser.UserName);
+                case IssueSortOrder.CREATOR_DESC:
+                    return issues.OrderByDescending(x => x.CreatorUser.UserName);
+                case IssueSortOrder.ASSIGNED_USER_NAME_ASC:
+                    return issues.OrderBy(x => x.AssignedUser.UserName);
+                case IssueSortOrder.ASSIGNED_USER_NAME_DESC:
+                    return issues.OrderByDescending(x => x.AssignedUser.UserName);
                 case IssueSortOrder.CREATED_DATE_ASC:
-                    return issues.OrderBy(x => x.Created);
-                case IssueSortOrder.CREATED_DATE_DESC:
                     return issues.OrderByDescending(x => x.Created);
+                case IssueSortOrder.CREATED_DATE_DESC:                    
+                    return issues.OrderBy(x => x.Created);
                 default:
                     return issues.OrderByDescending(x => x.Created);
             }

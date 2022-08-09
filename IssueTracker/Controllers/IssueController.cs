@@ -73,7 +73,7 @@ namespace IssueTracker.Controllers
                 else
                 {
                     HttpContext.Session.SetString("sortField", sortField);
-                    sortDirection = IssueSortOrder.DESC;
+                    sortDirection = IssueSortOrder.DEFAULT_DIRECTION;
                     HttpContext.Session.SetString("sortDirection", sortDirection);
                 }
 
@@ -113,13 +113,13 @@ namespace IssueTracker.Controllers
 
             if(sortField == null)
             {
-                sortField = IssueSortOrder.CREATED_DATE;
+                sortField = IssueSortOrder.DEFAULT_FIELD;
                 HttpContext.Session.SetString("sortField", sortField);
             }
 
             if(sortDirection == null)
             {
-                sortDirection = IssueSortOrder.DESC;
+                sortDirection = IssueSortOrder.DEFAULT_DIRECTION;
                 HttpContext.Session.SetString("sortDirection", sortDirection);
             }
 
