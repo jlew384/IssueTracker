@@ -7,5 +7,7 @@
         public const string CREATOR = "CREATOR";
         public const string ACTIVE = "ACTIVE";
         public const string INACTIVE = "INACTIVE";
+
+        public static List<string> LIST = new List<string> { PROJECT, ASSIGNEE, CREATOR, ACTIVE, INACTIVE };
     }
 }

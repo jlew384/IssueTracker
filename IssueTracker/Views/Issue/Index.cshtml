@@ -5,8 +5,12 @@
 @{
 }
 
-<div>
+<div class="d-flex justify-content-between align-items-center">
     <h1 class="display-4">@Model.ProjectTitle</h1>
+    <div>
+        @*<select tag="filter-dropdown" class="form-select" asp-for="@Model.Filter" asp-items="@new SelectList(IssueFilter.LIST)"></select>*@
+    </div>
+    
 </div>
 
 

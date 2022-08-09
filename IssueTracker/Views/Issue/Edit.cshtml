@@ -8,7 +8,95 @@
          .ToList();
 
 }
-<form asp-controller="Issue" asp-action="Edit" asp-route-backUrl="@ViewBag.BackUrl">
+
+
+<div class="edit-issue-container container">
+    <div class="d-flex align-items-center justify-content-between">
+        <span class="h6 text-muted my-3 mx-1">Project: @Model.ProjectTitle</span>
+        <a class="btn btn-sm btn-primary" href="@ViewBag.BackUrl">Back</a>
+    </div>    
+    <div class="card box-shadow shadow">
+        <div class="card-body">        
+            <span class="align-middle h5">Issue Title</span>
+            <button tag="btn-edit-title" class="btn">
+                <i class="bi bi-pencil-fill"></i>
+            </button>
+            <div>
+                <span class="fs-4 align-middle">@Model.Title</span>            
+            </div>
+        </div>
+    </div>
+
+    <div class="card box-shadow shadow mt-3">
+        <div class="card-body">
+            <span class="align-middle h5">Description</span>
+            <button tag="btn-edit-desc" class="btn">
+                <i class="bi bi-pencil-fill"></i>
+            </button>
+            <div>
+                <span class="align-middle">@Model.Desc</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card box-shadow shadow mt-3">
+        <div class="card-body">
+            <span class="align-middle h5">Information</span>
+            <div>
+                <div class="row">
+                    <div class="col-4">
+                        <label asp-for="Status" class="control-label mt-1"></label>
+                        @switch(Model.Status)
+                        {
+                            case IssueStatus.TO_DO:
+                                <select tag="status-dropdown" issueId="@Model.Id" asp-for="Status" class="form-select mt-1 bg-success text-white" asp-items="@new SelectList(IssueStatus.List)"></select>
+                                break;
+                            case IssueStatus.IN_PROGRESS:
+                                <select tag="status-dropdown" issueId="@Model.Id" asp-for="Status" class="form-select mt-1 bg-info text-white" asp-items="@new SelectList(IssueStatus.List)"></select>
+                                break;
+                            case IssueStatus.DONE:
+                                <select tag="status-dropdown" issueId="@Model.Id" asp-for="Status" class="form-select mt-1 bg-secondary text-white" asp-items="@new SelectList(IssueStatus.List)"></select>
+                                break;
+
+                        }
+                        
+                    </div>
+
+                    <div class="col-4">
+                        <label asp-for="Priority" class="control-label mt-1"></label>
+                        <select tag="priority-dropdown" issueId="@Model.Id" asp-for="Priority" class="form-select mt-1" asp-items="@new SelectList(IssuePriority.List)"></select>
+                    </div>
+                    <div class="col-4">
+                        <label asp-for="Type" class="control-label mt-1"></label>
+                        
+                        <select tag="type-dropdown" issueId="@Model.Id" asp-for="Type" class="form-select mt-1" asp-items="@new SelectList(IssueType.List)"></select>
+                    </div>
+                </div>
+                @if(User.IsInRole(UserRoles.ADMIN) || User.IsInRole(UserRoles.PROJ_MNGR))
+                {
+                    <div class="row">
+                        <div class="col-12">
+                            <label asp-for="AssignedUserId" class="control-label mt-1"></label>
+                            <select tag="assigned-dropdown" issueId="@Model.Id" asp-for="AssignedUserId" class="form-select mt-1">
+                                <option value="">Unassigned</option>
+                                @foreach(var user in Model.AssignableUsers)
+                                {
+                                    <option value="@user.Id">@user.UserName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@*<form asp-controller="Issue" asp-action="Edit" asp-route-backUrl="@ViewBag.BackUrl">
     <div class="card">
         <div class="card-header">
             <h1>@Model.ProjectTitle</h1>
@@ -67,7 +155,7 @@
             <input type="submit" value="Save" class="btn btn-primary" />
         </div>
     </div>
-</form>
+</form>*@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

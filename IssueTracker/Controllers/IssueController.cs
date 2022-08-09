@@ -182,6 +182,38 @@ namespace IssueTracker.Controllers
 
         }
 
+        public async Task<string> UpdateAssignedUser(int id, string userId)
+        {
+            Issue? issue = _context.Issues.Find(id);
+            if (issue == null)
+            {
+                return "";
+            }
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+
+            if(user == null)
+            {
+                issue.AssignedUserId = null;
+            }
+            else
+            {
+                issue.AssignedUserId = user.Id;
+            }
+            
+            _context.Issues.Update(issue);
+            _context.SaveChanges();
+
+            if(user == null)
+            {
+                return "Unassigned";
+            }
+            else
+            {
+                return user.UserName;
+            }
+            
+        }
+
         [HttpGet]
         public IActionResult Create(int? pid)
         {
