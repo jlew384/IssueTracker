@@ -182,6 +182,7 @@ namespace IssueTracker.Controllers
 
         }
 
+        [HttpPost]
         public async Task<string> UpdateAssignedUser(int id, string userId)
         {
             Issue? issue = _context.Issues.Find(id);
@@ -191,7 +192,7 @@ namespace IssueTracker.Controllers
             }
             ApplicationUser user = await _userManager.FindByIdAsync(userId);
 
-            if(user == null)
+            if (user == null)
             {
                 issue.AssignedUserId = null;
             }
@@ -199,11 +200,11 @@ namespace IssueTracker.Controllers
             {
                 issue.AssignedUserId = user.Id;
             }
-            
+
             _context.Issues.Update(issue);
             _context.SaveChanges();
 
-            if(user == null)
+            if (user == null)
             {
                 return "Unassigned";
             }
@@ -211,11 +212,43 @@ namespace IssueTracker.Controllers
             {
                 return user.UserName;
             }
-            
+
+        }
+
+        [HttpPost]
+        public string UpdateTitle(int id, string title)
+        {
+            Issue? issue = _context.Issues.Find(id);
+            if (issue == null)
+            {
+                return "";
+            }
+
+            issue.Title = title;
+            _context.Issues.Update(issue);
+            _context.SaveChanges();
+            return title;
+
+        }
+
+        [HttpPost]
+        public string UpdateDesc(int id, string desc)
+        {
+            Issue? issue = _context.Issues.Find(id);
+            if (issue == null)
+            {
+                return "";
+            }
+
+            issue.Desc = desc;
+            _context.Issues.Update(issue);
+            _context.SaveChanges();
+            return desc;
+
         }
 
         [HttpGet]
-        public IActionResult Create(int? pid)
+        public async Task<IActionResult> Create(int? pid)
         {
             Project? project = _context.Projects.Find(pid);
 
@@ -224,18 +257,24 @@ namespace IssueTracker.Controllers
                 return NotFound();
             }
 
+            IList<ApplicationUser> submitters = await _userManager.GetUsersInRoleAsync(UserRoles.SUB);
+            IEnumerable<ApplicationUser> assignableUsers = project.Users.Except(submitters);
+
             CreateIssueViewModel model = new CreateIssueViewModel()
             {
+                ProjectTitle = project.Title,
                 ProjectId = project.Id,
-                ProjectTitle = project.Title
+                AssignableUsers = assignableUsers
             };
+
+            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
             return View(model);
         }
 
 
 
         [HttpPost]
-        public IActionResult Create(CreateIssueViewModel model)
+        public IActionResult Create(CreateIssueViewModel model, string backUrl)
         {
             if(!ModelState.IsValid)
             {
@@ -246,18 +285,19 @@ namespace IssueTracker.Controllers
             {
                 Title = model.Title,
                 Desc = model.Desc,
-                Status = IssueStatus.TO_DO,
+                Status = model.Status,
                 Priority = model.Priority,
                 Type = model.Type,
                 ProjectId = model.ProjectId,
-                CreatorUserId = _userManager.GetUserId(this.User)
+                CreatorUserId = _userManager.GetUserId(this.User),
+                AssignedUserId = model.AssignedUserId
             };
 
             _context.Issues.Add(issue);
             _context.SaveChanges();
 
-            
-            return RedirectToAction("Details", "Project", new {pid = model.ProjectId});
+
+            return Redirect(backUrl);
         }
 
         [HttpGet]
@@ -279,6 +319,7 @@ namespace IssueTracker.Controllers
                 Type = issue.Type,
                 AssignedUserId = issue.AssignedUserId,
                 ProjectTitle = issue.Project.Title,
+                ProjectId = issue.Project.Id,
                 AssignableUsers = assignableUsers
             };            
 

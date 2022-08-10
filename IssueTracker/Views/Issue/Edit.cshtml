@@ -11,30 +11,60 @@
 
 
 <div class="edit-issue-container container">
-    <div class="d-flex align-items-center justify-content-between">
-        <span class="h6 text-muted my-3 mx-1">Project: @Model.ProjectTitle</span>
+    <div class="my-2 mx-1 d-flex align-items-center justify-content-between">
+        <span class="h6 text-muted">Project: @Model.ProjectTitle</span>
         <a class="btn btn-sm btn-primary" href="@ViewBag.BackUrl">Back</a>
-    </div>    
-    <div class="card box-shadow shadow">
-        <div class="card-body">        
-            <span class="align-middle h5">Issue Title</span>
-            <button tag="btn-edit-title" class="btn">
-                <i class="bi bi-pencil-fill"></i>
-            </button>
+    </div> 
+    <div class="card box-shadow shadow">        
+        <div class="card-body">
             <div>
-                <span class="fs-4 align-middle">@Model.Title</span>            
+                <div class="display-title-container">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <span class="align-middle h5">Issue Title</span>
+                            <i tag="btn-edit-title" role="button" class="bi bi-pencil-fill mx-1 align-bottom"></i>
+                        </div>
+                        <form asp-action="Delete" asp-route-backUrl="@ViewBag.BackUrl">
+                            <input type="hidden" asp-for="@Model.Id" />
+                            <input hidden asp-for="@Model.ProjectId" />
+                            <button class="bg-white border-0" type="submit"><i class="text-danger bi-trash2-fill"></i></button>                            
+                        </form>
+                    </div>
+                    
+                    <span class="display-title fs-4 d-block my-2">@Model.Title</span>   
+                </div>
+                
+                               
+                <div class="edit-title-container" hidden>
+                    <span class="align-middle h5">Issue Title</span>
+                    <input class="edit-title-input form-control fs-4 my-2" issueId="@Model.Id" value="@Model.Title" />
+                    <div class="my-2">
+                        <button tag="edit-title-submit" class="btn-sm btn-primary">Submit</button>
+                        <button tag="edit-title-cancel" class="btn-sm btn-secondary">Cancel</button>
+                    </div>                
+                </div>
             </div>
+            
+            
         </div>
     </div>
 
     <div class="card box-shadow shadow mt-3">
         <div class="card-body">
-            <span class="align-middle h5">Description</span>
-            <button tag="btn-edit-desc" class="btn">
-                <i class="bi bi-pencil-fill"></i>
-            </button>
-            <div>
-                <span class="align-middle">@Model.Desc</span>
+            <div class="display-desc-container">
+                <span class="align-middle h5">Description</span>
+                <i tag="btn-edit-desc" role="button" class="bi bi-pencil-fill align-bottom mx-1"></i>
+                <span class="display-desc d-block my-2">@Model.Desc</span>
+            </div>
+            
+            <div class="edit-desc-container" hidden>
+                <span class="align-middle h5">Description</span>
+                <textarea issueId="@Model.Id" class="edit-desc-input form-control my-2" rows="3">@Model.Desc</textarea>
+
+                <div class="my-3">
+                    <button tag="edit-desc-submit" class="btn-sm btn-primary">Submit</button>
+                    <button tag="edit-desc-cancel" class="btn-sm btn-secondary">Cancel</button>
+                </div>
             </div>
         </div>
     </div>

@@ -109,6 +109,46 @@ function updateIssueAssignedUser(event) {
     });
 }
 
+function updateIssueTitle(event) {
+    let inputTitleString = $(".edit-title-input").val();
+    let issueId = $(".edit-title-input").attr("issueId");
+    console.log(inputTitleString, issueId);
+    $.ajax({
+        type: 'POST',
+        url: "/Issue/UpdateTitle",
+        data: {
+            id: issueId,
+            title: inputTitleString
+        },
+        success: function (result) {
+            console.log(['result', result]);
+            $(".display-title-container").attr("hidden", false);
+            $(".edit-title-container").attr("hidden", true);
+            $(".display-title").text(result);
+        }
+    });
+}
+
+function updateIssueDesc(event) {
+    let inputDescString = $(".edit-desc-input").val();
+    let issueId = $(".edit-desc-input").attr("issueId");
+    console.log(inputDescString, issueId);
+    $.ajax({
+        type: 'POST',
+        url: "/Issue/UpdateDesc",
+        data: {
+            id: issueId,
+            desc: inputDescString
+        },
+        success: function (result) {
+            console.log(['result', result]);
+            $(".display-desc-container").attr("hidden", false);
+            $(".edit-desc-container").attr("hidden", true);
+            $(".display-desc").text(result);
+        }
+    });
+}
+
 function sortIssues(event) {
     $.ajax({
         type: "GET",
@@ -144,11 +184,29 @@ $(document).ready(function () {
         //)
         switch ($(event.target).attr("tag")) {
             case "btn-edit-title":
-                console.log("title edit clicked");
+                $(".display-title-container").attr("hidden", true);
+                $(".edit-title-container").attr("hidden", false);
+                break;
+            case "edit-title-submit":
+                updateIssueTitle(event)
+                break;
+            case "edit-title-cancel":
+                $(".display-title-container").attr("hidden", false);
+                $(".edit-title-container").attr("hidden", true);
                 break;
             case "btn-edit-desc":
                 console.log("description edit clicked");
+                $(".display-desc-container").attr("hidden", true);
+                $(".edit-desc-container").attr("hidden", false);
                 break;
+            case "edit-desc-submit":
+                updateIssueDesc(event);
+                break;
+            case "edit-desc-cancel":
+                $(".display-desc-container").attr("hidden", false);
+                $(".edit-desc-container").attr("hidden", true);
+                break;
+
         }
     });
 
@@ -165,6 +223,7 @@ $(document).ready(function () {
                 break;
         }
     }).click(function (event) {
+        
         if ($(event.target).attr("tag") == "sort-button") {
             sortIssues(event);
         }

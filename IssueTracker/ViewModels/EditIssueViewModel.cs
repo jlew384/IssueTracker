@@ -15,6 +15,8 @@ namespace IssueTracker.ViewModels
 
         public string? ProjectTitle { get; set; }
 
+        public int? ProjectId { get; set; }
+
         public IEnumerable<ApplicationUser>? AssignableUsers { get; set; }
     }
 }
