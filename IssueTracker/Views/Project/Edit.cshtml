@@ -1,10 +1,91 @@
-﻿@model EditProjectViewModel
+﻿@model Project
 
 @{
     ViewData["Title"] = "Edit Project";
 }
-<form asp-controller="Project" asp-action="Edit">
-    <div class="card">
+
+
+<div class="edit-project-container container p-0" asp-controller="Project" asp-action="Edit">
+    <div class="my-2 mx-1 d-flex align-items-center justify-content-between">
+        <span class="h6 text-muted">Edit Project</span>
+        <a class="btn btn-sm btn-primary" href="@ViewBag.BackUrl">Back</a>
+    </div> 
+
+    <div class="card box-shadow shadow">        
+        <div class="card-body">
+            <div>
+                <div class="display-title-container">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <span class="align-middle h5">Project Title</span>
+                            <i tag="btn-edit-title" role="button" class="bi bi-pencil-fill mx-1 align-bottom"></i>
+                        </div>
+                    </div>
+                    
+                    <span class="display-title fs-4 d-block my-2">@Model.Title</span>   
+                </div>
+                
+                               
+                <div class="edit-title-container" hidden>
+                    <span class="align-middle h5">Project Title</span>
+                    <input class="edit-title-input form-control fs-4 my-2" projectId="@Model.Id" value="@Model.Title" />
+                    <div class="my-2">
+                        <button tag="edit-title-submit" class="btn-sm btn-primary">Submit</button>
+                        <button tag="edit-title-cancel" class="btn-sm btn-secondary">Cancel</button>
+                    </div>                
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+
+    <div class="card box-shadow shadow mt-3">
+        <div class="card-body">
+            <div class="display-desc-container">
+                <span class="align-middle h5">Description</span>
+                <i tag="btn-edit-desc" role="button" class="bi bi-pencil-fill align-bottom mx-1"></i>
+                <span class="display-desc d-block my-2">@Model.Desc</span>
+            </div>
+            
+            <div class="edit-desc-container" hidden>
+                <span class="align-middle h5">Description</span>
+                <textarea projectId="@Model.Id" class="edit-desc-input form-control my-2" rows="3">@Model.Desc</textarea>
+
+                <div class="my-3">
+                    <button tag="edit-desc-submit" class="btn-sm btn-primary">Submit</button>
+                    <button tag="edit-desc-cancel" class="btn-sm btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card box-shadow shadow mt-3">
+        <div class="card-body">
+            <h5 class="align-middle">Assigned Users</h5>
+            <table class="table">
+                <thead>
+                    <th>User Name</th>
+                </thead>
+                @foreach(ApplicationUser user  in Model.Users)
+                {
+                   <tr>
+                       <td>
+                           @user.UserName
+                       </td>
+                   </tr> 
+                }
+            </table>
+            <a class="mt-3 btn btn-primary" asp-controller="Administration" asp-action="ManageUsersInProject" asp-route-pid="@Model.Id">Manage Assigned Users</a>
+        </div>
+    </div>    
+</div>
+
+
+
+
+
+    @*<div class="card">
         <div class="card-header">
             <h1>@Model.Title</h1>
             <h4>Edit Project</h4>
@@ -34,7 +115,7 @@
 
 <div>
     
-</div>
+</div>*@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

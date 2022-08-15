@@ -54,7 +54,7 @@ namespace IssueTracker.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View(new MyProjectsViewModel { UserId = _userManager.GetUserAsync(User).Result.Id});
+            return View(_context.Projects.ToList());
         }
 
         [HttpGet]
@@ -70,6 +70,14 @@ namespace IssueTracker.Controllers
                     userId = userId
                 });
         }
+
+        [HttpGet]
+        public IActionResult ProjectTable()
+        {
+            return ViewComponent("ProjectTable");
+        }
+
+
 
 
 
@@ -137,12 +145,8 @@ namespace IssueTracker.Controllers
                 return NotFound();
             }
 
-            EditProjectViewModel model = new EditProjectViewModel();
-            model.Id = project.Id;
-            model.Title = project.Title;
-            model.Desc = project.Desc;
-            model.RefererUrl = Request.Headers["Referer"].ToString();
-            return View(model);
+            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
+            return View(project);
         }
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
@@ -185,28 +189,27 @@ namespace IssueTracker.Controllers
             {
                 return NotFound();
             }
-            
-            return View(new DeleteProjectViewModel
-            {
-                Project = project,
-                RefererUrl = Request.Headers["Referer"].ToString()
-            });
+
+            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
+
+
+            return View(project);
         }
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
-        public async Task<IActionResult> Delete(DeleteProjectViewModel model)
+        public async Task<IActionResult> Delete(Project model)
         {
-            if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(model.Project.Id))
+            if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(model.Id))
 
             {
                 return NotFound();
             }
 
-            _context.Projects.Remove(model.Project);
+            _context.Projects.Remove(model);
             _context.SaveChanges();
-            await RemoveProjectOwnerClaim(model.Project.Id);
-            return Redirect(model.RefererUrl);
+            await RemoveProjectOwnerClaim(model.Id);
+            return RedirectToAction("Index");
         }
 
 

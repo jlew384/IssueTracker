@@ -1,0 +1,44 @@
+﻿@using System.Security.Claims;
+@model List<Project>
+
+@{
+    
+    var user = User as ClaimsPrincipal;
+    string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+    var ownerClaimValues = user.Claims
+        .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+        .Select(c => Int32.Parse(c.Value))
+        .ToList();
+}
+      
+
+@foreach(Project project in Model) {
+    <div class="project-card card shadow box-shadow mt-3">
+        <div class="card-body">
+            <a class="stretched-link" asp-action="Index" asp-controller="Issue" asp-route-pid="@project.Id"></a>
+            <div class="d-flex justify-content-between">
+                <h5>@Html.DisplayFor(projectItem => project.Title)</h5>
+                <div>
+                    @if(User.IsInRole(UserRoles.ADMIN) || (User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(project.Id)))
+                    {
+                        <span class="text-nowrap">
+                            <a class="m-1 text-muted position-relative" style="z-index: 10;" asp-controller="Project" asp-action="Edit" asp-route-pid="@project.Id"><i class="bi bi-pencil-fill"></i></a>
+                            <a class="m-1 text-muted position-relative" style="z-index: 10;" asp-controller="Project" asp-action="Delete" asp-route-pid="@project.Id"><i class="bi bi-trash2-fill"></i></a>
+                        </span>
+                    
+                    }  
+                </div>
+            </div>            
+            <p>@Html.DisplayFor(projectItem => project.Desc)</p>
+            <hr>
+             <div>   
+                <span>Created: @DateTimeHelpers.GetSimpleElapsedTime(project.DateCreated)</span>
+                @if(project.DateModified != null)
+                {
+                    <span class="mx-3">Modified: @DateTimeHelpers.GetSimpleElapsedTime(project.DateModified)</span>
+                }
+            </div>
+            
+        </div>        
+    </div>
+}

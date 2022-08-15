@@ -1,104 +1,15 @@
-﻿@model MyProjectsViewModel
+﻿@model List<Project>
 
 @{
     ViewData["Title"] = "All Projects";
 }
 
-<div id="default-projects-container">
+
+<div class="container p-0">
+    <h2 class="text-center">Projects</h2>
+</div>
+<div class="project-list-container container p-0">
+    @await Component.InvokeAsync("ProjectTable")
 </div>
 
-@section scripts {
-    <script>
-const componentContainers = {
-    projectLists: {
-        default: "#default-projects-container",
-        managed: "#managed-projects-container",
-        assigned: "#assigned-projects-container",
-        assigned_only: "#assigned-only-projects-container"
-    }
-}
 
-let components = {
-    projectLists: {
-        default: {
-            type: 'GET',
-            url: "@Url.Action("ProjectList", "Project")",
-            data: {
-                type: "default",
-                sortOrder: "@ProjectSortOrder.CREATED_DATE_DESC",
-                searchString: "",
-                pageIndex: 1,
-                userId: '@Model.UserId',
-            },
-            success: function(result) {
-                $(componentContainers.projectLists.default).html(result);
-            }
-        },
-        managed: {
-            type: 'GET',
-            url: "@Url.Action("ProjectList", "Project")",
-            data: {
-                type: "managed",
-                sortOrder: "@ProjectSortOrder.CREATED_DATE_DESC",
-                searchString: "",
-                pageIndex: 1,
-                userId: '@Model.UserId',
-            },
-            success: function(result) {
-                $(componentContainers.projectLists.managed).html(result);
-            }
-        },
-        assigned: {
-            type: 'GET',
-            url: "@Url.Action("ProjectList", "Project")",
-            data: {
-                type: "assigned",
-                sortOrder: "@ProjectSortOrder.CREATED_DATE_DESC",
-                searchString: "",
-                pageIndex: 1,
-                userId: '@Model.UserId',
-            },
-            success: function(result) {
-                $(componentContainers.projectLists.assigned).html(result);
-            }
-        },
-        assigned_only: {
-            type: 'GET',
-            url: "@Url.Action("ProjectList", "Project")",
-            data: {
-                type: "assigned_only",
-                sortOrder: "@ProjectSortOrder.CREATED_DATE_DESC",
-                searchString: "",
-                pageIndex: 1,
-                userId: '@Model.UserId',
-            },
-            success: function(result) {
-                $(componentContainers.projectLists.assigned_only).html(result);
-            }
-        }
-    }
-}
-
-function sortProjectList(listType, sortOrder) {
-    if (sortOrder == components.projectLists[listType].data.sortOrder) {
-        sortOrder += "_DESC";
-    }
-    components.projectLists[listType].data.sortOrder = sortOrder;
-    $.ajax(components.projectLists[listType]);
-}
-
-function searchProjectList(listType) {
-    components.projectLists[listType].data.searchString = $(componentContainers.projectLists[listType]).find('.search-input').val();
-    $.ajax(components.projectLists[listType]);
-}
-
-function selectProjectPage(listType, pageIndex) {
-    components.projectLists[listType].data.pageIndex = pageIndex;
-    $.ajax(components.projectLists[listType]);
-}
-
-$(document).ready(function() {
-    $.ajax(components.projectLists.default);
-})
-    </script>
-}

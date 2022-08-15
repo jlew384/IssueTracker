@@ -163,7 +163,37 @@ function sortIssues(event) {
 }
 
 $(document).ready(function () {
-    $('.edit-issue-container').change(function (event) {
+    $(".edit-project-container").click(function (event) {
+        switch ($(event.target).attr("tag")) {
+            case "btn-edit-title":
+                $(".display-title-container").attr("hidden", true);
+                $(".edit-title-container").attr("hidden", false);
+                break;
+            case "edit-title-submit":
+                //updateProjectTitle(event)
+                break;
+            case "edit-title-cancel":
+                $(".display-title-container").attr("hidden", false);
+                $(".edit-title-container").attr("hidden", true);
+                break;
+            case "btn-edit-desc":
+                console.log("description edit clicked");
+                $(".display-desc-container").attr("hidden", true);
+                $(".edit-desc-container").attr("hidden", false);
+                break;
+            case "edit-desc-submit":
+                //updateProjectDesc(event);
+                break;
+            case "edit-desc-cancel":
+                $(".display-desc-container").attr("hidden", false);
+                $(".edit-desc-container").attr("hidden", true);
+                break;
+
+        }
+    });
+
+
+    $(".edit-issue-container").change(function (event) {
         switch ($(event.target).attr("tag")) {
             case "status-dropdown":
                 updateIssueStatus(event);

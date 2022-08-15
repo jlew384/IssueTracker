@@ -1,48 +1,50 @@
-﻿@model DeleteProjectViewModel
+﻿@model Project
 
 @{
     ViewData["Title"] = "Delete Project";
 }
-<div class="card">
-    <div class="card-header">
-        <h4>Are you sure you want to delete the "@Model.Project.Title" project?</h4>
+
+
+<div class="container p-0">
+    <div class="card shadow box-shadow">
+        <div class="card-header">
+            <h4>Are you sure you want to delete the "@Model.Title" project?</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class = "col-sm-2">
+                    @Html.DisplayNameFor(model => model.Title)
+                </dt>
+                <dd class = "col-sm-10">
+                    @Html.DisplayFor(model => model.Title)
+                </dd>
+                <dt class = "col-sm-2">
+                    @Html.DisplayNameFor(model => model.Desc)
+                </dt>
+                <dd class = "col-sm-10">
+                    @Html.DisplayFor(model => model.Desc)
+                </dd>
+                <dt class = "col-sm-2">
+                    @Html.DisplayNameFor(model => model.DateCreated)
+                </dt>
+                <dd class = "col-sm-10">
+                    @DateTimeHelpers.GetSimpleElapsedTime(Model.DateCreated)
+                </dd>
+                <dt class = "col-sm-2">
+                    @Html.DisplayNameFor(model => model.DateModified)
+                </dt>
+                <dd class = "col-sm-10">
+                    @DateTimeHelpers.GetSimpleElapsedTime(Model.DateModified)
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <form class="d-flex justify-content-between" asp-action="Delete">
+                <a class="btn btn-primary" href="@ViewBag.BackUrl">Cancel</a>
+                <input type="hidden" asp-for="Id" />
+                <input type="submit" value="Delete Project" class="btn btn-danger" />            
+            </form>
+        </div>    
     </div>
-    <div class="card-body">
-        <dl class="row">
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Project.Title)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Project.Title)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Project.Desc)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Project.Desc)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Project.DateCreated)
-            </dt>
-            <dd class = "col-sm-10">
-                @DateTimeHelpers.GetSimpleElapsedTime(Model.Project.DateCreated)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Project.DateModified)
-            </dt>
-            <dd class = "col-sm-10">
-                @DateTimeHelpers.GetSimpleElapsedTime(Model.Project.DateModified)
-            </dd>
-        </dl>
-    </div>
-    <div class="card-footer">
-        <form class="d-flex justify-content-between" asp-action="Delete">
-            <a class="btn btn-primary" href="@Model.RefererUrl">Cancel</a>
-            <input type="hidden" asp-for="RefererUrl" />
-            <input type="hidden" asp-for="Project.Id" />
-            <input type="submit" value="Delete Project" class="btn btn-danger" />
-            
-        </form>
-    </div>
-    
 </div>
+
