@@ -163,6 +163,37 @@ function sortIssues(event) {
 }
 
 $(document).ready(function () {
+
+    $(".project-list-container").click(function (event) {
+        switch ($(event.target).attr("tag")) {
+            case "delete-project-btn":
+                let projectId = $(event.target).attr("projectId");
+                let projectTitle = $(event.target).attr("projectTitle");
+                $(".modal-title").text(projectTitle);
+                $("#confirm-modal-btn").attr("projectId", projectId);
+                $(".delete-project-modal").modal("show");                
+                break;
+            case "close-modal-btn":
+                $(".delete-project-modal").modal("hide");
+                break;
+            case "confirm-modal-btn":
+                console.log("delete project", $(event.target).attr("projectId"));
+                $.ajax({
+                    type: "POST",
+                    url: "Project/Delete",
+                    data: {
+                        pid: $(event.target).attr("projectId")
+                    },
+                    success: function (result) {
+                        let pid = $(event.target).attr("projectId");
+                        $("#" + pid).attr("hidden", true);
+                    }
+                });
+                $(".delete-project-modal").modal("hide");
+                break;
+        }
+    });
+
     $(".edit-project-container").click(function (event) {
         switch ($(event.target).attr("tag")) {
             case "btn-edit-title":

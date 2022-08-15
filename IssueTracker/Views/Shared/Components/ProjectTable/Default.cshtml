@@ -13,7 +13,7 @@
       
 
 @foreach(Project project in Model) {
-    <div class="project-card card shadow box-shadow mt-3">
+    <div id="@project.Id" class="project-card card shadow box-shadow mt-3">
         <div class="card-body">
             <a class="stretched-link" asp-action="Index" asp-controller="Issue" asp-route-pid="@project.Id"></a>
             <div class="d-flex justify-content-between">
@@ -23,7 +23,7 @@
                     {
                         <span class="text-nowrap">
                             <a class="m-1 text-muted position-relative" style="z-index: 10;" asp-controller="Project" asp-action="Edit" asp-route-pid="@project.Id"><i class="bi bi-pencil-fill"></i></a>
-                            <a class="m-1 text-muted position-relative" style="z-index: 10;" asp-controller="Project" asp-action="Delete" asp-route-pid="@project.Id"><i class="bi bi-trash2-fill"></i></a>
+                            <i tag="delete-project-btn" projectId="@project.Id" projectTitle="@project.Title" class="m-1 text-muted position-relative bi bi-trash2-fill" style="z-index: 10;"></i>
                         </span>
                     
                     }  
@@ -37,8 +37,27 @@
                 {
                     <span class="mx-3">Modified: @DateTimeHelpers.GetSimpleElapsedTime(project.DateModified)</span>
                 }
-            </div>
-            
+            </div>            
         </div>        
     </div>
 }
+
+    <div class="delete-project-modal modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Modal title</h5>
+            <button tag="close-modal-btn" type="button" class="close" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this project?</p>
+          </div>
+          <div class="modal-footer">
+            <button tag="confirm-modal-btn" id="confirm-modal-btn" type="button" class="btn btn-danger">Delete</button>
+            <button tag="close-modal-btn" type="button" class="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>

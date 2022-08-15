@@ -77,45 +77,25 @@ namespace IssueTracker.Controllers
         }
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
-        [HttpGet]
-        public async Task<IActionResult> Delete(int? pid, string? refererUrl)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int pid)
         {
-            if (pid == null || pid == 0)
-            {
-                return NotFound();
-            }
-
             if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(pid))
+
             {
                 return NotFound();
             }
 
-            var project = _context.Projects.Find(pid);
+            Project project = _context.Projects.Find(pid);
 
             if (project == null)
             {
                 return NotFound();
             }
 
-            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
-
-
-            return View(project);
-        }
-
-        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
-        [HttpPost]
-        public async Task<IActionResult> Delete(Project model)
-        {
-            if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(model.Id))
-
-            {
-                return NotFound();
-            }
-
-            _context.Projects.Remove(model);
+            _context.Projects.Remove(project);
             _context.SaveChanges();
-            await RemoveProjectOwnerClaim(model.Id);
+            await RemoveProjectOwnerClaim(pid);
             return RedirectToAction("Index");
         }
 
