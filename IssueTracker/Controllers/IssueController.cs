@@ -22,23 +22,6 @@ namespace IssueTracker.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult IssueList(string type, string sortOrder, string searchString, int? pageIndex, string statusFilter, string priorityFilter, string typeFilter, int? pid, string userId)
-        {
-            return ViewComponent("IssueList",
-                new
-                {
-                    type = type,
-                    sortOrder = sortOrder,
-                    searchString = searchString,
-                    pageIndex = pageIndex,
-                    statusFilter = statusFilter,
-                    priorityFilter = priorityFilter,
-                    typeFilter = typeFilter,
-                    pid = pid,
-                    userId = userId
-                });
-        }
-
         public IActionResult IssueTable(string filter, string sortField, string sortDirection)
         {
             if(filter == null)
@@ -135,6 +118,123 @@ namespace IssueTracker.Controllers
 
             return View(model);
         }
+
+        
+
+        [HttpGet]
+        public async Task<IActionResult> Create(int? pid)
+        {
+            Project? project = _context.Projects.Find(pid);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            IList<ApplicationUser> submitters = await _userManager.GetUsersInRoleAsync(UserRoles.SUB);
+            IEnumerable<ApplicationUser> assignableUsers = project.Users.Except(submitters);
+
+            CreateIssueViewModel model = new CreateIssueViewModel()
+            {
+                ProjectTitle = project.Title,
+                ProjectId = project.Id,
+                AssignableUsers = assignableUsers
+            };
+
+            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
+            return View(model);
+        }
+
+
+
+        [HttpPost]
+        public IActionResult Create(CreateIssueViewModel model, string backUrl)
+        {
+            if(!ModelState.IsValid)
+            {
+                return NotFound();
+            }
+
+            Issue issue = new Issue()
+            {
+                Title = model.Title,
+                Desc = model.Desc,
+                Status = model.Status,
+                Priority = model.Priority,
+                Type = model.Type,
+                ProjectId = model.ProjectId,
+                CreatorUserId = _userManager.GetUserId(this.User),
+                AssignedUserId = model.AssignedUserId
+            };
+
+            _context.Issues.Add(issue);
+            _context.SaveChanges();
+
+
+            return Redirect(backUrl);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            Issue? issue = _context.Issues.Find(id);
+            if (issue == null) return NotFound();
+
+            IList<ApplicationUser> submitters = await _userManager.GetUsersInRoleAsync(UserRoles.SUB);
+            IEnumerable<ApplicationUser> assignableUsers = issue.Project.Users.Except(submitters);
+
+            EditIssueViewModel model = new EditIssueViewModel()
+            {
+                Id = issue.Id,
+                Title = issue.Title,
+                Desc = issue.Desc,
+                Priority = issue.Priority,
+                Status = issue.Status,
+                Type = issue.Type,
+                AssignedUserId = issue.AssignedUserId,
+                ProjectTitle = issue.Project.Title,
+                ProjectId = issue.Project.Id,
+                AssignableUsers = assignableUsers
+            };            
+
+            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(EditIssueViewModel model, string backUrl)
+        {
+            Issue? issue = _context.Issues.Find(model.Id);
+            if (!ModelState.IsValid || issue == null)
+            {
+                return NotFound();
+            }
+
+            issue.Title = model.Title;
+            issue.Desc = model.Desc;
+            issue.AssignedUser = _context.ApplicationUsers.Find(model.AssignedUserId);
+            issue.Status = model.Status;
+            issue.Priority = model.Priority;
+            issue.Type = model.Type;
+            issue.Modified = DateTime.UtcNow;
+
+            _context.Issues.Update(issue);
+            _context.SaveChanges();
+            return Redirect(backUrl);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(int? id, string backUrl)
+        {
+            Issue? issue = _context.Issues.Find(id);
+            if (issue == null) return NotFound();
+
+            _context.Issues.Remove(issue);
+            _context.SaveChanges();
+
+            return Redirect(backUrl);
+        }
+
 
         [HttpPost]
         public string UpdateStatus(int id, string status)
@@ -245,149 +345,6 @@ namespace IssueTracker.Controllers
             _context.SaveChanges();
             return desc;
 
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Create(int? pid)
-        {
-            Project? project = _context.Projects.Find(pid);
-
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            IList<ApplicationUser> submitters = await _userManager.GetUsersInRoleAsync(UserRoles.SUB);
-            IEnumerable<ApplicationUser> assignableUsers = project.Users.Except(submitters);
-
-            CreateIssueViewModel model = new CreateIssueViewModel()
-            {
-                ProjectTitle = project.Title,
-                ProjectId = project.Id,
-                AssignableUsers = assignableUsers
-            };
-
-            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
-            return View(model);
-        }
-
-
-
-        [HttpPost]
-        public IActionResult Create(CreateIssueViewModel model, string backUrl)
-        {
-            if(!ModelState.IsValid)
-            {
-                return NotFound();
-            }
-
-            Issue issue = new Issue()
-            {
-                Title = model.Title,
-                Desc = model.Desc,
-                Status = model.Status,
-                Priority = model.Priority,
-                Type = model.Type,
-                ProjectId = model.ProjectId,
-                CreatorUserId = _userManager.GetUserId(this.User),
-                AssignedUserId = model.AssignedUserId
-            };
-
-            _context.Issues.Add(issue);
-            _context.SaveChanges();
-
-
-            return Redirect(backUrl);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            Issue? issue = _context.Issues.Find(id);
-            if (issue == null) return NotFound();
-
-            IList<ApplicationUser> submitters = await _userManager.GetUsersInRoleAsync(UserRoles.SUB);
-            IEnumerable<ApplicationUser> assignableUsers = issue.Project.Users.Except(submitters);
-
-            EditIssueViewModel model = new EditIssueViewModel()
-            {
-                Id = issue.Id,
-                Title = issue.Title,
-                Desc = issue.Desc,
-                Priority = issue.Priority,
-                Status = issue.Status,
-                Type = issue.Type,
-                AssignedUserId = issue.AssignedUserId,
-                ProjectTitle = issue.Project.Title,
-                ProjectId = issue.Project.Id,
-                AssignableUsers = assignableUsers
-            };            
-
-            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
-            return View(model);
-        }
-
-        [HttpPost]
-        public IActionResult Edit(EditIssueViewModel model, string backUrl)
-        {
-            Issue? issue = _context.Issues.Find(model.Id);
-            if (!ModelState.IsValid || issue == null)
-            {
-                return NotFound();
-            }
-
-            issue.Title = model.Title;
-            issue.Desc = model.Desc;
-            issue.AssignedUser = _context.ApplicationUsers.Find(model.AssignedUserId);
-            issue.Status = model.Status;
-            issue.Priority = model.Priority;
-            issue.Type = model.Type;
-            issue.Modified = DateTime.UtcNow;
-
-            _context.Issues.Update(issue);
-            _context.SaveChanges();
-            return Redirect(backUrl);
-        }
-
-        [HttpGet]
-        public IActionResult Delete(int id)
-        {
-            Issue? issue = _context.Issues.Find(id);
-            if (issue == null) return NotFound();
-
-            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
-            return View(issue);
-        }
-
-        [HttpPost]
-        public IActionResult Delete(int? id, string backUrl)
-        {
-            Issue? issue = _context.Issues.Find(id);
-            if (issue == null) return NotFound();
-
-            _context.Issues.Remove(issue);
-            _context.SaveChanges();
-
-            return Redirect(backUrl);
-        }
-
-        [HttpGet]
-        public IActionResult Details(int id)
-        {
-            Issue? issue = _context.Issues.Find(id);
-            if (issue == null) return NotFound();
-            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
-            return View(issue);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> MyIssues()
-        {
-            ApplicationUser user = await _userManager.GetUserAsync(User);
-
-            MyIssuesViewModel model = new MyIssuesViewModel { UserId = user.Id };
-            
-            return View(model);
         }
     }
 }

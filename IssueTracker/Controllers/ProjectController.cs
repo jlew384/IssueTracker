@@ -24,110 +24,37 @@ namespace IssueTracker.Controllers
             _userManager = userManager;
         }
 
-        private async Task AddProjectOwnerClaim(ApplicationUser projectOwner, int? projectId)
-        {
-            Claim projectOwnerClaim = new Claim(UserClaimTypes.PROJECT_OWNER, projectId.ToString());
-            await RemoveProjectOwnerClaim(projectOwnerClaim);
-            await _userManager.AddClaimAsync(projectOwner, projectOwnerClaim);
-        }
-
-        private async Task RemoveProjectOwnerClaim(int? projectId)
-        {
-            Claim projectOwnerClaim = new Claim(UserClaimTypes.PROJECT_OWNER, projectId.ToString());
-            await RemoveProjectOwnerClaim(projectOwnerClaim);
-        }
-
-        private async Task RemoveProjectOwnerClaim(Claim projectOwnerClaim)
-        {
-            IList<ApplicationUser> users = await _userManager.GetUsersForClaimAsync(projectOwnerClaim);
-            foreach (ApplicationUser user in users)
-            {
-                await _userManager.RemoveClaimAsync(user, projectOwnerClaim);
-            }
-        }
-
-        private bool CheckForProjectOwnerClaim(int? projectId)
-        {           
-            return User.HasClaim(x => x.Type == UserClaimTypes.PROJECT_OWNER && x.Value == projectId.ToString());
-        }
-
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return View(_context.Projects.ToList());
-        }
-
-        [HttpGet]
-        public IActionResult ProjectList(string type, string sortOrder, string searchString, int? pageIndex, string userId)
-        {
-            return ViewComponent("ProjectList",
-                new
-                {
-                    type = type,
-                    sortOrder = sortOrder,
-                    searchString = searchString,
-                    pageIndex = pageIndex,
-                    userId = userId
-                });
-        }
-
         [HttpGet]
         public IActionResult ProjectTable()
         {
             return ViewComponent("ProjectTable");
         }
 
-
-
-
-
-
         [HttpGet]
-        public async Task<IActionResult> MyProjects()
+        public IActionResult Index()
         {
-            MyProjectsViewModel model = new MyProjectsViewModel();
-            ApplicationUser user = await _userManager.GetUserAsync(User);
-            var claims = await _userManager.GetClaimsAsync(user);
-            List<int> ownedProjectIds = claims
-                .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
-                .Select(c => Int32.Parse(c.Value))
-                .ToList();
-            
-            foreach(Project project in user.Projects)
-            {
-                if(ownedProjectIds.Contains(project.Id))
-                {
-                    model.ManagedProjects.Add(project);
-                }
-                else
-                {
-                    model.AssignedProjects.Add(project);
-                }
-            }
-            model.UserId = user.Id;
-            return View(model);
-        }
+            return View(_context.Projects.ToList());
+        }        
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpGet]        
         public async Task<IActionResult> Create()
         {
-            CreateProjectViewModel model = new CreateProjectViewModel();
-            model.RefererUrl = Request.Headers["Referer"].ToString();
-            return View(model);
+            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
+            return View();
         }
 
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
-        public async Task<IActionResult> Create(CreateProjectViewModel model)
+        public async Task<IActionResult> Create(Project model)
         {
             ApplicationUser currentUser = await _userManager.GetUserAsync(User);
-            model.Project.Users.Add(currentUser);
-            _context.Projects.Add(model.Project);
+            model.Users.Add(currentUser);
+            _context.Projects.Add(model);
             _context.SaveChanges();
-            await AddProjectOwnerClaim(currentUser, model.Project.Id);
-            return RedirectToAction("ManageUsersInProject", "Administration", new {pid = model.Project.Id } );
+            await AddProjectOwnerClaim(currentUser, model.Id);
+            return RedirectToAction("Index", "Project");
         }
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
@@ -147,26 +74,6 @@ namespace IssueTracker.Controllers
 
             ViewBag.BackUrl = Request.Headers["Referer"].ToString();
             return View(project);
-        }
-
-        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
-        [HttpPost]
-        public async Task<IActionResult> Edit(EditProjectViewModel model)
-        {
-            if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(model.Id))
-            {
-                return NotFound();
-            }
-            
-            Project project = _context.Projects.Find(model.Id);            
-
-            project.Title = model.Title;
-            project.Desc = model.Desc;
-
-            project.DateModified = DateTime.UtcNow;
-            _context.Projects.Update(project);
-            _context.SaveChanges();
-            return Redirect(model.RefererUrl);
         }
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
@@ -212,28 +119,31 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Index");
         }
 
-
-        [HttpGet]
-        public async Task<IActionResult> Details(int? pid)
+        private async Task AddProjectOwnerClaim(ApplicationUser projectOwner, int? projectId)
         {
-            if (pid == null || pid == 0)
+            Claim projectOwnerClaim = new Claim(UserClaimTypes.PROJECT_OWNER, projectId.ToString());
+            await RemoveProjectOwnerClaim(projectOwnerClaim);
+            await _userManager.AddClaimAsync(projectOwner, projectOwnerClaim);
+        }
+
+        private async Task RemoveProjectOwnerClaim(int? projectId)
+        {
+            Claim projectOwnerClaim = new Claim(UserClaimTypes.PROJECT_OWNER, projectId.ToString());
+            await RemoveProjectOwnerClaim(projectOwnerClaim);
+        }
+
+        private async Task RemoveProjectOwnerClaim(Claim projectOwnerClaim)
+        {
+            IList<ApplicationUser> users = await _userManager.GetUsersForClaimAsync(projectOwnerClaim);
+            foreach (ApplicationUser user in users)
             {
-                return NotFound();
+                await _userManager.RemoveClaimAsync(user, projectOwnerClaim);
             }
-            var project = _context.Projects.Find(pid);
+        }
 
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            ApplicationUser user = await _userManager.GetUserAsync(User);
-
-            return View(new ProjectIssuesViewModel { 
-                Project = project, 
-                UserId = user.Id, 
-                RefererUrl = Request.Headers["Referer"].ToString() 
-            });
+        private bool CheckForProjectOwnerClaim(int? projectId)
+        {
+            return User.HasClaim(x => x.Type == UserClaimTypes.PROJECT_OWNER && x.Value == projectId.ToString());
         }
     }
 }
