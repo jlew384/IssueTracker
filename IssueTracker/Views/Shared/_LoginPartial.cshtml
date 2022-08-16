@@ -28,11 +28,11 @@
 {
 
     <li class="nav-item">
-        <a  class="nav-link btn btn-link">@User.Identity?.Name (@role)</a>
+        <a  class="nav-link text-light btn btn-link">@User.Identity?.Name (@role)</a>
     </li>
     <li class="nav-item">
         <form  class="" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Project", new { area = "" })">
-            <button type="submit" class="nav-link btn btn-link">Logout</button>
+            <button type="submit" class="nav-link text-light btn btn-link">Logout</button>
         </form>
     </li>
 }
