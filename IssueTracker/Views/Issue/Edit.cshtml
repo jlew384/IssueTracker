@@ -70,7 +70,7 @@
             <span class="align-middle h5">Information</span>
             <div>
                 <div class="row">
-                    <div class="col-4">
+                    <div class="col-12 col-sm-4">
                         <label asp-for="Status" class="control-label mt-1"></label>
                         @switch(Model.Status)
                         {
@@ -88,11 +88,11 @@
                         
                     </div>
 
-                    <div class="col-4">
+                    <div class="col-12 col-sm-4">
                         <label asp-for="Priority" class="control-label mt-1"></label>
                         <select tag="priority-dropdown" issueId="@Model.Id" asp-for="Priority" class="form-select mt-1" asp-items="@new SelectList(IssuePriority.List)"></select>
                     </div>
-                    <div class="col-4">
+                    <div class="col-12 col-sm-4">
                         <label asp-for="Type" class="control-label mt-1"></label>
                         
                         <select tag="type-dropdown" issueId="@Model.Id" asp-for="Type" class="form-select mt-1" asp-items="@new SelectList(IssueType.List)"></select>
