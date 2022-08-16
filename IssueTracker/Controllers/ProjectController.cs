@@ -33,7 +33,8 @@ namespace IssueTracker.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View(_context.Projects.ToList());
+            HttpContext.Session.Clear();
+            return View();
         }        
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]

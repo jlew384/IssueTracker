@@ -64,13 +64,13 @@ namespace IssueTracker.Components
                 case IssueFilter.PROJECT:
                     return _context.Issues.Where(x => x.ProjectId == _projectId);
                 case IssueFilter.ASSIGNEE:
-                    return _context.Issues.Where(x => x.AssignedUserId == _userId);
+                    return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.AssignedUserId == _userId);
                 case IssueFilter.CREATOR:
-                    return _context.Issues.Where(x => x.CreatorUserId == _userId);
+                    return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.CreatorUserId == _userId);
                 case IssueFilter.ACTIVE:
-                    return _context.Issues.Where(x => x.Status != IssueStatus.DONE);
+                    return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.Status != IssueStatus.DONE);
                 case IssueFilter.INACTIVE:
-                    return _context.Issues.Where(x => x.Status == IssueStatus.DONE);
+                    return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.Status == IssueStatus.DONE);
                 default:
                     return _context.Issues.Where(x => x.ProjectId == _projectId);
             }

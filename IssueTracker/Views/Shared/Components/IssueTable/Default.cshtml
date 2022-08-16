@@ -120,60 +120,62 @@
             </tr>
         </thead>
         <tbody>
-            @if(Model.Issues.Count > 0)
+            @foreach(var issue in Model.Issues)
             {
-                foreach(var issue in Model.Issues)
-                {
-                    <tr tag="issue-row" issueId="@issue.Id">
-                        <td>
-                            @Html.DisplayFor(issueItem => issue.Title)
-                        </td>
-                        <td class="d-none d-xxl-table-cell text-nowrap">
-                            @Html.DisplayFor(issueItem => issue.CreatorUser.UserName)
-                        </td>
-                        <td class="text-muted">
-                            @DateTimeHelpers.GetSimpleElapsedTime(issue.Created)
-                        </td>
-                        <td>
-                            @switch(issue.Status)
-                            {
-                                case IssueStatus.TO_DO:
-                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-success text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
-                                    break;
-                                case IssueStatus.IN_PROGRESS:
-                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-info text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
-                                    break;
-                                case IssueStatus.DONE:
-                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-secondary text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
-                                    break;
-                            }
+                <tr tag="issue-row" issueId="@issue.Id">
+                    <td>
+                        @Html.DisplayFor(issueItem => issue.Title)
+                    </td>
+                    <td class="d-none d-xxl-table-cell text-nowrap">
+                        @Html.DisplayFor(issueItem => issue.CreatorUser.UserName)
+                    </td>
+                    <td class="text-muted">
+                        @DateTimeHelpers.GetSimpleElapsedTime(issue.Created)
+                    </td>
+                    <td>
+                        @switch(issue.Status)
+                        {
+                            case IssueStatus.TO_DO:
+                                <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-success text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
+                                break;
+                            case IssueStatus.IN_PROGRESS:
+                                <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-info text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
+                                break;
+                            case IssueStatus.DONE:
+                                <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-secondary text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
+                                break;
+                        }
                             
-                        </td>
-                        <td class="d-none d-sm-table-cell">
-                            <select tag="priority-dropdown" asp-for="@issue.Priority" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssuePriority.List)" ></select>
-                        </td>
-                        <td class="d-none d-sm-table-cell">
-                            <select tag="type-dropdown" asp-for="@issue.Type" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssueType.List)" ></select>
-                        </td>
-                        <td class="d-none d-lg-table-cell text-nowrap">
-                            @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)
-                        </td>                        
-                        <td class="d-none">
+                    </td>
+                    <td class="d-none d-sm-table-cell">
+                        <select tag="priority-dropdown" asp-for="@issue.Priority" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssuePriority.List)" ></select>
+                    </td>
+                    <td class="d-none d-sm-table-cell">
+                        <select tag="type-dropdown" asp-for="@issue.Type" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssueType.List)" ></select>
+                    </td>
+                    <td class="d-none d-lg-table-cell text-nowrap">
+                        @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)
+                    </td>                        
+                    <td class="d-none">
                             
-                            @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
-                            {
-                                <div class="text-nowrap">
-                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Edit" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-pencil-fill"></i></a>
-                                    <a class="m-1 text-muted" asp-controller="Issue" asp-action="Delete" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-trash2-fill"></i></a>
-                                </div>
+                        @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+                        {
+                            <div class="text-nowrap">
+                                <a class="m-1 text-muted" asp-controller="Issue" asp-action="Edit" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-pencil-fill"></i></a>
+                                <a class="m-1 text-muted" asp-controller="Issue" asp-action="Delete" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-trash2-fill"></i></a>
+                            </div>
                     
-                            }  
-                        </td>
-                    </tr>
-                }
-            }                
-        </tbody>
+                        }  
+                    </td>
+                </tr>
+            }            
+        </tbody>        
     </table>
+
+    @if(Model.Issues.Count == 0)
+    {
+        <p class="text-center">There are no issues to display.</p>
+    }
 
 
     <div class="d-flex flex-nowrap justify-content-end align-items-center mx-3">
