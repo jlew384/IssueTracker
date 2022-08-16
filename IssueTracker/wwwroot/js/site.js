@@ -311,6 +311,55 @@ $(document).ready(function () {
         }
     });
 
+    $(".issue-filter-dropdown").change(function (event) {
+        let filter = $(event.target).find("option:selected").val();
+
+        $.ajax({
+            type: "GET",
+            url: "Issue/IssueTable",
+            data: {
+                filter: filter
+            },
+            success: function (result) {
+                $(".issue-list-container").html(result);
+            }
+        });
+
+        //let issueId = $(event.target).attr("issueId");
+        //let status = $(event.target).find("option:selected").val();
+        //$(event.target).removeClass("bg-info bg-secondary bg-success");
+        //$(event.target).attr("disabled", true).addClass("bg-dark");
+        //$(event.target).find("option:selected").text(". . .");
+
+        //$.ajax({
+        //    type: 'POST',
+        //    url: "/Issue/UpdateStatus",
+        //    data: {
+        //        id: issueId,
+        //        status: status
+        //    },
+        //    success: function (result) {
+        //        switch (result) {
+        //            case "To Do":
+        //                $(event.target).removeClass("bg-dark");
+        //                $(event.target).addClass("bg-success");
+        //                break;
+        //            case "In Progress":
+        //                $(event.target).removeClass("bg-dark");
+        //                $(event.target).addClass("bg-info");
+        //                break;
+        //            case "Done":
+        //                $(event.target).removeClass("bg-dark");
+        //                $(event.target).addClass("bg-secondary");
+        //                break;
+        //        }
+        //        $(event.target).attr("disabled", false);
+        //        $(event.target).find("option:selected").text(status);
+        //        console.log(['result', result]);
+        //    }
+        //});
+    });
+
     $('.issue-list-container').change(function (event) {
         switch ($(event.target).attr("tag")) {
             case "status-dropdown":

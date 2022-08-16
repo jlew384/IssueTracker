@@ -2,6 +2,7 @@
 using IssueTracker.Data;
 using IssueTracker.Models;
 using IssueTracker.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IssueTracker.Components
@@ -19,10 +20,12 @@ namespace IssueTracker.Components
         public IssueTableViewComponent(ApplicationDbContext context)
         {
             _context = context;
+            
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string filter, int projectId, string sortField, string sortDirection)
+        public async Task<IViewComponentResult> InvokeAsync(string userId, string filter, int projectId, string sortField, string sortDirection)
         {
+            _userId = userId;
             _filter = filter;
             _projectId = projectId;
             _sortOrder = sortField + "_" + sortDirection;
@@ -60,9 +63,9 @@ namespace IssueTracker.Components
                 case IssueFilter.CREATOR:
                     return _context.Issues.Where(x => x.CreatorUserId == _userId);
                 case IssueFilter.ACTIVE:
-                    return _context.Issues.Where(x => x.ProjectId == _projectId);
+                    return _context.Issues.Where(x => x.Status != IssueStatus.DONE);
                 case IssueFilter.INACTIVE:
-                    return _context.Issues.Where(x => x.ProjectId == _projectId);
+                    return _context.Issues.Where(x => x.Status == IssueStatus.DONE);
                 default:
                     return _context.Issues.Where(x => x.ProjectId == _projectId);
             }

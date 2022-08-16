@@ -5,11 +5,13 @@
 @{
 }
 
-<div class="d-flex justify-content-between align-items-center">
-    <h1 class="display-4">@Model.ProjectTitle</h1>
-    <a class="btn btn-primary" asp-action="Create" asp-controller="Issue" asp-route-pid="@Model.ProjectId">Create Issue</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center">
+        <h1 class="display-4">@Model.ProjectTitle</h1>
+        <select class="issue-filter-dropdown form-select mx-3" asp-for="@Model.Filter" asp-items="@new SelectList(IssueFilter.LIST)"></select>
+    </div>
     <div>
-        @*<select tag="filter-dropdown" class="form-select" asp-for="@Model.Filter" asp-items="@new SelectList(IssueFilter.LIST)"></select>*@
+        <a class="btn btn-primary" asp-action="Create" asp-controller="Issue" asp-route-pid="@Model.ProjectId">Create Issue</a>
     </div>
     
 </div>
@@ -18,6 +20,7 @@
 <div class="issue-list-container">
     @await Component.InvokeAsync("IssueTable", 
         new {
+            userId = Model.UserId,
             projectId = Model.ProjectId,
             filter = Model.Filter,
             sortField = Model.SortField,

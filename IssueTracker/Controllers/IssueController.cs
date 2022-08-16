@@ -66,6 +66,7 @@ namespace IssueTracker.Controllers
             return ViewComponent("IssueTable",
                 new
                 {
+                    userId = _userManager.GetUserId(this.User),
                     filter = filter,
                     projectId = HttpContext.Session.GetInt32("projectId"),
                     sortField = sortField,
@@ -109,6 +110,7 @@ namespace IssueTracker.Controllers
 
             IssueIndexViewModel model = new IssueIndexViewModel()
             {
+                UserId = _userManager.GetUserId(this.User),
                 ProjectId = project.Id,
                 ProjectTitle = project.Title,
                 Filter = filter,

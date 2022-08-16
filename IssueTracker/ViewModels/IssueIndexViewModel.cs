@@ -2,6 +2,7 @@
 {
     public class IssueIndexViewModel
     {
+        public string UserId { get; set; }
         public int ProjectId { get; set; }
         public string ProjectTitle { get; set; }
         public string Filter { get; set; }
