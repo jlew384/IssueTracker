@@ -17,102 +17,102 @@
     <table class="table table-hover table-responsive">
         <thead>
             <tr class="">
-                <th tag="sort-button" field="@IssueSortOrder.TITLE" role="button" class="border-1" style="width: 25%;">
+                <th tag="sort-button" field="@IssueSortOrder.TITLE" role="button" class="border-1 text-nowrap" style="width: 25%;">
                     @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Title)
                     @if(Model.SortField == IssueSortOrder.TITLE)
                     {
                         if(Model.SortDirection == IssueSortOrder.DESC)
                         {
-                            <i class="bi bi-caret-down-fill"></i>
+                            <i class="z-back bi bi-caret-down-fill"></i>
                         }
                         else
                         {                            
-                            <i class="bi bi-caret-up-fill"></i>
+                            <i class="z-back bi bi-caret-up-fill"></i>
                         }
                     }
                 </th>
-                <th tag="sort-button" field="@IssueSortOrder.CREATOR" role="button" class="border-1 d-none d-xxl-table-cell" style="width: 5%;">
+                <th tag="sort-button" field="@IssueSortOrder.CREATOR" role="button" class="border-1 d-none d-xxl-table-cell text-nowrap" style="width: 5%;">
                     @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().CreatorUser)
                     @if(Model.SortField == IssueSortOrder.CREATOR)
                     {
                         if(Model.SortDirection == IssueSortOrder.DESC)
                         {
-                            <i class="bi bi-caret-down-fill"></i>
+                            <i class="z-back bi bi-caret-down-fill"></i>
                         }
                         else
                         {                            
-                            <i class="bi bi-caret-up-fill"></i>
+                            <i class="z-back bi bi-caret-up-fill"></i>
                         }
                     }
                 </th>
-                <th tag="sort-button" field="@IssueSortOrder.CREATED_DATE" role="button" class="border-1" style="width: 5%;">
+                <th tag="sort-button" field="@IssueSortOrder.CREATED_DATE" role="button" class="border-1 text-nowrap" style="width: 5%;">
                     @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Created)
                     @if(Model.SortField == IssueSortOrder.CREATED_DATE)
                     {
                         if(Model.SortDirection == IssueSortOrder.DESC)
                         {
-                            <i class="bi bi-caret-down-fill"></i>
+                            <i class="z-back bi bi-caret-down-fill"></i>
                         }
                         else
                         {                            
-                            <i class="bi bi-caret-up-fill"></i>
+                            <i class="z-back bi bi-caret-up-fill"></i>
                         }
                     }
                     
                 </th>
-                <th tag="sort-button" field="@IssueSortOrder.STATUS" role="button" class="border-1" style="width: 5%;">
+                <th tag="sort-button" field="@IssueSortOrder.STATUS" role="button" class="border-1 text-nowrap" style="width: 5%;">
                     @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Status)
                     @if(Model.SortField == IssueSortOrder.STATUS)
                     {
                         if(Model.SortDirection == IssueSortOrder.DESC)
                         {
-                            <i class="bi bi-caret-down-fill"></i>
+                            <i class="z-back bi bi-caret-down-fill"></i>
                         }
                         else
                         {                            
-                            <i class="bi bi-caret-up-fill"></i>
+                            <i class="z-back bi bi-caret-up-fill"></i>
                         }
                     }
                 </th>
-                <th tag="sort-button" field="@IssueSortOrder.PRIORITY" role="button" class="border-1" style="width: 5%;">
+                <th tag="sort-button" field="@IssueSortOrder.PRIORITY" role="button" class="border-1 text-nowrap d-none d-sm-table-cell" style="width: 5%;">
                     @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Priority)
                     @if(Model.SortField == IssueSortOrder.PRIORITY)
                     {
                         if(Model.SortDirection == IssueSortOrder.DESC)
                         {
-                            <i class="bi bi-caret-down-fill"></i>
+                            <i class="z-back bi bi-caret-down-fill"></i>
                         }
                         else
                         {                            
-                            <i class="bi bi-caret-up-fill"></i>
+                            <i class="z-back bi bi-caret-up-fill"></i>
                         }
                     }
                 </th>
-                <th tag="sort-button" field="@IssueSortOrder.TYPE" role="button" class="border-1" style="width: 5%;">
+                <th tag="sort-button" field="@IssueSortOrder.TYPE" role="button" class="border-1 d-none d-sm-table-cell text-nowrap" style="width: 5%;">
                     @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().Type)
                     @if(Model.SortField == IssueSortOrder.TYPE)
                     {
                         if(Model.SortDirection == IssueSortOrder.DESC)
                         {
-                            <i class="bi bi-caret-down-fill"></i>
+                            <i class="z-back bi bi-caret-down-fill"></i>
                         }
                         else
                         {                            
-                            <i class="bi bi-caret-up-fill"></i>
+                            <i class="z-back bi bi-caret-up-fill"></i>
                         }
                     }
                 </th>
-                <th tag="sort-button" field="@IssueSortOrder.ASSIGNED_USER_NAME" role="button" class="border-1 d-none d-lg-table-cell" style="width: 5%;">
+                <th tag="sort-button" field="@IssueSortOrder.ASSIGNED_USER_NAME" role="button" class="border-1 d-none d-lg-table-cell text-nowrap" style="width: 5%;">
                     @Html.DisplayNameFor(model => model.Issues.FirstOrDefault().AssignedUser)
                     @if(Model.SortField == IssueSortOrder.ASSIGNED_USER_NAME)
                     {
                         if(Model.SortDirection == IssueSortOrder.DESC)
                         {
-                            <i class="bi bi-caret-down-fill"></i>
+                            <i class="z-back bi bi-caret-down-fill"></i>
                         }
                         else
                         {                            
-                            <i class="bi bi-caret-up-fill"></i>
+                            <i class="z-back bi bi-caret-up-fill"></i>
                         }
                     }
                 </th>
@@ -149,10 +149,10 @@
                             }
                             
                         </td>
-                        <td>
+                        <td class="d-none d-sm-table-cell">
                             <select tag="priority-dropdown" asp-for="@issue.Priority" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssuePriority.List)" ></select>
                         </td>
-                        <td>
+                        <td class="d-none d-sm-table-cell">
                             <select tag="type-dropdown" asp-for="@issue.Type" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssueType.List)" ></select>
                         </td>
                         <td class="d-none d-lg-table-cell text-nowrap">

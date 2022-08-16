@@ -37,3 +37,8 @@ body {
 .project-card:hover {
     background-color: #efefef;
 }
+
+.z-back {
+   position: relative;
+   z-index: -1;
+}

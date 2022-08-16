@@ -169,7 +169,7 @@ $(document).ready(function () {
             case "delete-project-btn":
                 let projectId = $(event.target).attr("projectId");
                 let projectTitle = $(event.target).attr("projectTitle");
-                $(".modal-title").text(projectTitle);
+                $("#delete-project-title").text(projectTitle);
                 $("#confirm-modal-btn").attr("projectId", projectId);
                 $(".delete-project-modal").modal("show");                
                 break;
@@ -201,6 +201,23 @@ $(document).ready(function () {
                 $(".edit-title-container").attr("hidden", false);
                 break;
             case "edit-title-submit":
+                let inputTitleString = $(".edit-title-input").val();
+                let pid = $(".edit-title-input").attr("projectId");
+                console.log(inputTitleString, pid);
+                $.ajax({
+                    type: 'POST',
+                    url: "/Project/UpdateTitle",
+                    data: {
+                        pid: pid,
+                        title: inputTitleString
+                    },
+                    success: function (result) {
+                        console.log(['result', result]);
+                        $(".display-title-container").attr("hidden", false);
+                        $(".edit-title-container").attr("hidden", true);
+                        $(".display-title").text(result);
+                    }
+                });
                 //updateProjectTitle(event)
                 break;
             case "edit-title-cancel":
@@ -213,6 +230,23 @@ $(document).ready(function () {
                 $(".edit-desc-container").attr("hidden", false);
                 break;
             case "edit-desc-submit":
+                let inputDescString = $(".edit-desc-input").val();
+                let projectId = $(".edit-desc-input").attr("projectId");
+                console.log(inputDescString, projectId);
+                $.ajax({
+                    type: 'POST',
+                    url: "/Project/UpdateDesc",
+                    data: {
+                        pid: projectId,
+                        desc: inputDescString
+                    },
+                    success: function (result) {
+                        console.log(['result', result]);
+                        $(".display-desc-container").attr("hidden", false);
+                        $(".edit-desc-container").attr("hidden", true);
+                        $(".display-desc").text(result);
+                    }
+                });
                 //updateProjectDesc(event);
                 break;
             case "edit-desc-cancel":
@@ -266,6 +300,12 @@ $(document).ready(function () {
             case "edit-desc-cancel":
                 $(".display-desc-container").attr("hidden", false);
                 $(".edit-desc-container").attr("hidden", true);
+                break;
+            case "delete-issue-modal-btn":
+                $("#delete-issue-modal").modal("show");
+                break;
+            case "close-modal-btn":
+                $("#delete-issue-modal").modal("hide");
                 break;
 
         }

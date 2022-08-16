@@ -24,11 +24,7 @@
                             <span class="align-middle h5">Issue Title</span>
                             <i tag="btn-edit-title" role="button" class="bi bi-pencil-fill mx-1 align-bottom"></i>
                         </div>
-                        <form asp-action="Delete" asp-route-backUrl="@ViewBag.BackUrl">
-                            <input type="hidden" asp-for="@Model.Id" />
-                            <input hidden asp-for="@Model.ProjectId" />
-                            <button class="bg-white border-0" type="submit"><i class="text-danger bi-trash2-fill"></i></button>                            
-                        </form>
+                        <i tag="delete-issue-modal-btn" role="button" class="bi-trash2-fill"></i>
                     </div>
                     
                     <span class="display-title fs-4 d-block my-2">@Model.Title</span>   
@@ -120,7 +116,31 @@
             </div>
         </div>
     </div>
+
+
+    <div id="delete-issue-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white">Delete Issue</h5>
+                </div>
+                    <div class="modal-body">
+                    <p>Are you sure you want to delete the <b>@Model.Title</b> issue?</p>
+                </div>
+                <div class="modal-footer">
+                    <form asp-action="Delete" asp-route-backUrl="@ViewBag.BackUrl">
+                        <input type="hidden" asp-for="@Model.Id" />
+                        <input hidden asp-for="@Model.ProjectId" />
+                        <button id="confirm-modal-btn" type="submit" class="btn btn-danger">Delete</button>                         
+                    </form>
+                    <button tag="close-modal-btn" type="button" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
 
 
 

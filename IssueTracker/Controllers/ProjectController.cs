@@ -99,6 +99,37 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public string UpdateTitle(int pid, string title)
+        {
+            Project? project = _context.Projects.Find(pid);
+            if (project == null)
+            {
+                return "";
+            }
+
+            project.Title = title;
+            _context.Projects.Update(project);
+            _context.SaveChanges();
+            return title;
+        }
+
+        [HttpPost]
+        public string UpdateDesc(int pid, string desc)
+        {
+            Project? project = _context.Projects.Find(pid);
+            if (project == null)
+            {
+                return "";
+            }
+
+            project.Desc = desc;
+            _context.Projects.Update(project);
+            _context.SaveChanges();
+            return desc;
+
+        }
+
         private async Task AddProjectOwnerClaim(ApplicationUser projectOwner, int? projectId)
         {
             Claim projectOwnerClaim = new Claim(UserClaimTypes.PROJECT_OWNER, projectId.ToString());
