@@ -5,15 +5,22 @@
 @{
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="d-flex align-items-center">
-        <h1 class="display-4">@Model.ProjectTitle</h1>
-        <select class="issue-filter-dropdown form-select mx-3" asp-for="@Model.Filter" asp-items="@new SelectList(IssueFilter.LIST)"></select>
+<div >
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center">
+            <h1 class="display-4">@Model.ProjectTitle</h1>
+            <select class="issue-filter-dropdown form-select mx-3" asp-for="@Model.Filter" asp-items="@new SelectList(IssueFilter.LIST)"></select>
+        </div>
+        <div>
+            <a class="btn btn-primary" asp-action="Create" asp-controller="Issue" asp-route-pid="@Model.ProjectId">Create Issue</a>
+        </div>
     </div>
     <div>
-        <a class="btn btn-primary" asp-action="Create" asp-controller="Issue" asp-route-pid="@Model.ProjectId">Create Issue</a>
-    </div>
-    
+        <div class="input-group mb-3" style="width: 250px">
+          <input id="issue-search-input" type="text" class="form-control" placeholder="Issue Title">
+          <button class="input-group-text" id="issue-search-btn"><i class="bi bi-search"></i></button>
+        </div>
+    </div>   
 </div>
 
 
@@ -24,6 +31,8 @@
             projectId = Model.ProjectId,
             filter = Model.Filter,
             sortField = Model.SortField,
-            sortDirection = Model.SortDirection
+            sortDirection = Model.SortDirection,
+            searchString = Model.SearchString,
+            pageIndex = Model.PageIndex
         })
 </div>

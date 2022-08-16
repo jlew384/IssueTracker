@@ -1,5 +1,6 @@
 ﻿using IssueTracker.Constants;
 using IssueTracker.Data;
+using IssueTracker.Helpers;
 using IssueTracker.Models;
 using IssueTracker.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +24,7 @@ namespace IssueTracker.Components
             
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string userId, string filter, int projectId, string sortField, string sortDirection)
+        public async Task<IViewComponentResult> InvokeAsync(string userId, string filter, int projectId, string sortField, string sortDirection, string searchString, int? pageIndex)
         {
             _userId = userId;
             _filter = filter;
@@ -37,17 +38,21 @@ namespace IssueTracker.Components
             string projectTitle = _context.Projects.Find(projectId).Title;
 
             issues = Sort(issues, _sortOrder);
+            issues = Search(issues, searchString);
 
+            PaginatedList<Issue> paginatedList = await PaginatedList<Issue>.CreateAsync(issues, pageIndex ?? 1, 10);
+
+            
 
 
             IssueTableComponentViewModel model = new IssueTableComponentViewModel()
             {
-                Issues = issues.ToList(),
+                Issues = paginatedList,
                 ProjectTitle = projectTitle,
                 ProjectId = projectId,
                 SortDirection = sortDirection,
                 SortField = sortField,
-                Filter = filter
+                Filter = filter,
             };
             return View(model);
         }

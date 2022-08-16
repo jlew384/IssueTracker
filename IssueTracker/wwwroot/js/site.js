@@ -324,40 +324,26 @@ $(document).ready(function () {
                 $(".issue-list-container").html(result);
             }
         });
+    });
 
-        //let issueId = $(event.target).attr("issueId");
-        //let status = $(event.target).find("option:selected").val();
-        //$(event.target).removeClass("bg-info bg-secondary bg-success");
-        //$(event.target).attr("disabled", true).addClass("bg-dark");
-        //$(event.target).find("option:selected").text(". . .");
-
-        //$.ajax({
-        //    type: 'POST',
-        //    url: "/Issue/UpdateStatus",
-        //    data: {
-        //        id: issueId,
-        //        status: status
-        //    },
-        //    success: function (result) {
-        //        switch (result) {
-        //            case "To Do":
-        //                $(event.target).removeClass("bg-dark");
-        //                $(event.target).addClass("bg-success");
-        //                break;
-        //            case "In Progress":
-        //                $(event.target).removeClass("bg-dark");
-        //                $(event.target).addClass("bg-info");
-        //                break;
-        //            case "Done":
-        //                $(event.target).removeClass("bg-dark");
-        //                $(event.target).addClass("bg-secondary");
-        //                break;
-        //        }
-        //        $(event.target).attr("disabled", false);
-        //        $(event.target).find("option:selected").text(status);
-        //        console.log(['result', result]);
-        //    }
-        //});
+    $("#issue-search-btn").click(function (event) {
+        let searchString = $("#issue-search-input").val();
+        let emptySearch = false;
+        if (searchString === "") {
+            emptySearch = true;
+        }
+        console.log(searchString);
+        $.ajax({
+            type: "GET",
+            url: "Issue/IssueTable",
+            data: {
+                searchString: searchString,
+                emptySearch: emptySearch
+            },
+            success: function (result) {
+                $(".issue-list-container").html(result);
+            }
+        });
     });
 
     $('.issue-list-container').change(function (event) {
@@ -373,9 +359,36 @@ $(document).ready(function () {
                 break;
         }
     }).click(function (event) {
-        
-        if ($(event.target).attr("tag") == "sort-button") {
-            sortIssues(event);
+        console.log("whatt")
+        switch ($(event.target).attr("tag")) {
+            case "sort-button":
+                sortIssues(event);
+                break;
+            case "next-page-btn":
+                console.log("hello ehlolo")
+                $.ajax({
+                    type: "GET",
+                    url: "Issue/IssueTable",
+                    data: {
+                        pageIndex: Number($(event.target).attr("pageIndex")) + 1
+                    },
+                    success: function (result) {
+                        $(".issue-list-container").html(result);
+                    }
+                });
+                break;
+            case "prev-page-btn":
+                $.ajax({
+                    type: "GET",
+                    url: "Issue/IssueTable",
+                    data: {
+                        pageIndex: Number($(event.target).attr("pageIndex")) - 1
+                    },
+                    success: function (result) {
+                        $(".issue-list-container").html(result);
+                    }
+                });
+                break;
         }
 
         let element = event.target.parentElement;

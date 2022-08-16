@@ -22,8 +22,33 @@ namespace IssueTracker.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult IssueTable(string filter, string sortField, string sortDirection)
+        public IActionResult IssueTable(string filter, string sortField, string sortDirection, string searchString, int? pageIndex, bool emptySearch = false)
         {
+
+            if(pageIndex == null)
+            {
+                pageIndex = HttpContext.Session.GetInt32("pageIndex");
+            }
+            else
+            {
+                HttpContext.Session.SetInt32("pageIndex", (int)pageIndex);
+            }
+
+            if(emptySearch)
+            {
+                searchString = "";
+            }
+
+            if(searchString == null && !emptySearch)
+            {
+                searchString = HttpContext.Session.GetString("searchString");
+            }
+            else
+            {
+                HttpContext.Session.SetString("searchString", searchString);
+            }
+
+
             if(filter == null)
             {
                 filter = HttpContext.Session.GetString("filter");
@@ -70,7 +95,9 @@ namespace IssueTracker.Controllers
                     filter = filter,
                     projectId = HttpContext.Session.GetInt32("projectId"),
                     sortField = sortField,
-                    sortDirection = sortDirection
+                    sortDirection = sortDirection,
+                    searchString = searchString,
+                    pageIndex = pageIndex
                 });
         }
 
@@ -86,6 +113,8 @@ namespace IssueTracker.Controllers
             string? filter =  HttpContext.Session.GetString("filter");
             string? sortField = HttpContext.Session.GetString("sortField");
             string? sortDirection = HttpContext.Session.GetString("sortDirection");
+            string? searchString = HttpContext.Session.GetString("searchString");
+            int? pageIndex = HttpContext.Session.GetInt32("pageIndex");
 
             HttpContext.Session.SetInt32("projectId", (int)pid);
 
@@ -107,6 +136,17 @@ namespace IssueTracker.Controllers
                 HttpContext.Session.SetString("sortDirection", sortDirection);
             }
 
+            if(searchString == null)
+            {
+                searchString = "";
+                HttpContext.Session.SetString("searchString", searchString);
+            }
+
+            if(pageIndex == null)
+            {
+                pageIndex = 1;
+                HttpContext.Session.SetInt32("pageIndex", (int)pageIndex);
+            }
 
             IssueIndexViewModel model = new IssueIndexViewModel()
             {
@@ -115,7 +155,9 @@ namespace IssueTracker.Controllers
                 ProjectTitle = project.Title,
                 Filter = filter,
                 SortField = sortField,
-                SortDirection = sortDirection
+                SortDirection = sortDirection,
+                SearchString = searchString,
+                PageIndex = (int)pageIndex
             };
 
             return View(model);

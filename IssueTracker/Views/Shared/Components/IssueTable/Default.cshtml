@@ -174,4 +174,22 @@
             }                
         </tbody>
     </table>
+
+
+    <div class="d-flex flex-nowrap justify-content-end align-items-center mx-3">
+        @if(Model.Issues.TotalPages > 1)
+        {
+            @if(Model.Issues.HasPreviousPage)
+            {
+                <button tag="prev-page-btn" pageIndex="@Model.Issues.PageIndex" type="button" class="prev-page-btn btn btn-sm btn-outline-dark"><i class="z-back bi bi-chevron-left"></i></button>
+            }        
+
+            <span class="fs-5 mx-2 fw-bold">@Model.Issues.PageIndex</span>
+
+            @if(Model.Issues.HasNextPage)
+            {
+                <button tag="next-page-btn" pageIndex="@Model.Issues.PageIndex" type="button" class="btn btn-sm btn-outline-dark"><i class="z-back bi bi-chevron-right"></i></button>
+            }
+        }       
+    </div>
 </div>
