@@ -1,0 +1,91 @@
+﻿@model EditIssueViewModel
+
+@{
+    ViewData["Title"] = "Edit Issue";
+}
+
+
+<div class="edit-issue-container container p-0">
+    <div class="my-2 mx-1 d-flex align-items-center justify-content-between">
+        <span class="h6 text-muted">Project: @Model.ProjectTitle</span>
+        <a class="btn btn-sm btn-primary" href="@ViewBag.BackUrl">Back</a>
+    </div> 
+    <div class="card box-shadow shadow">        
+        <div class="card-body">
+            <div>
+                <div class="display-title-container">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <span class="align-middle h5">Issue Title</span>
+                        </div>
+                    </div>
+                    
+                    <span class="display-title fs-4 d-block my-2">@Model.Title</span>   
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+
+    <div class="card box-shadow shadow mt-3">
+        <div class="card-body">
+            <div class="display-desc-container">
+                <span class="align-middle h5">Description</span>
+                <span class="display-desc d-block my-2">@Model.Desc</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card box-shadow shadow mt-3">
+        <div class="card-body">
+            <span class="align-middle h5">Information</span>
+            <div>
+                <div class="row">
+                    <div class="col-12 col-sm-4">
+                        <label asp-for="Status" class="control-label mt-1"></label>
+                        @switch(Model.Status)
+                        {
+                            case IssueStatus.TO_DO:
+                                <select tag="status-dropdown" issueId="@Model.Id" asp-for="Status" class="form-select mt-1 bg-success text-white" asp-items="@new SelectList(IssueStatus.List)" disabled></select>
+                                break;
+                            case IssueStatus.IN_PROGRESS:
+                                <select tag="status-dropdown" issueId="@Model.Id" asp-for="Status" class="form-select mt-1 bg-info text-white" asp-items="@new SelectList(IssueStatus.List)" disabled></select>
+                                break;
+                            case IssueStatus.DONE:
+                                <select tag="status-dropdown" issueId="@Model.Id" asp-for="Status" class="form-select mt-1 bg-secondary text-white" asp-items="@new SelectList(IssueStatus.List)" disabled></select>
+                                break;
+
+                        }
+                        
+                    </div>
+
+                    <div class="col-12 col-sm-4">
+                        <label asp-for="Priority" class="control-label mt-1"></label>
+                        <select tag="priority-dropdown" issueId="@Model.Id" asp-for="Priority" class="form-select mt-1" asp-items="@new SelectList(IssuePriority.List)" disabled></select>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                        <label asp-for="Type" class="control-label mt-1"></label>
+                        
+                        <select tag="type-dropdown" issueId="@Model.Id" asp-for="Type" class="form-select mt-1" asp-items="@new SelectList(IssueType.List)" disabled></select>
+                    </div>
+                </div>
+                @if(User.IsInRole(UserRoles.ADMIN) || User.IsInRole(UserRoles.PROJ_MNGR))
+                {
+                    <div class="row">
+                        <div class="col-12">
+                            <label asp-for="AssignedUserId" class="control-label mt-1"></label>
+                            <select tag="assigned-dropdown" issueId="@Model.Id" asp-for="AssignedUserId" class="form-select mt-1" disabled>
+                                <option value="">Unassigned</option>
+                                @foreach(var user in Model.AssignableUsers)
+                                {
+                                    <option value="@user.Id">@user.UserName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

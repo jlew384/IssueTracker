@@ -221,8 +221,12 @@ namespace IssueTracker.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
+            
+            
             Issue? issue = _context.Issues.Find(id);
             if (issue == null) return NotFound();
+
+            
 
             IList<ApplicationUser> submitters = await _userManager.GetUsersInRoleAsync(UserRoles.SUB);
             IEnumerable<ApplicationUser> assignableUsers = issue.Project.Users.Except(submitters);
@@ -242,7 +246,21 @@ namespace IssueTracker.Controllers
             };            
 
             ViewBag.BackUrl = Request.Headers["Referer"].ToString();
-            return View(model);
+
+            var ownerClaimValues = User.Claims
+                 .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+                 .Select(c => Int32.Parse(c.Value))
+                 .ToList();
+            var userId = _userManager.GetUserId(this.User);
+            if (User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+            {
+                return View(model);
+            }
+            else
+            {
+                return View("Details", model);
+            }
+            
         }
 
         [HttpPost]

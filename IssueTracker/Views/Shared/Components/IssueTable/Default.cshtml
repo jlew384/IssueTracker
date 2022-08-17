@@ -11,6 +11,8 @@
          .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
          .Select(c => Int32.Parse(c.Value))
          .ToList();
+
+       
 }
 
 <div class="">
@@ -133,25 +135,59 @@
                         @DateTimeHelpers.GetSimpleElapsedTime(issue.Created)
                     </td>
                     <td>
-                        @switch(issue.Status)
+                        @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
                         {
-                            case IssueStatus.TO_DO:
-                                <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-success text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
-                                break;
-                            case IssueStatus.IN_PROGRESS:
-                                <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-info text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
-                                break;
-                            case IssueStatus.DONE:
-                                <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-secondary text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
-                                break;
+                            switch(issue.Status)
+                            {
+                                case IssueStatus.TO_DO:
+                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-success text-white border-0" asp-items="@new SelectList(IssueStatus.List)"  ></select>
+                                    break;
+                                case IssueStatus.IN_PROGRESS:
+                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-info text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
+                                    break;
+                                case IssueStatus.DONE:
+                                    <select tag="status-dropdown" asp-for="@issue.Status" issueId="@issue.Id" class="status-dropdown form-select-sm bg-secondary text-white border-0" asp-items="@new SelectList(IssueStatus.List)" ></select>
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch(issue.Status)
+                            {
+                                case IssueStatus.TO_DO:
+                                    <div class="w-100p p-2p z-back fs-6 text-white bg-success">@issue.Status</div>
+                                    break;
+                                case IssueStatus.IN_PROGRESS:
+                                    <div class="w-100p p-2p z-back fs-6 text-white bg-info">@issue.Status</div>
+                                    break;
+                                case IssueStatus.DONE:
+                                    <div class="w-100p p-2p z-back fs-6 text-white bg-secondary">@issue.Status</div>
+                                    break;
+                            }
                         }
                             
                     </td>
                     <td class="d-none d-sm-table-cell">
-                        <select tag="priority-dropdown" asp-for="@issue.Priority" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssuePriority.List)" ></select>
+                        @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+                        {
+                            <select tag="priority-dropdown" asp-for="@issue.Priority" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssuePriority.List)" ></select>
+                        }
+                        else
+                        {
+                            @issue.Priority
+                        }
+
                     </td>
                     <td class="d-none d-sm-table-cell">
-                        <select tag="type-dropdown" asp-for="@issue.Type" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssueType.List)" ></select>
+                        @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+                        {                                    
+                            <select tag="type-dropdown" asp-for="@issue.Type" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssueType.List)" ></select>
+                        }
+                        else
+                        {
+                            @issue.Type
+                        }
+
                     </td>
                     <td class="d-none d-lg-table-cell text-nowrap">
                         @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)

@@ -34,6 +34,18 @@ body {
     width:100px;
 }
 
+.w-80p {
+    width: 80px;
+}
+
+.w-100p {
+    width: 100px;
+}
+
+.p-2p {
+    padding: 2px;
+}
+
 .project-card:hover {
     background-color: #efefef;
 }
