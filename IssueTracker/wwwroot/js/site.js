@@ -318,7 +318,8 @@ $(document).ready(function () {
             type: "GET",
             url: "Issue/IssueTable",
             data: {
-                filter: filter
+                filter: filter,
+                pageIndex: 1
             },
             success: function (result) {
                 $(".issue-list-container").html(result);
