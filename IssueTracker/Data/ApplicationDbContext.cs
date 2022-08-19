@@ -13,21 +13,7 @@ namespace IssueTracker.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
-            //builder.Entity<ApplicationUserProject>().HasKey("ApplicationUserId", "ProjectId");
-
-
-            //var cascadeFKs = builder.Model.GetEntityTypes()
-            //    .SelectMany(t => t.GetForeignKeys())
-            //    .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
-
-            //foreach (var fk in cascadeFKs)
-            //    fk.DeleteBehavior = DeleteBehavior.Restrict;
-
             base.OnModelCreating(builder);   
-
-
-
         }
 
         public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
@@ -36,6 +22,8 @@ namespace IssueTracker.Data
 
         public virtual DbSet<Issue> Issues { get; set; }
 
-        //public virtual DbSet<ApplicationUserProject> ApplicationUserProject { get; set; }
+        public virtual DbSet<IssueHistory> IssuesHistory { get; set; }
+
+        public virtual DbSet<IssueComment> IssueComments { get; set; }
     }
 }

@@ -124,28 +124,6 @@
 </div>
 
 
-@*<div id="delete-issue-modal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-danger">
-                <h5 class="modal-title text-white">Delete Issue</h5>
-                </div>
-                    <div class="modal-body">
-                    <p>Are you sure you want to delete the <b>@Model.Title</b> issue?</p>
-                </div>
-                <div class="modal-footer">
-                    <form asp-action="Delete" asp-route-backUrl="@ViewBag.BackUrl">
-                        <input type="hidden" asp-for="@Model.Id" />
-                        <input hidden asp-for="@Model.ProjectId" />
-                        <button id="confirm-modal-btn" type="submit" class="btn btn-danger">Delete</button>                         
-                    </form>
-                    <button tag="close-modal-btn" type="button" class="btn btn-secondary">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>*@
-
-
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

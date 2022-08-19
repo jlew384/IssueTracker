@@ -26,5 +26,8 @@ namespace IssueTracker.Models
 
         [DisplayName("Modified")]
         public DateTime? DateModified { get; set; }
+
+        public string OwnerId { get; set; }
+        
     }
 }
