@@ -62,60 +62,90 @@
 
     <div class="card box-shadow shadow mt-3">
         <div class="card-body">
-            <h5 class="align-middle">Assigned Users</h5>
-            <table class="table">
-                <thead>
-                    <th>User Name</th>
-                </thead>
-                @foreach(ApplicationUser user  in Model.Users)
-                {
-                   <tr>
-                       <td>
-                           @user.UserName
-                       </td>
-                   </tr> 
-                }
-            </table>
-            <a class="mt-3 btn btn-primary" asp-controller="Administration" asp-action="ManageUsersInProject" asp-route-pid="@Model.Id">Manage Assigned Users</a>
+            <div class="d-flex justify-content-start align-items-center">
+                <h5 class="align-middle">Assigned Users</h5>
+                <button tag="add-users-btn" type="button" class="ms-2 btn btn-sm btn-primary" data-toggle="modal">
+                  Add Users
+                </button>
+                <button tag="remove-users-btn" type="button" class="ms-2 btn btn-sm btn-primary" data-toggle="modal">
+                  Remove Users
+                </button>                
+            </div>
+            <div id="project-members-table">
+                @await Component.InvokeAsync("UserTable", new {
+                    filter = UserFilter.IN_PROJECT,
+                    projectId = Model.Id
+                })
+            </div>
         </div>
     </div>    
+
+    <div class="modal col-10" id="remove-users-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title">Remove Users From Project</h5>
+                </div>
+                    <div id="remove-users-table" class="modal-body">
+                        @await Component.InvokeAsync("UserTable", new {
+                            filter = UserFilter.IN_PROJECT,
+                            projectId = Model.Id,
+                            isSelectable = true
+                        })
+                    </div>
+                <div class="modal-footer">
+                    <button tag="confirm-remove-btn" projectId="@Model.Id" type="submit" class="btn btn-primary">Save Changes</button>  
+                    <button tag="cancel-remove-btn" type="button" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="add-users-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div id="add-user-table" class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title">Add Users To Project</h5>
+                </div>
+                    <div id="add-users-table" class="modal-body">
+                        @await Component.InvokeAsync("UserTable", new {
+                            filter = UserFilter.NOT_IN_PROJECT,
+                            projectId = Model.Id,
+                            isSelectable = true
+                        })
+                    </div>
+                <div class="modal-footer">
+                    <button tag="confirm-add-btn" projectId="@Model.Id" type="submit" class="btn btn-primary">Save Changes</button>
+                    <button tag="cancel-add-btn" type="button" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
-
-
-
-    @*<div class="card">
-        <div class="card-header">
-            <h1>@Model.Title</h1>
-            <h4>Edit Project</h4>
-        </div>
-        <div class="card-body">
-        
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+@*<div id="delete-issue-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white">Delete Issue</h5>
+                </div>
+                    <div class="modal-body">
+                    <p>Are you sure you want to delete the <b>@Model.Title</b> issue?</p>
+                </div>
+                <div class="modal-footer">
+                    <form asp-action="Delete" asp-route-backUrl="@ViewBag.BackUrl">
+                        <input type="hidden" asp-for="@Model.Id" />
+                        <input hidden asp-for="@Model.ProjectId" />
+                        <button id="confirm-modal-btn" type="submit" class="btn btn-danger">Delete</button>                         
+                    </form>
+                    <button tag="close-modal-btn" type="button" class="btn btn-secondary">Cancel</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Desc" class="control-label"></label>
-                <textarea asp-for="Desc" class="form-control" ></textarea>
-                <span asp-validation-for="Desc" class="text-danger"></span>
-            </div>        
         </div>
-        <div class="card-footer d-flex justify-content-between">
-            <a class="btn btn-primary" href="@Model.RefererUrl">Cancel</a>
-            <input hidden asp-for="RefererUrl" />
-            <input type="submit" value="Save" class="btn btn-primary" />
-        </div>
-    </div>
-</form>
+    </div>*@
 
-<div>
-    
-</div>*@
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -1,0 +1,41 @@
+﻿@model UserTableComponentViewModel
+@{
+}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            @if(Model.IsSelectable)
+            {
+                <th></th>
+            }
+            
+            <th>
+                @Html.DisplayNameFor(model => model.User.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.Role)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var user in Model.Users)
+        {
+            <tr tag="user-row" userId="@user.Id">
+                @if(Model.IsSelectable)
+                {
+                    <td>
+                        <input userId="@user.Id" class="user-checkbox form-check-input" type="checkbox">
+                    </td>
+                }
+                
+                <td>
+                    @Html.DisplayFor(userItem => user.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(userItem => user.Role)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

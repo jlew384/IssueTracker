@@ -3,6 +3,22 @@
 
 $(document).ready(function () {
 
+
+
+
+    /* Admin Index Page */
+    $(".user-list-container").click(function (event) {
+
+        let element = event.target.parentElement;
+        if ($(element).attr("tag") == "user-row") {
+            let userId = $(element).attr("userId");
+
+            location.href = "/Administration/EditUserRole?userId=" + userId;
+        }
+    });
+
+
+
     /* ProjectTableViewComponent */
 
     $(".project-list-container").click(function (event) {
@@ -93,9 +109,89 @@ $(document).ready(function () {
                 $(".display-desc-container").attr("hidden", false);
                 $(".edit-desc-container").attr("hidden", true);
                 break;
-
+            case "remove-users-btn":
+                $("#remove-users-modal").modal("show");
+                break;
+            case "confirm-remove-btn":
+                $.ajax({
+                    type: 'POST',
+                    url: "/Project/RemoveUsersFromProject",
+                    data: {
+                        pid: $(event.target).attr("projectId"),
+                        userIds: $(".user-checkbox:checked").map(function () {
+                                    return $(this).attr("userId");
+                                }).get()
+                    },
+                    success: function (result) {
+                        refreshUserTables($(event.target).attr("projectId"));
+                        $("#remove-users-modal").modal("hide");
+                    }
+                });
+                break;
+            case "cancel-remove-btn":
+                $("#remove-users-modal").modal("hide");
+                break;
+            case "add-users-btn":
+                $("#add-users-modal").modal("show");
+                break;
+            case "confirm-add-btn":
+                $.ajax({
+                    type: 'POST',
+                    url: "/Project/AddUsersToProject",
+                    data: {
+                        pid: $(event.target).attr("projectId"),
+                        userIds: $(".user-checkbox:checked").map(function () {
+                            return $(this).attr("userId");
+                        }).get()
+                    },
+                    success: function (result) {
+                        refreshUserTables($(event.target).attr("projectId"));
+                        $("#add-users-modal").modal("hide");
+                    }
+                });
+            case "cancel-add-btn":
+                $("#add-users-modal").modal("hide");
+                break;
         }
     });
+
+    function refreshUserTables(projectId) {
+        $.ajax({
+            type: 'GET',
+            url: "/Administration/UserTable",
+            data: {
+                projectId: projectId,
+                filter: "IN PROJECT"
+            },
+            success: function (result) {
+                $("#project-members-table").html(result);
+            }
+        });
+        $.ajax({
+            type: 'GET',
+            url: "/Administration/UserTable",
+            data: {
+                projectId: projectId,
+                filter: "IN PROJECT",
+                isSelectable: true
+            },
+            success: function (result) {
+                $("#remove-users-table").html(result);
+            }
+        });
+        $.ajax({
+            type: 'GET',
+            url: "/Administration/UserTable",
+            data: {
+                projectId: projectId,
+                filter: "NOT IN PROJECT",
+                isSelectable: true
+            },
+            success: function (result) {
+                $("#add-users-table").html(result);
+            }
+        });
+    }
 
     /* Edit Issue Page */
 

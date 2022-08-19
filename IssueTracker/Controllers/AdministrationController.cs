@@ -41,6 +41,19 @@ namespace IssueTracker.Controllers
                 });
         }
 
+        [IgnoreAntiforgeryToken]
+        [HttpGet]
+        public IActionResult UserTable(string filter, int projectId, bool isSelectable = false)
+        {
+            return ViewComponent("UserTable",
+                new
+                {
+                    filter = filter,
+                    projectId = projectId,
+                    isSelectable = isSelectable
+                });
+        }
+
         [Authorize(Roles = UserRoles.ADMIN)]
         [HttpGet]
         public async Task<IActionResult> Index()

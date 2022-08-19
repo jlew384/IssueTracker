@@ -131,6 +131,38 @@ namespace IssueTracker.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<int> RemoveUsersFromProject(int pid, List<string> userIds)
+        {
+            Project? project = _context.Projects.Find(pid);
+            List<ApplicationUser> users = new List<ApplicationUser>();
+
+            foreach(string userId in userIds)
+            {
+                ApplicationUser user = await _userManager.FindByIdAsync(userId);
+                project.Users.Remove(user);
+            }
+
+            _context.SaveChanges();
+            return pid;
+        }
+
+        [HttpPost]
+        public async Task<int> AddUsersToProject(int pid, List<string> userIds)
+        {
+            Project? project = _context.Projects.Find(pid);
+            List<ApplicationUser> users = new List<ApplicationUser>();
+
+            foreach (string userId in userIds)
+            {
+                ApplicationUser user = await _userManager.FindByIdAsync(userId);
+                project.Users.Add(user);
+            }
+
+            _context.SaveChanges();
+            return pid;
+        }
+
         private async Task AddProjectOwnerClaim(ApplicationUser projectOwner, int? projectId)
         {
             Claim projectOwnerClaim = new Claim(UserClaimTypes.PROJECT_OWNER, projectId.ToString());
