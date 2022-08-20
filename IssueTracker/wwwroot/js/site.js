@@ -255,6 +255,7 @@ $(document).ready(function () {
                 break;
             case "type-dropdown":
                 // Update Issue Type
+                let type = $(event.target).find("option:selected").val();
                 $(event.target).attr("disabled", true).addClass("bg-dark text-white");
                 $(event.target).find("option:selected").text(". . .");
 
@@ -263,10 +264,11 @@ $(document).ready(function () {
                     url: "/Issue/UpdateType",
                     data: {
                         id: $(event.target).attr("issueId"),
-                        type: $(event.target).find("option:selected").val()
+                        type: type
                     },
                     success: function (result) {
-                        $(event.target).removeClass("bg-dark text-white").attr("disabled", false).find("option:selected").text(type);
+                        $(event.target).removeClass("bg-dark text-white").attr("disabled", false);
+                        $(event.target).find("option:selected").text(result);
                     }
                 });
                 break;
@@ -350,9 +352,68 @@ $(document).ready(function () {
                 // Hide Delete issue confirmation modal
                 $("#delete-issue-modal").modal("hide");
                 break;
-
+            case "submit-comment-btn":
+                $.ajax({
+                    type: "POST",
+                    url: "/Issue/CreateIssueComment",
+                    data: {
+                        id: $(event.target).attr("issueId"),
+                        text: $("#comment-input").val()
+                    },
+                    success: function (result) {
+                        $("#comment-input").val("");
+                        $.ajax({
+                            type: "POST",
+                            url: "/Issue/IssueCommentList",
+                            data: {
+                                id: $(event.target).attr("issueId")
+                            },
+                            success: function (result) {
+                                $("#comment-container").html(result);
+                            }
+                        })
+                    }
+                });
+                break;
+            case "delete-comment-btn":
+                let commentId = $(event.target).attr("commentId");
+                $("#delete-comment-modal").modal("show");
+                $("#confirm-delete-comment-btn").attr("commentId", commentId);
+                break;
+            case "cancel-delete-comment-btn":
+                $("#delete-comment-modal").modal("hide");
+                break;
+            case "confirm-delete-comment-btn":
+                $(event.target).attr("commentId");
+                $.ajax({
+                    type: "POST",
+                    url: "/Issue/DeleteIssueComment",
+                    data: {
+                        cid: $(event.target).attr("commentId")
+                    },
+                    success: function (result) {
+                        refreshComments($(event.target).attr("issueId"));
+                        
+                    }
+                })
+                $("#delete-comment-modal").modal("hide");
+                break;
         }
     });
+
+    function refreshComments(issueId) {
+        console.log(["refresh commms", issueId]);
+        $.ajax({
+            type: "GET",
+            url: "/Issue/IssueCommentList",
+            data: {
+                id: issueId
+            },
+            success: function (result) {
+                $("#comment-container").html(result);
+            }
+        })
+    }
 
 
     /* Issue Index Page */

@@ -1,0 +1,17 @@
+﻿@model List<IssueComment>
+@{
+    
+}
+
+<div class="overflow-auto d-flex flex-column-reverse" style="height: fit-content; max-height: 50vh;">
+    @foreach(IssueComment comment in Model) {
+        <div class="border border-1 mb-1 px-2 py-1">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6>@comment.Owner <span class="text-muted fs-6">@DateTimeHelpers.GetSimpleElapsedTime(comment.CreatedDate)</span></h6>
+                <i tag="delete-comment-btn" commentId="@comment.Id" role="button" class="text-muted bi bi-trash2-fill"></i>                
+            </div>
+            <p>@comment.Text</p>
+        </div>
+    }
+</div>
+

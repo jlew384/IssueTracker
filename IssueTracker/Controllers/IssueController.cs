@@ -408,5 +408,76 @@ namespace IssueTracker.Controllers
             return desc;
 
         }
+
+        public IActionResult IssueCommentList(int id)
+        {
+            return ViewComponent("IssueCommentList", new
+            {
+                issueId = id
+            });
+        }
+
+
+        [HttpPost]
+        public string CreateIssueComment(int id, string text)
+        {
+            Issue? issue = _context.Issues.Find(id);
+
+            if (issue == null)
+            {
+                return "";
+            }           
+
+            IssueComment comment = new IssueComment()
+            {
+                IssueId = id,
+                Text = text,
+                OwnerId = _userManager.GetUserId(this.User)
+            };
+
+            _context.IssueComments.Add(comment);
+            _context.SaveChanges();
+            return "success";
+        }
+
+        [HttpPost]
+        public string DeleteIssueComment(int cid)
+        {
+            IssueComment comment = _context.IssueComments.Find(cid);
+
+            if (comment == null)
+            {
+                return "";
+            }
+
+            _context.IssueComments.Remove(comment);
+            _context.SaveChanges();
+            return "success";
+        }
+
+        public string EditIssueComment(int cid, string text)
+        {
+            IssueComment comment = _context.IssueComments.Find(cid);
+
+            if (comment == null)
+            {
+                return "";
+            }
+
+            comment.Text = text;
+            comment.ModifiedDate = DateTime.UtcNow;
+
+            _context.IssueComments.Update(comment);
+            _context.SaveChanges();
+            return "success";
+        }
+
+        public IActionResult IssueHistory(int id)
+        {
+            return ViewComponent("IssueHistory", new
+            {
+                issueId = id
+            });
+        }
     }
 }
