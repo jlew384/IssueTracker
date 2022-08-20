@@ -198,7 +198,6 @@ namespace IssueTracker.Controllers
             {
                 return NotFound();
             }
-
             Issue issue = new Issue()
             {
                 Title = model.Title,
@@ -213,7 +212,49 @@ namespace IssueTracker.Controllers
 
             _context.Issues.Add(issue);
             _context.SaveChanges();
-
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                Title = issue.Title,
+                IsTitleUpdated = true
+            });
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                Desc = issue.Desc,
+                IsDescUpdated = true
+            });
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                Status = issue.Status,
+                IsStatusUpdated = true
+            });
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                Priority = issue.Priority,
+                IsPriorityUpdated = true
+            });
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                Type = issue.Type,
+                IsTypeUpdated = true
+            });
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                CreatorUserId = issue.CreatorUserId,
+                IsCreatorUpdated = true
+            });
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                AssignedUserId = issue.AssignedUserId,
+                IsAssignedUserUpdated = true
+            });
+            _context.SaveChanges();
 
             return Redirect(backUrl);
         }
@@ -309,6 +350,12 @@ namespace IssueTracker.Controllers
 
             issue.Status = status;
             _context.Issues.Update(issue);
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                Status = issue.Status,
+                IsStatusUpdated = true
+            });
             _context.SaveChanges();
             return status;
 
@@ -324,6 +371,12 @@ namespace IssueTracker.Controllers
 
             issue.Priority = priority;
             _context.Issues.Update(issue);
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                Priority = issue.Priority,
+                IsPriorityUpdated = true
+            });
             _context.SaveChanges();
             return priority;
 
@@ -339,6 +392,12 @@ namespace IssueTracker.Controllers
 
             issue.Type = type;
             _context.Issues.Update(issue);
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                Type = issue.Type,
+                IsTypeUpdated = true
+            });
             _context.SaveChanges();
             return type;
 
@@ -364,6 +423,12 @@ namespace IssueTracker.Controllers
             }
 
             _context.Issues.Update(issue);
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                AssignedUserId = issue.AssignedUserId,
+                IsAssignedUserUpdated = true
+            });
             _context.SaveChanges();
 
             if (user == null)
@@ -388,6 +453,12 @@ namespace IssueTracker.Controllers
 
             issue.Title = title;
             _context.Issues.Update(issue);
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                Title = issue.Title,
+                IsTitleUpdated = true
+            });
             _context.SaveChanges();
             return title;
 
@@ -404,6 +475,12 @@ namespace IssueTracker.Controllers
 
             issue.Desc = desc;
             _context.Issues.Update(issue);
+            _context.IssuesHistory.Add(new IssueHistory()
+            {
+                IssueId = issue.Id,
+                Desc = issue.Desc,
+                IsDescUpdated = true
+            });
             _context.SaveChanges();
             return desc;
 

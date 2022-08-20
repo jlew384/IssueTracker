@@ -26,35 +26,31 @@ namespace IssueTracker.Models
         [ForeignKey("AssignedUserId")]
         public virtual ApplicationUser? AssignedUser { get; set; }
 
-        [Required]
         [StringLength(50)]
-        public string Title { get; set; } = null!;
+        public string? Title { get; set; }
 
         [DisplayName("Description")]
-        [Required]
         [StringLength(600)]
-        public string Desc { get; set; } = null!;
+        public string? Desc { get; set; }
 
-        [Required]
         [StringLength(15)]
-        public string Status { get; set; } = null!;
+        public string? Status { get; set; }
 
-        [Required]
         [StringLength(15)]
-        public string Priority { get; set; } = null!;
+        public string? Priority { get; set; }
 
-        [Required]
         [StringLength(15)]
-        public string Type { get; set; } = null!;
+        public string? Type { get; set; }
 
         [Required]
-        public DateTime Created { get; set; } = DateTime.UtcNow;
+        public DateTime Updated { get; set; } = DateTime.UtcNow;
 
-        public bool IsCreatorUpdated { get; set; }
-        public bool IsAssignedUserUpdated { get; set; }
-        public bool IsDescUpdated { get; set; }
-        public bool IsStatusUpdated { get; set; }
-        public bool IsPriorityUpdated { get; set; }
-        public bool IsTypeUpdated { get; set; }
+        public bool IsCreatorUpdated { get; set; } = false;
+        public bool IsAssignedUserUpdated { get; set; } = false;
+        public bool IsTitleUpdated { get; set; } = false;
+        public bool IsDescUpdated { get; set; } = false;
+        public bool IsStatusUpdated { get; set; } = false;
+        public bool IsPriorityUpdated { get; set; } = false;
+        public bool IsTypeUpdated { get; set; } = false;
     }
 }

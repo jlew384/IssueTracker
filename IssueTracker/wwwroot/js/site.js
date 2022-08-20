@@ -228,6 +228,7 @@ $(document).ready(function () {
                         }
                         $(event.target).attr("disabled", false);
                         $(event.target).find("option:selected").text(status);
+                        refreshHistory($(event.target).attr("issueId"));
                     }
                 });
                 break;
@@ -250,6 +251,7 @@ $(document).ready(function () {
                         $(event.target).removeClass("bg-dark text-white");
                         $(event.target).attr("disabled", false);
                         $(event.target).find("option:selected").text(priority);
+                        refreshHistory($(event.target).attr("issueId"));
                     }
                 });
                 break;
@@ -269,6 +271,7 @@ $(document).ready(function () {
                     success: function (result) {
                         $(event.target).removeClass("bg-dark text-white").attr("disabled", false);
                         $(event.target).find("option:selected").text(result);
+                        refreshHistory($(event.target).attr("issueId"));
                     }
                 });
                 break;
@@ -286,6 +289,7 @@ $(document).ready(function () {
                     },
                     success: function (result) {
                         $(event.target).removeClass("bg-dark text-white").attr("disabled", false).find("option:selected").text(result);
+                        refreshHistory($(event.target).attr("issueId"));
                     }
                 });
         }
@@ -310,6 +314,7 @@ $(document).ready(function () {
                         $(".display-title-container").attr("hidden", false);
                         $(".edit-title-container").attr("hidden", true);
                         $(".display-title").text(result);
+                        refreshHistory($(".edit-title-input").attr("issueId"));
                     }
                 });
                 break;
@@ -336,6 +341,7 @@ $(document).ready(function () {
                         $(".display-desc-container").attr("hidden", false);
                         $(".edit-desc-container").attr("hidden", true);
                         $(".display-desc").text(result);
+                        refreshHistory($(".edit-desc-input").attr("issueId"));
                     }
                 });
                 break;
@@ -401,8 +407,20 @@ $(document).ready(function () {
         }
     });
 
+    function refreshHistory(issueId) {
+        $.ajax({
+            type: "GET",
+            url: "/Issue/IssueHistory",
+            data: {
+                id: issueId
+            },
+            success: function (result) {
+                $("#history-container").html(result);
+            }
+        })
+    }
+
     function refreshComments(issueId) {
-        console.log(["refresh commms", issueId]);
         $.ajax({
             type: "GET",
             url: "/Issue/IssueCommentList",

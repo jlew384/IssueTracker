@@ -138,8 +138,10 @@
         <div class="card-body">
             <h5 class="align-middle h5">History</h5>
 
-            <div id="comment-container" style="height: 50vh">
-
+            <div id="history-container" class="overflow-auto" style="height: fit-content; max-height: 50vh">
+                @await Component.InvokeAsync("IssueHistory", new {
+                    issueId = Model.Id
+                })
             </div>
         </div>
     </div>

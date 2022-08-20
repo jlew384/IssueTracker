@@ -1,0 +1,35 @@
+﻿@model List<IssueHistoryViewModel>
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(m => Model.FirstOrDefault().FieldName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(m => Model.FirstOrDefault().FieldValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(m => Model.FirstOrDefault().Updated)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(IssueHistoryViewModel item in Model)
+        {
+            <tr>
+                <td>
+                    @item.FieldName
+                </td>
+                <td>
+                    @item.FieldValue
+                </td>
+                <td>
+                    @item.Updated
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>    
