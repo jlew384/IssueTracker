@@ -13,7 +13,7 @@
 <div class="edit-issue-container container p-0">
     <div class="my-2 mx-1 d-flex align-items-center justify-content-between">
         <span class="h6 text-muted">Project: @Model.ProjectTitle</span>
-        <a class="btn btn-sm btn-primary" href="@ViewBag.BackUrl">Back</a>
+        <a class="btn btn-sm btn-primary" asp-controller="Issue" asp-action="Index" asp-route-pid="@Model.ProjectId">To Project</a>
     </div> 
     <div class="card box-shadow shadow">        
         <div class="card-body">

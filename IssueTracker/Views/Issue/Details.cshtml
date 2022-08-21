@@ -8,7 +8,7 @@
 <div class="edit-issue-container container p-0">
     <div class="my-2 mx-1 d-flex align-items-center justify-content-between">
         <span class="h6 text-muted">Project: @Model.ProjectTitle</span>
-        <a class="btn btn-sm btn-primary" href="@ViewBag.BackUrl">Back</a>
+        <a class="btn btn-sm btn-primary" asp-controller="Issue" asp-action="Index" asp-route-pid="@Model.ProjectId">To Project</a>
     </div> 
     <div class="card box-shadow shadow">        
         <div class="card-body">
@@ -85,6 +85,83 @@
                         </div>
                     </div>
                 }
+            </div>
+        </div>
+    </div>
+
+     <div class="card box-shadow shadow mt-3">
+        <div class="card-body">
+            <h5 class="align-middle h5">Comments</h5>
+
+            <div id="comment-container">
+                @await Component.InvokeAsync("IssueCommentList", new {
+                    issueId = Model.Id
+                })
+            </div>
+             
+            <textarea id="comment-input" class="form-control mb-2" rows="2"></textarea>
+            <div class="d-flex justify-content-end">                
+                <button tag="submit-comment-btn" issueId="@Model.Id" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card box-shadow shadow mt-3">
+        <div class="card-body">
+            <h5 class="align-middle h5">History</h5>
+
+            <div id="history-container" class="overflow-auto" style="height: fit-content; max-height: 50vh">
+                @await Component.InvokeAsync("IssueHistory", new {
+                    issueId = Model.Id
+                })
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <!-- Delete Issue Modal -->
+
+    <div id="delete-issue-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white">Delete Issue</h5>
+                </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete the <b>@Model.Title</b> issue?</p>
+                    </div>
+                <div class="modal-footer">
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="@Model.Id" />
+                        <input hidden asp-for="@Model.ProjectId" />
+                        <button id="confirm-modal-btn" type="submit" class="btn btn-danger">Delete</button>                         
+                    </form>
+                    <button tag="close-modal-btn" type="button" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Delete Comment Modal -->
+
+    <div id="delete-comment-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white">Delete Comment</h5>
+                </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this comment?</p>
+                    </div>
+                <div class="modal-footer">
+                    <button tag="confirm-delete-comment-btn" id="confirm-delete-comment-btn" issueId="@Model.Id" class="btn btn-danger">Delete</button>                         
+                    <button tag="cancel-delete-comment-btn" type="button" class="btn btn-secondary">Cancel</button>
+                </div>
             </div>
         </div>
     </div>

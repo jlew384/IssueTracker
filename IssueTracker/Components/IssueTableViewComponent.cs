@@ -62,6 +62,9 @@ namespace IssueTracker.Components
             }
             else
             {
+                Project proj = _context.Projects.Where(x => x.Id == projectId).FirstOrDefault();
+                List<string> userIds = proj.Users.Select(x => x.Id).ToList();
+
                 IssueTableComponentViewModel model = new IssueTableComponentViewModel()
                 {
                     Issues = paginatedList,
@@ -70,6 +73,7 @@ namespace IssueTracker.Components
                     SortDirection = sortDirection,
                     SortField = sortField,
                     Filter = filter,
+                    ProjectMemberIds = userIds
                 };
                 return View(model);
             }

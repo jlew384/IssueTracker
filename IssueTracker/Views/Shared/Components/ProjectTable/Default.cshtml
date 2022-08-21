@@ -22,11 +22,15 @@
                     @if(User.IsInRole(UserRoles.ADMIN) || (User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(project.Id)))
                     {
                         <span class="text-nowrap">
-                            <a class="m-1 text-muted position-relative" style="z-index: 10;" asp-controller="Project" asp-action="Edit" asp-route-pid="@project.Id"><i class="bi bi-pencil-fill"></i></a>
-                            <i tag="delete-project-btn" projectId="@project.Id" projectTitle="@project.Title" class="m-1 text-muted position-relative bi bi-trash2-fill" style="z-index: 10;"></i>
+                            <a class="m-1 text-muted position-relative" style="z-index: 10;" asp-controller="Project" asp-action="Details" asp-route-pid="@project.Id"><i class="bi bi-pencil-fill"></i></a>
+                            <i tag="delete-project-btn" projectId="@project.Id" projectTitle="@project.Title" role="button" class="m-1 text-muted position-relative bi bi-trash2-fill" style="z-index: 10;"></i>
                         </span>
-                    
-                    }  
+
+                    }
+                    else
+                    {
+                        <a class="m-1 text-muted position-relative" style="z-index: 10;" asp-controller="Project" asp-action="Details" asp-route-pid="@project.Id"><i class="bi bi-info-square-fill"></i></a>
+                    }
                 </div>
             </div>            
             <p>@Html.DisplayFor(projectItem => project.Desc)</p>

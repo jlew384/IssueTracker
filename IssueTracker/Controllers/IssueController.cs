@@ -192,7 +192,7 @@ namespace IssueTracker.Controllers
 
 
         [HttpPost]
-        public IActionResult Create(CreateIssueViewModel model, string backUrl)
+        public IActionResult Create(CreateIssueViewModel model)
         {
             if(!ModelState.IsValid)
             {
@@ -263,11 +263,11 @@ namespace IssueTracker.Controllers
             });
             _context.SaveChanges();
 
-            return Redirect(backUrl);
+            return RedirectToAction("Index", new {pid = model.ProjectId});
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             
             
@@ -293,37 +293,36 @@ namespace IssueTracker.Controllers
                 AssignableUsers = assignableUsers
             };            
 
-            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
+            List<string> projMemberIds = issue.Project.Users.Select(x => x.Id).ToList();
 
-            var ownerClaimValues = User.Claims
-                 .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
-                 .Select(c => Int32.Parse(c.Value))
-                 .ToList();
             var userId = _userManager.GetUserId(this.User);
-            if (User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+            if (User.IsInRole(UserRoles.ADMIN) || (projMemberIds.Contains(userId) && !User.IsInRole(UserRoles.SUB)))
             {
-                return View(model);
+                return View("Edit", model);
             }
             else
             {
-                return View("Details", model);
+                return View(model);
             }
             
         }
 
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR + "," + UserRoles.DEV)]
         [HttpPost]
-        public IActionResult Delete(int? id, string backUrl)
+        public IActionResult Delete(int? id)
         {
             Issue? issue = _context.Issues.Find(id);
             if (issue == null) return NotFound();
 
+            int projectId = issue.ProjectId;
+
             _context.Issues.Remove(issue);
             _context.SaveChanges();
 
-            return Redirect(backUrl);
+            return RedirectToAction("Index", new { pid = projectId});
         }
 
-
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR + "," + UserRoles.DEV)]
         [HttpPost]
         public string UpdateStatus(int id, string status)
         {
@@ -346,6 +345,8 @@ namespace IssueTracker.Controllers
             return status;
 
         }
+
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR + "," + UserRoles.DEV)]
         [HttpPost]
         public string UpdatePriority(int id, string priority)
         {
@@ -368,6 +369,8 @@ namespace IssueTracker.Controllers
             return priority;
 
         }
+
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR + "," + UserRoles.DEV)]
         [HttpPost]
         public string UpdateType(int id, string type)
         {
@@ -391,6 +394,7 @@ namespace IssueTracker.Controllers
 
         }
 
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR + "," + UserRoles.DEV)]
         [HttpPost]
         public async Task<string> UpdateAssignedUser(int id, string userId)
         {
@@ -431,6 +435,7 @@ namespace IssueTracker.Controllers
 
         }
 
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR + "," + UserRoles.DEV)]
         [HttpPost]
         public string UpdateTitle(int id, string title)
         {
@@ -454,6 +459,7 @@ namespace IssueTracker.Controllers
 
         }
 
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR + "," + UserRoles.DEV)]
         [HttpPost]
         public string UpdateDesc(int id, string desc)
         {

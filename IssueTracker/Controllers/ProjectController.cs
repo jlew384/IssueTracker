@@ -59,9 +59,8 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Index", "Project");
         }
 
-        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpGet]
-        public async Task<IActionResult> Edit(int? pid)
+        public async Task<IActionResult> Details(int? pid)
         {
             var project = _context.Projects.Find(pid);
 
@@ -69,13 +68,20 @@ namespace IssueTracker.Controllers
             {
                 return NotFound();
             }
-            if(User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(pid))
-            {
-                return NotFound();
-            }
 
             ViewBag.BackUrl = Request.Headers["Referer"].ToString();
-            return View(project);
+
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            
+
+            if(User.IsInRole(UserRoles.ADMIN) || (User.IsInRole(UserRoles.PROJ_MNGR) && project.OwnerId == user.Id))
+            {
+                return View("Edit", project);
+            }
+            else
+            {
+                return View(project);
+            }
         }
 
         [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
@@ -101,6 +107,7 @@ namespace IssueTracker.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
         public string UpdateTitle(int pid, string title)
         {
@@ -116,6 +123,7 @@ namespace IssueTracker.Controllers
             return title;
         }
 
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
         public string UpdateDesc(int pid, string desc)
         {
@@ -132,6 +140,7 @@ namespace IssueTracker.Controllers
 
         }
 
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpPost]
         public string UpdateProjectOwner(int pid, string userId)
         {
@@ -147,6 +156,7 @@ namespace IssueTracker.Controllers
             return "success";
         }
 
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
         public async Task<int> RemoveUsersFromProject(int pid, List<string> userIds)
         {
@@ -163,6 +173,7 @@ namespace IssueTracker.Controllers
             return pid;
         }
 
+        [Authorize(Roles = UserRoles.ADMIN + "," + UserRoles.PROJ_MNGR)]
         [HttpPost]
         public async Task<int> AddUsersToProject(int pid, List<string> userIds)
         {

@@ -24,24 +24,7 @@ namespace IssueTracker.Controllers
             _roleManager = roleManager;
         }
 
-
-        [IgnoreAntiforgeryToken]
-        public IActionResult UserList(string type, string sortOrder, string searchString, int? pageIndex, string roleFilter, int? pid, string userId)
-        {
-            return ViewComponent("UserList",
-                new
-                {
-                    type = type,
-                    sortOrder = sortOrder,
-                    searchString = searchString,
-                    pageIndex = pageIndex,
-                    roleFilter = roleFilter,
-                    pid = pid,
-                    userId = userId
-                });
-        }
-
-        [IgnoreAntiforgeryToken]
+        
         [HttpGet]
         public IActionResult UserTable(string filter, int projectId, bool isSelectable = false)
         {
@@ -58,20 +41,11 @@ namespace IssueTracker.Controllers
         [HttpGet]
         public async Task<IActionResult> Users()
         {
-            //List<UserViewModel> modelList = new List<UserViewModel>() { };
-            //foreach(var user in _userManager.Users.Where(x => x.Id != _userManager.GetUserId(User)))
-            //{
-            //    UserViewModel model = new UserViewModel();
-            //    model.Id = user.Id;
-            //    model.Name = user.UserName;
-            //    model.Email = user.Email;
-            //    model.Roles = await _userManager.GetRolesAsync(user);
-            //    modelList.Add(model);
-            //}
             ApplicationUser user1 = await _userManager.GetUserAsync(User);
             return View(user1);
         }
 
+        [Authorize(Roles = UserRoles.ADMIN)]
         [HttpGet]
         public IActionResult Index()
         {
@@ -79,7 +53,6 @@ namespace IssueTracker.Controllers
         }
 
 
-        [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoles.PROJ_MNGR + "," + UserRoles.ADMIN)]
         [HttpPost]
         public async Task<IActionResult> RemoveUserFromProject(string userId, int pid)
@@ -100,7 +73,7 @@ namespace IssueTracker.Controllers
             
         }
 
-        [IgnoreAntiforgeryToken]
+        
         [Authorize(Roles = UserRoles.PROJ_MNGR + "," + UserRoles.ADMIN)]
         [HttpPost]
         public async Task<IActionResult> AddUserToProject(string userId, int pid)

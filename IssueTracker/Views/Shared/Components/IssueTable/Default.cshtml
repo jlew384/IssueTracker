@@ -118,7 +118,6 @@
                         }
                     }
                 </th>
-                <th class="d-none" style="width: 2%;"></th>
             </tr>
         </thead>
         <tbody>
@@ -135,7 +134,7 @@
                         @DateTimeHelpers.GetSimpleElapsedTime(issue.Created)
                     </td>
                     <td>
-                        @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+                        @if(User.IsInRole(UserRoles.ADMIN) || (Model.ProjectMemberIds.Contains(userId) && !User.IsInRole(UserRoles.SUB)))
                         {
                             switch(issue.Status)
                             {
@@ -168,7 +167,7 @@
                             
                     </td>
                     <td class="d-none d-sm-table-cell">
-                        @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+                        @if(User.IsInRole(UserRoles.ADMIN) || (Model.ProjectMemberIds.Contains(userId) && !User.IsInRole(UserRoles.SUB)))
                         {
                             <select tag="priority-dropdown" asp-for="@issue.Priority" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssuePriority.List)" ></select>
                         }
@@ -179,7 +178,7 @@
 
                     </td>
                     <td class="d-none d-sm-table-cell">
-                        @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
+                        @if(User.IsInRole(UserRoles.ADMIN) || (Model.ProjectMemberIds.Contains(userId) && !User.IsInRole(UserRoles.SUB)))
                         {                                    
                             <select tag="type-dropdown" asp-for="@issue.Type" issueId="@issue.Id" class="priority-dropdown form-select-sm border-0" asp-items="@new SelectList(IssueType.List)" ></select>
                         }
@@ -191,17 +190,6 @@
                     </td>
                     <td class="d-none d-lg-table-cell text-nowrap">
                         @Html.DisplayFor(issueItem => issue.AssignedUser.UserName)
-                    </td>                        
-                    <td class="d-none">
-                            
-                        @if(User.IsInRole(UserRoles.ADMIN) || userId == issue.CreatorUserId || User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(issue.ProjectId))
-                        {
-                            <div class="text-nowrap">
-                                <a class="m-1 text-muted" asp-controller="Issue" asp-action="Edit" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-pencil-fill"></i></a>
-                                <a class="m-1 text-muted" asp-controller="Issue" asp-action="Delete" asp-route-id="@issue.Id" asp-route-pid="@issue.ProjectId"><i class="bi bi-trash2-fill"></i></a>
-                            </div>
-                    
-                        }  
                     </td>
                 </tr>
             }            

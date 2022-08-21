@@ -608,7 +608,7 @@ $(document).ready(function () {
         if ($(element).attr("tag") == "issue-row") {
             let issueId = $(element).attr("issueId");
             console.log(["issueId", issueId]);
-            location.href = "/Issue/Edit/" + issueId;
+            location.href = "/Issue/Details/" + issueId;
         }
     });
 });
