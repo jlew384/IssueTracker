@@ -18,15 +18,26 @@ namespace IssueTracker.Components
             _userManager = userManager;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public async Task<IViewComponentResult> InvokeAsync(bool simple, string userId)
         {
-            IQueryable<Project> projects = _context.Projects;
+            
 
 
             //PaginatedList<Project> paginatedList = await PaginatedList<Project>.CreateAsync(projects, pageIndex ?? 1, PAGE_SIZE);
 
 
-            return View(projects.ToList());
+            if(simple)
+            {
+                IQueryable<Project> projects = _context.Projects.Where(x => x.Users.Select(u => u.Id).Contains(userId));
+                return View("Simple", projects.ToList());
+            }
+            else
+            {
+                IQueryable<Project> projects = _context.Projects;
+                return View(projects.ToList());
+            }
+
+            
         }
     }
 }

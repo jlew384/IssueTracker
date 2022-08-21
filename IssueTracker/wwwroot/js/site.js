@@ -368,16 +368,7 @@ $(document).ready(function () {
                     },
                     success: function (result) {
                         $("#comment-input").val("");
-                        $.ajax({
-                            type: "POST",
-                            url: "/Issue/IssueCommentList",
-                            data: {
-                                id: $(event.target).attr("issueId")
-                            },
-                            success: function (result) {
-                                $("#comment-container").html(result);
-                            }
-                        })
+                        refreshComments($(event.target).attr("issueId"));
                     }
                 });
                 break;

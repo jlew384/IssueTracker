@@ -305,28 +305,6 @@ namespace IssueTracker.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(EditIssueViewModel model, string backUrl)
-        {
-            Issue? issue = _context.Issues.Find(model.Id);
-            if (!ModelState.IsValid || issue == null)
-            {
-                return NotFound();
-            }
-
-            issue.Title = model.Title;
-            issue.Desc = model.Desc;
-            issue.AssignedUser = _context.ApplicationUsers.Find(model.AssignedUserId);
-            issue.Status = model.Status;
-            issue.Priority = model.Priority;
-            issue.Type = model.Type;
-            issue.Modified = DateTime.UtcNow;
-
-            _context.Issues.Update(issue);
-            _context.SaveChanges();
-            return Redirect(backUrl);
-        }
-
-        [HttpPost]
         public IActionResult Delete(int? id, string backUrl)
         {
             Issue? issue = _context.Issues.Find(id);
@@ -486,6 +464,7 @@ namespace IssueTracker.Controllers
 
         }
 
+        [HttpGet]
         public IActionResult IssueCommentList(int id)
         {
             return ViewComponent("IssueCommentList", new
@@ -532,6 +511,7 @@ namespace IssueTracker.Controllers
             return "success";
         }
 
+        [HttpPost]
         public string EditIssueComment(int cid, string text)
         {
             IssueComment comment = _context.IssueComments.Find(cid);
@@ -549,6 +529,7 @@ namespace IssueTracker.Controllers
             return "success";
         }
 
+        [HttpGet]
         public IActionResult IssueHistory(int id)
         {
             return ViewComponent("IssueHistory", new

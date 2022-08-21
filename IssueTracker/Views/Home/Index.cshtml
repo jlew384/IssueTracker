@@ -1,6 +1,13 @@
-﻿
+﻿@using System.Security.Claims
 @{
     ViewData["Title"] = "Welcome";
+    string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 }
 
-<h1 class="text-center">Welcome to Issue Tracker.</h1>
+<div class="col-lg-6">
+     @await Component.InvokeAsync("ProjectTable", 
+        new {
+            simple = true,
+            userId = userId
+        })
+</div>
