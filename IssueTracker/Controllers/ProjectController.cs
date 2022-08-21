@@ -41,7 +41,6 @@ namespace IssueTracker.Controllers
         [HttpGet]        
         public async Task<IActionResult> Create()
         {
-            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
             return View();
         }
 
@@ -69,7 +68,6 @@ namespace IssueTracker.Controllers
                 return NotFound();
             }
 
-            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
 
             ApplicationUser user = await _userManager.GetUserAsync(User);
             
