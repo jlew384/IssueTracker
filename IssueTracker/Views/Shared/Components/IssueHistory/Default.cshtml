@@ -14,6 +14,9 @@
             <th>
                 @Html.DisplayNameFor(m => Model.FirstOrDefault().Updated)
             </th>
+            <th>
+                @Html.DisplayNameFor(m => Model.FirstOrDefault().UpdatedBy)
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -28,6 +31,9 @@
                 </td>
                 <td>
                     @item.Updated
+                </td>
+                <td>
+                    @item.UpdatedBy
                 </td>
             </tr>
         }

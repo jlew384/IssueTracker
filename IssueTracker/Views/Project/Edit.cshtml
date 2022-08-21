@@ -78,7 +78,27 @@
                 })
             </div>
         </div>
-    </div>    
+    </div>
+
+
+    @if(User.IsInRole(UserRoles.ADMIN))
+    {
+         <div class="card box-shadow shadow mt-3">
+             <div class="card-body">
+                 <h5>Project Owner</h5>
+                 <select id="project-manager-dropdown" class="form-select my-2">
+                    @foreach(var user in Model.Users)
+                    {
+                        <option value="@user.Id">@user.UserName</option>
+                    }
+                 </select>
+                 <button tag="submit-proj-owner-btn" projectId="@Model.Id" class="btn btn-primary">Change Project Owner</button>
+             </div>
+
+         </div>
+    }
+    
+   
 
     <div class="modal col-10" id="remove-users-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">

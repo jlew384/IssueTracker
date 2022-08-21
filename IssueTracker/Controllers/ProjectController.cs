@@ -52,6 +52,7 @@ namespace IssueTracker.Controllers
         {
             ApplicationUser currentUser = await _userManager.GetUserAsync(User);
             model.Users.Add(currentUser);
+            model.OwnerId = currentUser.Id;
             _context.Projects.Add(model);
             _context.SaveChanges();
             await AddProjectOwnerClaim(currentUser, model.Id);
@@ -129,6 +130,21 @@ namespace IssueTracker.Controllers
             _context.SaveChanges();
             return desc;
 
+        }
+
+        [HttpPost]
+        public string UpdateProjectOwner(int pid, string userId)
+        {
+            Project? project = _context.Projects.Find(pid);
+            if(project == null)
+            {
+                return "";
+            }
+            project.OwnerId = userId;
+            _context.Projects.Update(project);
+            _context.SaveChanges();
+
+            return "success";
         }
 
         [HttpPost]

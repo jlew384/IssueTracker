@@ -19,16 +19,28 @@
     @foreach(Issue issue in Model.Issues)
     {
         <a class="text-decoration-none" asp-controller="Issue" asp-action="Edit" asp-route-id="@issue.Id">
-            <li class="list-group-item d-flex ">
-                <span class="w-50">
+            <li class="list-group-item d-flex justify-content-between">
+                <span>
                     @issue.Title
                 </span>
-                <span class="w-25">
-                    @issue.Status
-                </span>
-                <span class="w-25">
-                    @DateTimeHelpers.GetSimpleElapsedTime(issue.Created)
-                </span>
+                @switch(issue.Status)
+                {
+                    case IssueStatus.TO_DO:
+                        <span class="fw-bold text-success">
+                            @issue.Status
+                        </span>
+                        break;
+                    case IssueStatus.IN_PROGRESS:
+                        <span class="fw-bold text-info">
+                            @issue.Status
+                        </span>
+                        break;
+                    case IssueStatus.DONE:
+                        <span class="fw-bold text-secondary">
+                            @issue.Status
+                        </span>
+                        break;
+                }
                 
             </li>
         </a>

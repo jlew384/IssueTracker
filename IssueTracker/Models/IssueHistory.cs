@@ -14,6 +14,13 @@ namespace IssueTracker.Models
         [ForeignKey("IssueId")]
         public virtual Issue Issue { get; set; }
 
+        public string UpdatedByUserId { get; set; }
+
+        [Required]
+        [DisplayName("Updated By")]
+        [ForeignKey("UpdatedByUserId")]
+        public virtual ApplicationUser UpdatedBy { get; set; }
+
         public string? CreatorUserId { get; set; }
 
         [DisplayName("Creator")]

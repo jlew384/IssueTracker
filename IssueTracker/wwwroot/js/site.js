@@ -152,6 +152,17 @@ $(document).ready(function () {
             case "cancel-add-btn":
                 $("#add-users-modal").modal("hide");
                 break;
+            case "submit-proj-owner-btn":
+                $.ajax({
+                    type: 'POST',
+                    url: "/Project/UpdateProjectOwner",
+                    data: {
+                        pid: $(event.target).attr("projectId"),
+                        userId: $("#project-manager-dropdown option:selected").val()
+                    },
+                    success: function (result) {
+                    }
+                });
         }
     });
 

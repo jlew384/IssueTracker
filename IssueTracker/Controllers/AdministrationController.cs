@@ -56,7 +56,7 @@ namespace IssueTracker.Controllers
 
         [Authorize(Roles = UserRoles.ADMIN)]
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Users()
         {
             //List<UserViewModel> modelList = new List<UserViewModel>() { };
             //foreach(var user in _userManager.Users.Where(x => x.Id != _userManager.GetUserId(User)))
@@ -72,17 +72,12 @@ namespace IssueTracker.Controllers
             return View(user1);
         }
 
-
-        [Authorize(Roles = UserRoles.PROJ_MNGR + "," + UserRoles.ADMIN)]
         [HttpGet]
-        public IActionResult ManageUsersInProject(int pid)
+        public IActionResult Index()
         {
-            Project project = _context.Projects
-                .Where(x => x.Id == pid)
-                .First();
-
-            return View(project);
+            return View();
         }
+
 
         [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoles.PROJ_MNGR + "," + UserRoles.ADMIN)]

@@ -41,7 +41,9 @@ namespace IssueTracker.Components
                     {
                         FieldName = "Assigned",
                         FieldValue = item.AssignedUser == null ? "Unassigned" : item.AssignedUser.UserName,
-                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated),
+                        UpdatedBy = item.UpdatedBy.UserName,
+                        IssueTitle = item.Issue.Title
                     };
                     model.Add(modelItem);
                 }
@@ -51,7 +53,9 @@ namespace IssueTracker.Components
                     {
                         FieldName = "Creator",
                         FieldValue = item.CreatorUser.UserName,
-                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated),
+                        UpdatedBy = item.UpdatedBy.UserName,
+                        IssueTitle = item.Issue.Title
                     };
                     model.Add(modelItem);
                 }
@@ -61,7 +65,9 @@ namespace IssueTracker.Components
                     {
                         FieldName = "Description",
                         FieldValue = item.Desc,
-                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated),
+                        UpdatedBy = item.UpdatedBy.UserName,
+                        IssueTitle = item.Issue.Title
                     };
                     model.Add(modelItem);
                 }
@@ -71,7 +77,9 @@ namespace IssueTracker.Components
                     {
                         FieldName = "Priority",
                         FieldValue = item.Priority,
-                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated),
+                        UpdatedBy = item.UpdatedBy.UserName,
+                        IssueTitle = item.Issue.Title
                     };
                     model.Add(modelItem);
                 }
@@ -81,7 +89,9 @@ namespace IssueTracker.Components
                     {
                         FieldName = "Status",
                         FieldValue = item.Status,
-                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated),
+                        UpdatedBy = item.UpdatedBy.UserName,
+                        IssueTitle = item.Issue.Title
                     };
                     model.Add(modelItem);
                 }
@@ -91,7 +101,9 @@ namespace IssueTracker.Components
                     {
                         FieldName = "Type",
                         FieldValue = item.Type,
-                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated),
+                        UpdatedBy = item.UpdatedBy.UserName,
+                        IssueTitle = item.Issue.Title
                     };
                     model.Add(modelItem);
                 }
@@ -101,7 +113,9 @@ namespace IssueTracker.Components
                     {
                         FieldName = "Title",
                         FieldValue = item.Title,
-                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                        Updated = DateTimeHelpers.GetSimpleElapsedTime(item.Updated),
+                        UpdatedBy = item.UpdatedBy.UserName,
+                        IssueTitle = item.Issue.Title
                     };
                     model.Add(modelItem);
                 }

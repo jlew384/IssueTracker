@@ -1,0 +1,13 @@
+﻿@*@model IEnumerable<UserViewModel>*@
+@model ApplicationUser
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<div class="user-list-container">
+    @await Component.InvokeAsync("UserTable", 
+        new {
+            filter = UserFilter.ALL
+        })
+</div>

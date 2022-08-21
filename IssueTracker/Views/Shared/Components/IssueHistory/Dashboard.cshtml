@@ -3,11 +3,11 @@
 <ul class="list-group">
     @foreach(IssueHistoryViewModel item in Model)
     {
-        <li class="list-group-item">
+        <li class="list-group-item d-flex justify-content-between">
             <span>
-                @item.FieldName was changed to @item.FieldValue
+                <em>@item.IssueTitle</em> <b>@item.FieldName</b> was changed to <b>@item.FieldValue</b> by <b>@item.UpdatedBy</b>
             </span>
-            <span>
+            <span class="text-muted">
                 @item.Updated
             </span>
         </li>

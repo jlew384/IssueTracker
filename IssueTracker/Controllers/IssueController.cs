@@ -216,43 +216,50 @@ namespace IssueTracker.Controllers
             {
                 IssueId = issue.Id,
                 Title = issue.Title,
-                IsTitleUpdated = true
+                IsTitleUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.IssuesHistory.Add(new IssueHistory()
             {
                 IssueId = issue.Id,
                 Desc = issue.Desc,
-                IsDescUpdated = true
+                IsDescUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.IssuesHistory.Add(new IssueHistory()
             {
                 IssueId = issue.Id,
                 Status = issue.Status,
-                IsStatusUpdated = true
+                IsStatusUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.IssuesHistory.Add(new IssueHistory()
             {
                 IssueId = issue.Id,
                 Priority = issue.Priority,
-                IsPriorityUpdated = true
+                IsPriorityUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.IssuesHistory.Add(new IssueHistory()
             {
                 IssueId = issue.Id,
                 Type = issue.Type,
-                IsTypeUpdated = true
+                IsTypeUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.IssuesHistory.Add(new IssueHistory()
             {
                 IssueId = issue.Id,
                 CreatorUserId = issue.CreatorUserId,
-                IsCreatorUpdated = true
+                IsCreatorUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.IssuesHistory.Add(new IssueHistory()
             {
                 IssueId = issue.Id,
                 AssignedUserId = issue.AssignedUserId,
-                IsAssignedUserUpdated = true
+                IsAssignedUserUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.SaveChanges();
 
@@ -332,7 +339,8 @@ namespace IssueTracker.Controllers
             {
                 IssueId = issue.Id,
                 Status = issue.Status,
-                IsStatusUpdated = true
+                IsStatusUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.SaveChanges();
             return status;
@@ -353,7 +361,8 @@ namespace IssueTracker.Controllers
             {
                 IssueId = issue.Id,
                 Priority = issue.Priority,
-                IsPriorityUpdated = true
+                IsPriorityUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.SaveChanges();
             return priority;
@@ -374,7 +383,8 @@ namespace IssueTracker.Controllers
             {
                 IssueId = issue.Id,
                 Type = issue.Type,
-                IsTypeUpdated = true
+                IsTypeUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.SaveChanges();
             return type;
@@ -405,7 +415,8 @@ namespace IssueTracker.Controllers
             {
                 IssueId = issue.Id,
                 AssignedUserId = issue.AssignedUserId,
-                IsAssignedUserUpdated = true
+                IsAssignedUserUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.SaveChanges();
 
@@ -435,7 +446,8 @@ namespace IssueTracker.Controllers
             {
                 IssueId = issue.Id,
                 Title = issue.Title,
-                IsTitleUpdated = true
+                IsTitleUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.SaveChanges();
             return title;
@@ -457,7 +469,8 @@ namespace IssueTracker.Controllers
             {
                 IssueId = issue.Id,
                 Desc = issue.Desc,
-                IsDescUpdated = true
+                IsDescUpdated = true,
+                UpdatedByUserId = _userManager.GetUserId(this.User)
             });
             _context.SaveChanges();
             return desc;
