@@ -184,8 +184,6 @@ namespace IssueTracker.Controllers
                 ProjectId = project.Id,
                 AssignableUsers = assignableUsers
             };
-
-            ViewBag.BackUrl = Request.Headers["Referer"].ToString();
             return View(model);
         }
 
