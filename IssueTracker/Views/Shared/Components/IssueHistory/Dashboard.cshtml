@@ -1,0 +1,15 @@
+﻿@model List<IssueHistoryViewModel>
+
+<ul class="list-group">
+    @foreach(IssueHistoryViewModel item in Model)
+    {
+        <li class="list-group-item">
+            <span>
+                @item.FieldName was changed to @item.FieldValue
+            </span>
+            <span>
+                @item.Updated
+            </span>
+        </li>
+    }
+</ul>   

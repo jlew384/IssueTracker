@@ -1,0 +1,36 @@
+﻿@using System.Security.Claims;
+@using IssueTracker.Helpers;
+@using IssueTracker.Constants;
+@model IssueTableComponentViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    var user = User as ClaimsPrincipal;
+    string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+    var ownerClaimValues = user.Claims
+         .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
+         .Select(c => Int32.Parse(c.Value))
+         .ToList();
+
+       
+}
+
+<ul class="list-group">
+    @foreach(Issue issue in Model.Issues)
+    {
+        <a class="text-decoration-none" asp-controller="Issue" asp-action="Edit" asp-route-id="@issue.Id">
+            <li class="list-group-item d-flex ">
+                <span class="w-50">
+                    @issue.Title
+                </span>
+                <span class="w-25">
+                    @issue.Status
+                </span>
+                <span class="w-25">
+                    @DateTimeHelpers.GetSimpleElapsedTime(issue.Created)
+                </span>
+                
+            </li>
+        </a>
+    }
+</ul>

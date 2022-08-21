@@ -17,6 +17,7 @@ namespace IssueTracker.Components
         private int? _projectId;
         private string? _sortOrder;
         private string? _sortDirection;
+        private bool _isDashboard;
 
         public IssueTableViewComponent(ApplicationDbContext context)
         {
@@ -24,18 +25,19 @@ namespace IssueTracker.Components
             
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string userId, string filter, int projectId, string sortField, string sortDirection, string searchString, int? pageIndex)
+        public async Task<IViewComponentResult> InvokeAsync(string userId, string filter, int projectId, string sortField, string sortDirection, string searchString, int? pageIndex, bool isDashboard)
         {
             _userId = userId;
             _filter = filter;
             _projectId = projectId;
             _sortOrder = sortField + "_" + sortDirection;
             _sortDirection = sortDirection;
+            _isDashboard = isDashboard;
 
 
             IQueryable<Issue> issues = InitializeIssues();
 
-            string projectTitle = _context.Projects.Find(projectId).Title;
+            
 
             issues = Sort(issues, _sortOrder);
             issues = Search(issues, searchString);
@@ -45,16 +47,33 @@ namespace IssueTracker.Components
             
 
 
-            IssueTableComponentViewModel model = new IssueTableComponentViewModel()
+            
+
+            if(isDashboard)
             {
-                Issues = paginatedList,
-                ProjectTitle = projectTitle,
-                ProjectId = projectId,
-                SortDirection = sortDirection,
-                SortField = sortField,
-                Filter = filter,
-            };
-            return View(model);
+                IssueTableComponentViewModel model = new IssueTableComponentViewModel()
+                {
+                    Issues = paginatedList,
+                    SortDirection = sortDirection,
+                    SortField = sortField,
+                    Filter = filter,
+                };
+                return View("Dashboard", model);
+            }
+            else
+            {
+                IssueTableComponentViewModel model = new IssueTableComponentViewModel()
+                {
+                    Issues = paginatedList,
+                    ProjectTitle = _context.Projects.Find(projectId).Title,
+                    ProjectId = projectId,
+                    SortDirection = sortDirection,
+                    SortField = sortField,
+                    Filter = filter,
+                };
+                return View(model);
+            }
+            
         }
 
         private IQueryable<Issue> InitializeIssues()
@@ -64,15 +83,55 @@ namespace IssueTracker.Components
                 case IssueFilter.PROJECT:
                     return _context.Issues.Where(x => x.ProjectId == _projectId);
                 case IssueFilter.ASSIGNEE:
-                    return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.AssignedUserId == _userId);
+                    if(_isDashboard)
+                    {
+                        return _context.Issues.Where(x => x.AssignedUserId == _userId);
+                    }
+                    else
+                    {
+                        return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.AssignedUserId == _userId);
+                    }
+                    
                 case IssueFilter.CREATOR:
-                    return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.CreatorUserId == _userId);
+                    if(_isDashboard)
+                    {
+                        return _context.Issues.Where(x => x.CreatorUserId == _userId);
+                    }
+                    else
+                    {
+                        return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.CreatorUserId == _userId);
+                    }
+                    
                 case IssueFilter.ACTIVE:
-                    return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.Status != IssueStatus.DONE);
+                    if(_isDashboard)
+                    {
+                        return _context.Issues.Where(x => x.AssignedUserId == _userId).Where(x => x.Status != IssueStatus.DONE);
+                    }
+                    else
+                    {
+                        return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.Status != IssueStatus.DONE);
+                    }
+                    
                 case IssueFilter.INACTIVE:
-                    return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.Status == IssueStatus.DONE);
+                    if (_isDashboard)
+                    {
+                        return _context.Issues.Where(x => x.AssignedUserId == _userId).Where(x => x.Status == IssueStatus.DONE);
+                    }
+                    else
+                    {
+                        return _context.Issues.Where(x => x.ProjectId == _projectId).Where(x => x.Status == IssueStatus.DONE);
+                    }
+                    
                 default:
-                    return _context.Issues.Where(x => x.ProjectId == _projectId);
+                    if (_isDashboard)
+                    {
+                        return _context.Issues.Where(x => x.AssignedUserId == _userId);
+                    }
+                    else
+                    {
+                        return _context.Issues.Where(x => x.ProjectId == _projectId);
+                    }
+                    
             }
         }        
 

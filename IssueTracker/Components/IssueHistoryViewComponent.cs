@@ -15,10 +15,19 @@ namespace IssueTracker.Components
             _context = context;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int issueId)
+        public async Task<IViewComponentResult> InvokeAsync(int issueId, bool isDashboard)
         {
             List<IssueHistoryViewModel> model = new List<IssueHistoryViewModel>();
-            IQueryable<IssueHistory> histories = _context.IssuesHistory.Where(x => x.IssueId == issueId).OrderByDescending(x => x.Updated);
+            IQueryable<IssueHistory> histories;
+            if (isDashboard)
+            {
+                histories = _context.IssuesHistory.OrderByDescending(x => x.Updated);
+            }
+            else
+            {
+                histories = _context.IssuesHistory.Where(x => x.IssueId == issueId).OrderByDescending(x => x.Updated);
+            }
+
             foreach(IssueHistory item in histories)
             {
                 //typeof(Class1).GetProperty("Name")
@@ -96,6 +105,11 @@ namespace IssueTracker.Components
                     };
                     model.Add(modelItem);
                 }
+            }
+
+            if(isDashboard)
+            {
+                return View("Dashboard", model);
             }
 
             return View(model);

@@ -4,10 +4,46 @@
     string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 }
 
-<div class="col-lg-6">
-     @await Component.InvokeAsync("ProjectTable", 
-        new {
-            simple = true,
-            userId = userId
-        })
+<div class="d-lg-flex">
+    <div class="col-lg-6">
+        <div class="card shadow my-4 mx-2">
+            <div class="card-body border-top border-5 border-primary" style="border-radius: 5px;">
+                <h4>My Projects</h4>
+                @await Component.InvokeAsync("ProjectTable", 
+                    new {
+                        isDashboard = true,
+                        userId = userId
+                    })
+            </div>     
+        </div>
+
+        <div class="card shadow my-4 mx-2">
+            <div class="card-body border-top border-5 border-primary" style="border-radius: 5px;">
+                <h4>My Issues</h4>
+                @await Component.InvokeAsync("IssueTable", 
+                    new {
+                        filter = IssueFilter.ASSIGNEE,
+                        userid = userId,
+                        isDashboard = true
+                    })
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow my-4 mx-2">
+            <div class="card-body border-top border-5 border-primary" style="border-radius: 5px;">
+                <h4>Activity</h4>
+                @await Component.InvokeAsync("IssueHistory", 
+                    new {
+                    
+                        isDashboard = true
+                    })
+            </div>
+        </div>
+
+        
+    </div>
 </div>
+
+

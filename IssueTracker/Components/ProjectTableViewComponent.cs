@@ -18,7 +18,7 @@ namespace IssueTracker.Components
             _userManager = userManager;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(bool simple, string userId)
+        public async Task<IViewComponentResult> InvokeAsync(bool isDashboard, string userId)
         {
             
 
@@ -26,10 +26,10 @@ namespace IssueTracker.Components
             //PaginatedList<Project> paginatedList = await PaginatedList<Project>.CreateAsync(projects, pageIndex ?? 1, PAGE_SIZE);
 
 
-            if(simple)
+            if(isDashboard)
             {
                 IQueryable<Project> projects = _context.Projects.Where(x => x.Users.Select(u => u.Id).Contains(userId));
-                return View("Simple", projects.ToList());
+                return View("Dashboard", projects.ToList());
             }
             else
             {
