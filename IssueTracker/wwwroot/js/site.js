@@ -406,8 +406,22 @@ $(document).ready(function () {
                 })
                 $("#delete-comment-modal").modal("hide");
                 break;
+            case "comment-tab":
+                $(event.target).addClass("active");
+                $("#history-tab").removeClass("active");
+                $("#comment-tab-content").attr("hidden", false);
+                $("#history-tab-content").attr("hidden", true);
+                break;
+            case "history-tab":
+                $(event.target).addClass("active");
+                $("#comment-tab").removeClass("active");
+                $("#comment-tab-content").attr("hidden", true);
+                $("#history-tab-content").attr("hidden", false);
+                break;
         }
     });
+
+    
 
     function refreshHistory(issueId) {
         $.ajax({

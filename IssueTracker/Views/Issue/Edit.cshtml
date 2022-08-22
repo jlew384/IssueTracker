@@ -117,32 +117,45 @@
         </div>
     </div>
 
+    
+
     <div class="card box-shadow shadow mt-3">
         <div class="card-body">
-            <h5 class="align-middle h5">Comments</h5>
-
-            <div id="comment-container">
-                @await Component.InvokeAsync("IssueCommentList", new {
-                    issueId = Model.Id
-                })
-            </div>
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <span id="comment-tab" tag="comment-tab" role="button" class="nav-link text-black h5 active">Comments</span>
+                </li>
+                <li class="nav-item">
+                    <span id="history-tab" tag="history-tab" role="button" class="nav-link h5 text-black">History</span>
+                </li>
+            </ul>
+            <div class="p-3 border border-1 border-top-0">
+                <div id="comment-tab-content">
+                    <div id="comment-container">
+                        @await Component.InvokeAsync("IssueCommentList", new {
+                            issueId = Model.Id
+                        })
+                    </div>
              
-            <textarea id="comment-input" class="form-control mb-2" rows="2"></textarea>
-            <div class="d-flex justify-content-end">                
-                <button tag="submit-comment-btn" issueId="@Model.Id" class="btn btn-primary">Submit</button>
-            </div>
-        </div>
-    </div>
+                    <textarea id="comment-input" class="form-control mb-2" rows="2"></textarea>
+                    <div class="d-flex justify-content-end">                
+                        <button tag="submit-comment-btn" issueId="@Model.Id" class="btn btn-primary">Send</button>
+                    </div>
+                </div>
+                
 
-    <div class="card box-shadow shadow mt-3">
-        <div class="card-body">
-            <h5 class="align-middle h5">History</h5>
 
-            <div id="history-container" class="overflow-auto" style="height: fit-content; max-height: 50vh">
-                @await Component.InvokeAsync("IssueHistory", new {
-                    issueId = Model.Id
-                })
-            </div>
+                <div id="history-tab-content" hidden>
+                    <h5 class="align-middle h5">History</h5>
+
+                    <div id="history-container" class="overflow-auto" style="height: fit-content; max-height: 50vh">
+                        @await Component.InvokeAsync("IssueHistory", new {
+                            issueId = Model.Id
+                        })
+                    </div>
+                </div>
+                
+            </div>       
         </div>
     </div>
 

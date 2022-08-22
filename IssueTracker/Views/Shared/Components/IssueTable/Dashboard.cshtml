@@ -7,34 +7,42 @@
     ViewData["Title"] = "Index";       
 }
 
-<ul class="list-group">
-    @foreach(Issue issue in Model.Issues)
-    {
-        <a class="text-decoration-none" asp-controller="Issue" asp-action="Details" asp-route-id="@issue.Id">
-            <li class="list-group-item d-flex justify-content-between">
-                <span>
-                    @issue.Title
-                </span>
-                @switch(issue.Status)
-                {
-                    case IssueStatus.TO_DO:
-                        <span class="fw-bold text-success">
-                            @issue.Status
-                        </span>
-                        break;
-                    case IssueStatus.IN_PROGRESS:
-                        <span class="fw-bold text-info">
-                            @issue.Status
-                        </span>
-                        break;
-                    case IssueStatus.DONE:
-                        <span class="fw-bold text-secondary">
-                            @issue.Status
-                        </span>
-                        break;
-                }
+@if(Model.Issues.Count == 0)
+{
+    <p>There are no issues to display.</p>
+}
+else {
+    <ul class="list-group">
+        @foreach(Issue issue in Model.Issues)
+        {
+            <a class="text-decoration-none" asp-controller="Issue" asp-action="Details" asp-route-id="@issue.Id">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>
+                        @issue.Title
+                    </span>
+                    @switch(issue.Status)
+                    {
+                        case IssueStatus.TO_DO:
+                            <span class="fw-bold text-success text-end">
+                                @issue.Status
+                            </span>
+                            break;
+                        case IssueStatus.IN_PROGRESS:
+                            <span class="fw-bold text-info text-end">
+                                @issue.Status
+                            </span>
+                            break;
+                        case IssueStatus.DONE:
+                            <span class="fw-bold text-secondary text-end">
+                                @issue.Status
+                            </span>
+                            break;
+                    }
                 
-            </li>
-        </a>
-    }
-</ul>
+                </li>
+            </a>
+        }
+    </ul>
+}
+
+

@@ -15,7 +15,7 @@ namespace IssueTracker.Components
 
         public async Task<IViewComponentResult> InvokeAsync(int issueId)
         {
-            List<IssueComment> comments = _context.IssueComments.Where(x => x.IssueId == issueId).OrderByDescending(x => x.CreatedDate).ToList();
+            List<IssueComment> comments = _context.IssueComments.Where(x => x.IssueId == issueId).OrderByDescending(x => x.CreatedDate).Take(30).ToList();
             return View(comments);
         }
     }

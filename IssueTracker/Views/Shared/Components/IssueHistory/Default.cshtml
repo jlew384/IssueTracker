@@ -1,108 +1,116 @@
 ﻿@model List<IssueHistory>
 
 
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Field Name
-            </th>
-            <th>
-                Field Value
-            </th>
-            <th>
-                @Html.DisplayNameFor(m => Model.FirstOrDefault().Updated)
-            </th>
-            <th>
-                @Html.DisplayNameFor(m => Model.FirstOrDefault().UpdatedBy)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach(IssueHistory item in Model)
-        {
+@if(Model.Count == 0)
+{
+    <p>There is no issue history to display.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
             <tr>
-                @if (item.IsAssignedUserUpdated)
-                {
-                    <td>
-                        Assigned
-                    </td>
-                    @if(item.AssignedUser == null)
-                    {
-                        <td>
-                            Unassigned
-                        </td>
-                    }
-                    else
-                    {
-                        <td>
-                            @item.AssignedUser.UserName
-                        </td>
-                    }
-                }
-                else if (item.IsCreatorUpdated)
-                {
-                    <td>
-                        Creator
-                    </td>
-                    <td>
-                        @item.CreatorUser.UserName
-                    </td>
-                }
-                else if (item.IsDescUpdated)
-                {
-                    <td>
-                        Description
-                    </td>
-                    <td>
-                        @item.Desc
-                    </td>
-                }
-                else if (item.IsPriorityUpdated)
-                {
-                    <td>
-                        Priority
-                    </td>
-                    <td>
-                        @item.Priority
-                    </td>
-                }
-                else if (item.IsStatusUpdated)
-                {
-                    <td>
-                        Status
-                    </td>
-                    <td>
-                        @item.Status
-                    </td>
-                }
-                else if (item.IsTypeUpdated)
-                {
-                    <td>
-                        Type
-                    </td>
-                    <td>
-                        @item.Type
-                    </td>
-                }
-                else if (item.IsTitleUpdated)
-                {
-                    <td>
-                        Title
-                    </td>
-                    <td>
-                        @item.Title
-                    </td>
-                }
-                <td>
-                    @DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
-                </td>
-                <td>
-                    @item.UpdatedBy
-                </td>
-            
+                <th>
+                    Field Name
+                </th>
+                <th>
+                    Field Value
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => Model.FirstOrDefault().Updated)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => Model.FirstOrDefault().UpdatedBy)
+                </th>
             </tr>
-        }
-    </tbody>
-</table>    
+        </thead>
+        <tbody>
+            @foreach(IssueHistory item in Model)
+            {
+                <tr>
+                    @if (item.IsAssignedUserUpdated)
+                    {
+                        <td>
+                            Assigned
+                        </td>
+                        @if(item.AssignedUser == null)
+                        {
+                            <td>
+                                Unassigned
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @item.AssignedUser.UserName
+                            </td>
+                        }
+                    }
+                    else if (item.IsCreatorUpdated)
+                    {
+                        <td>
+                            Creator
+                        </td>
+                        <td>
+                            @item.CreatorUser.UserName
+                        </td>
+                    }
+                    else if (item.IsDescUpdated)
+                    {
+                        <td>
+                            Description
+                        </td>
+                        <td>
+                            @item.Desc
+                        </td>
+                    }
+                    else if (item.IsPriorityUpdated)
+                    {
+                        <td>
+                            Priority
+                        </td>
+                        <td>
+                            @item.Priority
+                        </td>
+                    }
+                    else if (item.IsStatusUpdated)
+                    {
+                        <td>
+                            Status
+                        </td>
+                        <td>
+                            @item.Status
+                        </td>
+                    }
+                    else if (item.IsTypeUpdated)
+                    {
+                        <td>
+                            Type
+                        </td>
+                        <td>
+                            @item.Type
+                        </td>
+                    }
+                    else if (item.IsTitleUpdated)
+                    {
+                        <td>
+                            Title
+                        </td>
+                        <td>
+                            @item.Title
+                        </td>
+                    }
+                    <td>
+                        @DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                    </td>
+                    <td>
+                        @item.UpdatedBy
+                    </td>
+            
+                </tr>
+            }
+        </tbody>
+    </table>  
+}
+
+  
