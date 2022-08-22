@@ -1,4 +1,4 @@
-﻿@model List<IssueHistoryViewModel>
+﻿@model List<IssueHistory>
 
 
 
@@ -6,10 +6,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(m => Model.FirstOrDefault().FieldName)
+                Field Name
             </th>
             <th>
-                @Html.DisplayNameFor(m => Model.FirstOrDefault().FieldValue)
+                Field Value
             </th>
             <th>
                 @Html.DisplayNameFor(m => Model.FirstOrDefault().Updated)
@@ -20,21 +20,88 @@
         </tr>
     </thead>
     <tbody>
-        @foreach(IssueHistoryViewModel item in Model)
+        @foreach(IssueHistory item in Model)
         {
             <tr>
+                @if (item.IsAssignedUserUpdated)
+                {
+                    <td>
+                        Assigned
+                    </td>
+                    @if(item.AssignedUser == null)
+                    {
+                        <td>
+                            Unassigned
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @item.AssignedUser.UserName
+                        </td>
+                    }
+                }
+                else if (item.IsCreatorUpdated)
+                {
+                    <td>
+                        Creator
+                    </td>
+                    <td>
+                        @item.CreatorUser.UserName
+                    </td>
+                }
+                else if (item.IsDescUpdated)
+                {
+                    <td>
+                        Description
+                    </td>
+                    <td>
+                        @item.Desc
+                    </td>
+                }
+                else if (item.IsPriorityUpdated)
+                {
+                    <td>
+                        Priority
+                    </td>
+                    <td>
+                        @item.Priority
+                    </td>
+                }
+                else if (item.IsStatusUpdated)
+                {
+                    <td>
+                        Status
+                    </td>
+                    <td>
+                        @item.Status
+                    </td>
+                }
+                else if (item.IsTypeUpdated)
+                {
+                    <td>
+                        Type
+                    </td>
+                    <td>
+                        @item.Type
+                    </td>
+                }
+                else if (item.IsTitleUpdated)
+                {
+                    <td>
+                        Title
+                    </td>
+                    <td>
+                        @item.Title
+                    </td>
+                }
                 <td>
-                    @item.FieldName
-                </td>
-                <td>
-                    @item.FieldValue
-                </td>
-                <td>
-                    @item.Updated
+                    @DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
                 </td>
                 <td>
                     @item.UpdatedBy
                 </td>
+            
             </tr>
         }
     </tbody>

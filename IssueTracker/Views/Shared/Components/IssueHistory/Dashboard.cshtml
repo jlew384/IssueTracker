@@ -1,15 +1,84 @@
-﻿@model List<IssueHistoryViewModel>
+﻿@model List<IssueHistory>
 
 <ul class="list-group">
-    @foreach(IssueHistoryViewModel item in Model)
-    {
-        <li class="list-group-item d-flex justify-content-between">
-            <span>
-                <em>@item.IssueTitle</em> <b>@item.FieldName</b> was changed to <b>@item.FieldValue</b> by <b>@item.UpdatedBy</b>
-            </span>
-            <span class="text-muted">
-                @item.Updated
-            </span>
-        </li>
-    }
+    @foreach(IssueHistory item in Model)
+        {
+            <li class="list-group-item d-flex justify-content-between">
+                @if (item.IsAssignedUserUpdated)
+                {
+                    @if(item.AssignedUser == null)
+                    {
+                        <span>
+                            <em>@item.Issue.Title</em> <b>Assigned</b> was changed to <b>Unassigned</b> by <b>@item.UpdatedBy</b>
+                        </span>
+                        <span class="text-muted">
+                            @DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                        </span>
+                    }
+                    else
+                    {
+                        <span>
+                            <em>@item.Issue.Title</em> <b>Assigned</b> was changed to <b>@item.AssignedUser.UserName</b> by <b>@item.UpdatedBy</b>
+                        </span>
+                        <span class="text-muted">
+                            @DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                        </span>
+                    }
+                }
+                else if (item.IsCreatorUpdated)
+                {
+                    <span>
+                        <em>@item.Issue.Title</em> <b>Creator</b> was changed to <b>@item.CreatorUser.UserName</b> by <b>@item.UpdatedBy</b>
+                    </span>
+                    <span class="text-muted">
+                        @DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                    </span>
+                }
+                else if (item.IsDescUpdated)
+                {
+                    <span>
+                        <em>@item.Issue.Title</em> <b>Description</b> was changed to <b>@item.Desc</b> by <b>@item.UpdatedBy</b>
+                    </span>
+                    <span class="text-muted">
+                        @DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                    </span>
+                }
+                else if (item.IsPriorityUpdated)
+                {
+                    <span>
+                        <em>@item.Issue.Title</em> <b>Priority</b> was changed to <b>@item.Priority</b> by <b>@item.UpdatedBy</b>
+                    </span>
+                    <span class="text-muted">
+                        @DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                    </span>
+                }
+                else if (item.IsStatusUpdated)
+                {
+                    <span>
+                        <em>@item.Issue.Title</em> <b>Status</b> was changed to <b>@item.Status</b> by <b>@item.UpdatedBy</b>
+                    </span>
+                    <span class="text-muted">
+                        @DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                    </span>
+                }
+                else if (item.IsTypeUpdated)
+                {
+                    <span>
+                        <em>@item.Issue.Title</em> <b>Type</b> was changed to <b>@item.Type</b> by <b>@item.UpdatedBy</b>
+                    </span>
+                    <span class="text-muted">
+                        @DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                    </span>
+                }
+                else if (item.IsTitleUpdated)
+                {
+                    <span>
+                        <em>@item.Issue.Title</em> <b>Title</b> was changed to <b>@item.Title</b> by <b>@item.UpdatedBy</b>
+                    </span>
+                    <span class="text-muted">
+                        @DateTimeHelpers.GetSimpleElapsedTime(item.Updated)
+                    </span>
+                }            
+            </li>
+        }
 </ul>   
