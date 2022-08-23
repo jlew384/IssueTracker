@@ -22,6 +22,7 @@ namespace IssueTracker.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet]
         public IActionResult IssueTable(string filter, string sortField, string sortDirection, string searchString, int? pageIndex, bool emptySearch = false)
         {
 
@@ -102,7 +103,7 @@ namespace IssueTracker.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(int? pid, string sortBy)
+        public IActionResult Index(int? pid)
         {
             Project? project = _context.Projects.Find(pid);
             if (pid == null)
@@ -188,25 +189,15 @@ namespace IssueTracker.Controllers
         }
 
 
-
         [HttpPost]
-        public IActionResult Create(CreateIssueViewModel model)
+        public IActionResult Create(Issue issue)
         {
             if(!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest();
             }
-            Issue issue = new Issue()
-            {
-                Title = model.Title,
-                Desc = model.Desc,
-                Status = model.Status,
-                Priority = model.Priority,
-                Type = model.Type,
-                ProjectId = model.ProjectId,
-                CreatorUserId = _userManager.GetUserId(this.User),
-                AssignedUserId = model.AssignedUserId
-            };
+
+            issue.CreatorUserId = _userManager.GetUserId(this.User);
 
             _context.Issues.Add(issue);
             _context.SaveChanges();
@@ -261,7 +252,7 @@ namespace IssueTracker.Controllers
             });
             _context.SaveChanges();
 
-            return RedirectToAction("Index", new {pid = model.ProjectId});
+            return RedirectToAction("Index", new {pid = issue.ProjectId});
         }
 
         [HttpGet]

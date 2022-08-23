@@ -3,10 +3,6 @@
 
 @{
     ViewData["Title"] = "Create Issue";
-    var ownerClaimValues = User.Claims
-        .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
-        .Select(c => Int32.Parse(c.Value))
-        .ToList();
 }
 
 

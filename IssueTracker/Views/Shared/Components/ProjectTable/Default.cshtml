@@ -5,10 +5,6 @@
     
     var user = User as ClaimsPrincipal;
     string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
-    var ownerClaimValues = user.Claims
-        .Where(c => c.Type == UserClaimTypes.PROJECT_OWNER)
-        .Select(c => Int32.Parse(c.Value))
-        .ToList();
 }
       
 
@@ -19,7 +15,7 @@
             <div class="d-flex justify-content-between">
                 <h5>@Html.DisplayFor(projectItem => project.Title)</h5>
                 <div>
-                    @if(User.IsInRole(UserRoles.ADMIN) || (User.IsInRole(UserRoles.PROJ_MNGR) && ownerClaimValues.Contains(project.Id)))
+                    @if(User.IsInRole(UserRoles.ADMIN) || (User.IsInRole(UserRoles.PROJ_MNGR) && project.OwnerId == userId))
                     {
                         <span class="text-nowrap">
                             <a class="m-1 text-muted position-relative" style="z-index: 10;" asp-controller="Project" asp-action="Details" asp-route-pid="@project.Id"><i class="bi bi-pencil-fill"></i></a>

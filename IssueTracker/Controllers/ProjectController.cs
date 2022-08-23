@@ -49,12 +49,16 @@ namespace IssueTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Project model)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
             ApplicationUser currentUser = await _userManager.GetUserAsync(User);
             model.Users.Add(currentUser);
             model.OwnerId = currentUser.Id;
             _context.Projects.Add(model);
             _context.SaveChanges();
-            await AddProjectOwnerClaim(currentUser, model.Id);
             return RedirectToAction("Index", "Project");
         }
 
@@ -86,12 +90,6 @@ namespace IssueTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int pid)
         {
-            if (User.IsInRole(UserRoles.PROJ_MNGR) && !CheckForProjectOwnerClaim(pid))
-
-            {
-                return NotFound();
-            }
-
             Project project = _context.Projects.Find(pid);
 
             if (project == null)
@@ -99,9 +97,15 @@ namespace IssueTracker.Controllers
                 return NotFound();
             }
 
+            string userId = _userManager.GetUserId(User);
+
+            if (User.IsInRole(UserRoles.PROJ_MNGR) && userId != project.OwnerId)
+            {
+                return BadRequest();
+            }
+
             _context.Projects.Remove(project);
             _context.SaveChanges();
-            await RemoveProjectOwnerClaim(pid);
             return RedirectToAction("Index");
         }
 
@@ -159,7 +163,6 @@ namespace IssueTracker.Controllers
         public async Task<int> RemoveUsersFromProject(int pid, List<string> userIds)
         {
             Project? project = _context.Projects.Find(pid);
-            List<ApplicationUser> users = new List<ApplicationUser>();
 
             foreach(string userId in userIds)
             {
@@ -176,7 +179,6 @@ namespace IssueTracker.Controllers
         public async Task<int> AddUsersToProject(int pid, List<string> userIds)
         {
             Project? project = _context.Projects.Find(pid);
-            List<ApplicationUser> users = new List<ApplicationUser>();
 
             foreach (string userId in userIds)
             {
@@ -186,33 +188,6 @@ namespace IssueTracker.Controllers
 
             _context.SaveChanges();
             return pid;
-        }
-
-        private async Task AddProjectOwnerClaim(ApplicationUser projectOwner, int? projectId)
-        {
-            Claim projectOwnerClaim = new Claim(UserClaimTypes.PROJECT_OWNER, projectId.ToString());
-            await RemoveProjectOwnerClaim(projectOwnerClaim);
-            await _userManager.AddClaimAsync(projectOwner, projectOwnerClaim);
-        }
-
-        private async Task RemoveProjectOwnerClaim(int? projectId)
-        {
-            Claim projectOwnerClaim = new Claim(UserClaimTypes.PROJECT_OWNER, projectId.ToString());
-            await RemoveProjectOwnerClaim(projectOwnerClaim);
-        }
-
-        private async Task RemoveProjectOwnerClaim(Claim projectOwnerClaim)
-        {
-            IList<ApplicationUser> users = await _userManager.GetUsersForClaimAsync(projectOwnerClaim);
-            foreach (ApplicationUser user in users)
-            {
-                await _userManager.RemoveClaimAsync(user, projectOwnerClaim);
-            }
-        }
-
-        private bool CheckForProjectOwnerClaim(int? projectId)
-        {
-            return User.HasClaim(x => x.Type == UserClaimTypes.PROJECT_OWNER && x.Value == projectId.ToString());
         }
     }
 }

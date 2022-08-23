@@ -16,7 +16,7 @@ namespace IssueTracker.Models
 
         [Required]
         [ForeignKey("ProjectId")]
-        public virtual Project Project { get; set; } = null!;
+        public virtual Project? Project { get; set; } = null!;
 
         public string? CreatorUserId { get; set; }
 

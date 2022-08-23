@@ -34,7 +34,7 @@ namespace IssueTracker.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("ApplicationUserProject");
+                    b.ToTable("ApplicationUserProject", (string)null);
                 });
 
             modelBuilder.Entity("IssueTracker.Models.Issue", b =>
@@ -93,7 +93,7 @@ namespace IssueTracker.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Issues");
+                    b.ToTable("Issues", (string)null);
                 });
 
             modelBuilder.Entity("IssueTracker.Models.IssueComment", b =>
@@ -127,7 +127,7 @@ namespace IssueTracker.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("IssueComments");
+                    b.ToTable("IssueComments", (string)null);
                 });
 
             modelBuilder.Entity("IssueTracker.Models.IssueHistory", b =>
@@ -205,7 +205,7 @@ namespace IssueTracker.Migrations
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("IssuesHistory");
+                    b.ToTable("IssuesHistory", (string)null);
                 });
 
             modelBuilder.Entity("IssueTracker.Models.Project", b =>
@@ -238,7 +238,7 @@ namespace IssueTracker.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

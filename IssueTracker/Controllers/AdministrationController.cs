@@ -120,7 +120,7 @@ namespace IssueTracker.Controllers
         {
             if(!ModelState.IsValid)
             {
-                return View(model);
+                return Redirect(Request.Headers["Referrer"].ToString());
             }
 
             ApplicationUser user = await _userManager.FindByIdAsync(model.Id);
